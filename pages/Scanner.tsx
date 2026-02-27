@@ -3,7 +3,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { addDoc, collection, Timestamp, getDoc, doc, query, where, getDocs, setDoc } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { usePlatform } from '../App';
+import { usePlatform } from '../contexts/PlatformContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { CheckCircle, X, ShieldCheck, AlertTriangle, FileUp, Clock } from 'lucide-react';
 import { ClassSession } from '../types';

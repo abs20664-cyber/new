@@ -1,7 +1,8 @@
-import React, { useState, useEffect, createContext, useContext, Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { PlatformProvider } from './contexts/PlatformContext';
 import { Layout } from './components/Layout';
 
 // Lazy load heavy page components
@@ -16,9 +17,6 @@ const Profile = lazy(() => import('./pages/Profile'));
 const Login = lazy(() => import('./pages/Login'));
 const EconomicDashboard = lazy(() => import('./pages/EconomicDashboard'));
 
-const PlatformContext = createContext<{ isMobile: boolean }>({ isMobile: false });
-export const usePlatform = () => useContext(PlatformContext);
-
 const PageLoader = () => (
   <div className="flex-1 flex items-center justify-center min-h-[400px]">
     <div className="flex flex-col items-center gap-4">
@@ -32,25 +30,6 @@ const AppContent: React.FC = () => {
   const { user, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1024 : false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth < 1024;
-      setIsMobile(mobile);
-      if (mobile) {
-        document.body.classList.add('is-mobile');
-        document.body.classList.remove('is-desktop');
-      } else {
-        document.body.classList.add('is-desktop');
-        document.body.classList.remove('is-mobile');
-      }
-    };
-    
-    window.addEventListener('resize', handleResize, { passive: true });
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // 1. Global Loading State
   if (loading) {
@@ -74,7 +53,7 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <PlatformContext.Provider value={{ isMobile }}>
+    <PlatformProvider>
         <Layout currentPath={location.pathname} onNavigate={(path) => navigate(path)}>
             <Suspense fallback={<PageLoader />}>
               <Routes>
@@ -91,7 +70,7 @@ const AppContent: React.FC = () => {
               </Routes>
             </Suspense>
         </Layout>
-    </PlatformContext.Provider>
+    </PlatformProvider>
   );
 };
 

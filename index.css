@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: "IBM Plex Sans Arabic", sans-serif;
+
+  --color-institutional-50: #f9fafb;
+  --color-institutional-100: #f3f4f6;
+  --color-institutional-200: #e5e7eb;
+  --color-institutional-300: #d1d5db;
+  --color-institutional-400: #9ca3af;
+  --color-institutional-500: #6b7280;
+  --color-institutional-600: #4b5563;
+  --color-institutional-700: #374151;
+  --color-institutional-800: #1f2937;
+  --color-institutional-900: #111827;
+  --color-institutional-950: #030712;
+
+  --color-primary: #006633;
+  --color-primary-hover: #00552b;
+  --color-primary-light: #e6f0eb;
+  --color-primary-foreground: #ffffff;
+
+  --color-algeria-green: #006633;
+  --color-algeria-red: #D21034;
+  --color-algeria-white: #FFFFFF;
+
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #f43f5e;
+
+  --color-surface: var(--bg-surface);
+  --color-body: var(--bg-body);
+  --color-background: var(--bg-body);
+  --color-sidebar: var(--bg-surface);
+  --color-text: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border: var(--border-color);
+
+  --color-ink: #121212;
+  --color-ink-light: #1e1e1e;
+  --color-paper: #EAE0D5;
+  --color-paper-dim: #C8BCA7;
+  --color-gold: #D4AF37;
+  --color-gold-muted: #B5952F;
+}
+
+@layer base {
+  body {
+    @apply bg-ink text-paper font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif tracking-tight;
+  }
+
+  code, pre {
+    @apply font-mono;
+  }
+}
+
+@layer components {
+  .academic-card {
+    @apply bg-ink-light border border-gold/20 rounded-sm shadow-xl transition-all duration-300 hover:border-gold/40;
+  }
+
+  .gold-button {
+    @apply px-4 py-2 bg-gold text-ink font-serif font-bold uppercase tracking-widest text-xs transition-all hover:bg-gold-muted active:scale-95;
+  }
+
+  .ink-button {
+    @apply px-4 py-2 border border-gold/30 text-gold font-serif font-bold uppercase tracking-widest text-xs transition-all hover:bg-gold/10 active:scale-95;
+  }
+
+  .editorial-label {
+    @apply font-mono text-[10px] uppercase tracking-[0.2em] text-paper-dim;
+  }
+}
+

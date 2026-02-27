@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import QRCode from 'react-qr-code';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { usePlatform } from '../App';
+import { usePlatform } from '../contexts/PlatformContext';
 import { Copy, Check, ShieldCheck, User as UserIcon, QrCode as QrIcon, Fingerprint } from 'lucide-react';
 
 const QRIdentity: React.FC = () => {

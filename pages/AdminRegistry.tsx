@@ -1,16 +1,16 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState, memo, useMemo } from 'react';
 import { collection, onSnapshot, doc, setDoc, updateDoc, getDocs, Timestamp } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { User, UserRole } from '../types';
-import { Trash2, Plus, Settings, Shield, GraduationCap, X, Loader2, ShieldAlert, AlertTriangle, Mail, Key, User as UserIcon, DollarSign } from 'lucide-react';
+import { Trash2, Plus, Settings, Shield, GraduationCap, X, Loader2, ShieldAlert, AlertTriangle, User as UserIcon, DollarSign, Users, Search, Filter } from 'lucide-react';
 import { superAdminHardDelete } from '../services/adminTools';
 import { useAuth } from '../contexts/AuthContext';
-import { usePlatform } from '../App';
+import { usePlatform } from '../contexts/PlatformContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
-import * as ReactWindow from 'react-window';
-const { FixedSizeList: List } = ReactWindow;
+import { FixedSizeList as List } from 'react-window';
 import { Skeleton } from '../components/Skeleton';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
 
 const getRoleIcon = (role: UserRole) => {
     switch(role) {
@@ -91,6 +91,9 @@ const AdminRegistry: React.FC = () => {
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [tempPassword, setTempPassword] = useState<string | null>(null);
+    
+    const [searchQuery, setSearchQuery] = useState('');
+    const [roleFilter, setRoleFilter] = useState<UserRole | 'all'>('all');
 
     useEffect(() => {
         const unsub = onSnapshot(collection(db, collections.users), (snap) => {
@@ -183,7 +186,32 @@ const AdminRegistry: React.FC = () => {
         }
     };
 
-    const itemData = { users, isMobile, t, navigate, setEditingUser, setIsModalOpen, handleDeleteClick, processingId };
+    const filteredUsers = useMemo(() => {
+        return users.filter(u => {
+            const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                  u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                  u.id.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesRole = roleFilter === 'all' || u.role === roleFilter;
+            return matchesSearch && matchesRole;
+        });
+    }, [users, searchQuery, roleFilter]);
+
+    const stats = useMemo(() => {
+        return {
+            total: users.length,
+            students: users.filter(u => u.role === 'student').length,
+            teachers: users.filter(u => u.role === 'teacher').length,
+            staff: users.filter(u => u.role === 'admin' || u.role === 'economic').length,
+        };
+    }, [users]);
+
+    const pieData = useMemo(() => [
+        { name: t('roles.student'), value: stats.students, color: '#10b981' }, // success
+        { name: t('roles.teacher'), value: stats.teachers, color: '#3b82f6' }, // primary
+        { name: t('roles.admin') + ' / ' + t('roles.economic'), value: stats.staff, color: '#ef4444' }, // danger
+    ].filter(d => d.value > 0), [stats, t]);
+
+    const itemData = { users: filteredUsers, isMobile, t, navigate, setEditingUser, setIsModalOpen, handleDeleteClick, processingId };
 
     const renderContent = () => {
         if (loading) {
@@ -205,42 +233,145 @@ const AdminRegistry: React.FC = () => {
             );
         }
 
-        if (isMobile) {
-            return (
-                <List
-                    height={window.innerHeight - 200} // Adjust height as needed
-                    itemCount={users.length}
-                    itemSize={180} // Approximate height of a card
-                    width="100%"
-                    itemData={itemData}
-                >
-                    {UserRow}
-                </List>
-            );
-        }
-
         return (
-            <div className="card-edu bg-surface dark:bg-institutional-900 border border-institutional-300 dark:border-institutional-800 rounded-[1.5rem] overflow-hidden shadow-2xl">
-                <div className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] p-6 border-b border-institutional-200 dark:border-institutional-800 bg-institutional-50 dark:bg-institutional-950 font-black text-[10px] uppercase tracking-widest text-institutional-500 text-start`}>
-                    <div>{t('admin.legalName')}</div>
-                    <div>{t('admin.email')}</div>
-                    <div>{t('admin.permissions')}</div>
-                    <div>{t('admin.systemId')}</div>
-                    <div className="text-end">{t('admin.manage')}</div>
+            <div className="space-y-6">
+                {/* Dashboard Stats */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500">Total Users</h3>
+                                <div className="w-8 h-8 rounded-full bg-institutional-100 dark:bg-institutional-800 flex items-center justify-center text-institutional-600">
+                                    <Users size={16} />
+                                </div>
+                            </div>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.total}</p>
+                        </div>
+                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500">Students</h3>
+                                <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center text-success">
+                                    <GraduationCap size={16} />
+                                </div>
+                            </div>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.students}</p>
+                        </div>
+                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500">Teachers</h3>
+                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <Shield size={16} />
+                                </div>
+                            </div>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.teachers}</p>
+                        </div>
+                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500">Staff</h3>
+                                <div className="w-8 h-8 rounded-full bg-danger/10 flex items-center justify-center text-danger">
+                                    <ShieldAlert size={16} />
+                                </div>
+                            </div>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.staff}</p>
+                        </div>
+                    </div>
+                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col">
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500 mb-4">Role Distribution</h3>
+                        <div className="flex-1 min-h-[200px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={pieData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        {pieData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                    <RechartsTooltip 
+                                        contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                                        itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                                    />
+                                    <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold' }} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
                 </div>
-                {users.length > 0 ? (
+
+                {/* Filters and Search */}
+                <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-4 rounded-[1.5rem] shadow-sm">
+                    <div className="relative w-full md:w-96">
+                        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-institutional-400" />
+                        <input 
+                            type="text" 
+                            placeholder="Search by name, email, or ID..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-institutional-50 dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 rounded-xl py-3 pl-12 pr-4 text-sm font-bold text-institutional-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
+                        />
+                    </div>
+                    <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                        <Filter size={16} className="text-institutional-400 shrink-0" />
+                        <div className="flex gap-2">
+                            {(['all', 'student', 'teacher', 'admin', 'economic'] as const).map(role => (
+                                <button
+                                    key={role}
+                                    onClick={() => setRoleFilter(role)}
+                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-colors ${
+                                        roleFilter === role 
+                                            ? 'bg-institutional-900 dark:bg-white text-white dark:text-institutional-900' 
+                                            : 'bg-institutional-50 dark:bg-institutional-950 text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-800'
+                                    }`}
+                                >
+                                    {role === 'all' ? 'All Roles' : t(`roles.${role}`)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Registry List */}
+                {isMobile ? (
                     <List
-                        height={Math.min(users.length * 81, window.innerHeight - 300)} // Dynamic height
-                        itemCount={users.length}
-                        itemSize={81} // Height of a row
+                        height={window.innerHeight - 400} // Adjust height as needed
+                        itemCount={filteredUsers.length}
+                        itemSize={180} // Approximate height of a card
                         width="100%"
                         itemData={itemData}
                     >
                         {UserRow}
                     </List>
                 ) : (
-                    <div className="p-8 text-center text-institutional-400 text-xs font-black uppercase tracking-widest">
-                        {t('admin.registryEmpty')}
+                    <div className="card-edu bg-surface dark:bg-institutional-900 border border-institutional-300 dark:border-institutional-800 rounded-[1.5rem] overflow-hidden shadow-2xl">
+                        <div className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] p-6 border-b border-institutional-200 dark:border-institutional-800 bg-institutional-50 dark:bg-institutional-950 font-black text-[10px] uppercase tracking-widest text-institutional-500 text-start`}>
+                            <div>{t('admin.legalName')}</div>
+                            <div>{t('admin.email')}</div>
+                            <div>{t('admin.permissions')}</div>
+                            <div>{t('admin.systemId')}</div>
+                            <div className="text-end">{t('admin.manage')}</div>
+                        </div>
+                        {filteredUsers.length > 0 ? (
+                            <List
+                                height={Math.min(filteredUsers.length * 81, window.innerHeight - 400)} // Dynamic height
+                                itemCount={filteredUsers.length}
+                                itemSize={81} // Height of a row
+                                width="100%"
+                                itemData={itemData}
+                            >
+                                {UserRow}
+                            </List>
+                        ) : (
+                            <div className="p-12 text-center text-institutional-400 text-xs font-black uppercase tracking-widest flex flex-col items-center gap-4">
+                                <Search size={32} className="opacity-20" />
+                                {t('admin.registryEmpty')}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -248,10 +379,10 @@ const AdminRegistry: React.FC = () => {
     };
 
     return (
-        <div className="fade-in">
+        <div className="fade-in max-w-7xl mx-auto">
             <div className={`mb-8 flex ${isMobile ? 'flex-col gap-4' : 'justify-between items-center'}`}>
                 <div className="text-start">
-                    <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-institutional-950 dark:text-white">{t('nav.registry')}</h2>
+                    <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-institutional-950 dark:text-white">{t('nav.registry')} Dashboard</h2>
                     <p className="text-[10px] font-bold text-danger uppercase tracking-widest mt-1">{t('admin.systemManagement')}</p>
                 </div>
                 <button 

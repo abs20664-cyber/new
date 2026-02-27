@@ -2,7 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { usePlatform } from '../App';
+import { usePlatform } from '../contexts/PlatformContext';
+import Logo from './Logo';
 import { collection, onSnapshot, query, where, doc, updateDoc } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { Notification, AppLanguage } from '../types';
@@ -328,7 +329,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
             {/* DESKTOP SIDEBAR */}
             <aside className={`hidden lg:flex fixed inset-y-0 ${isRTL ? 'end-0 border-s' : 'start-0 border-e'} w-[300px] bg-surface dark:bg-institutional-950 border-institutional-200 dark:border-institutional-800 z-50 flex-col transition-all duration-300`}>
                 <div className="p-10 flex items-center gap-4">
-                    <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-primary/30 transform -rotate-3 transition-transform hover:rotate-0">E</div>
+                    <Logo size="md" />
                     <div>
                         <h1 className="text-2xl font-black tracking-tighter text-institutional-950 dark:text-white uppercase">{t('appName')}</h1>
                         <p className="text-[9px] font-black tracking-[0.3em] text-primary uppercase">{t('appSubName')}</p>
@@ -472,42 +473,42 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
 
                 {/* MOBILE FLOATING TOP BAR */}
                 {isMobile && (
-                    <div className="fixed top-6 inset-x-0 z-[60] px-6 pointer-events-none">
+                    <div className="fixed top-4 inset-x-0 z-[60] px-3 pointer-events-none">
                         <div className="flex items-center justify-between w-full">
-                            <div className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 p-2 px-4 shadow-2xl rounded-2xl flex items-center gap-3 pointer-events-auto">
-                                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-black text-sm shadow-lg">E</div>
-                                <h2 className="text-xs font-black tracking-tight text-institutional-950 dark:text-white uppercase truncate max-w-[120px]">{getPageTitle()}</h2>
+                            <div className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 p-2 px-3 shadow-2xl rounded-2xl flex items-center gap-2 pointer-events-auto">
+                                <Logo size="sm" />
+                                <h2 className="text-[10px] sm:text-xs font-black tracking-tight text-institutional-950 dark:text-white uppercase truncate max-w-[100px] sm:max-w-[120px]">{getPageTitle()}</h2>
                             </div>
 
                             <div className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 p-1.5 shadow-2xl rounded-2xl flex items-center gap-1 pointer-events-auto">
-                                <button onClick={toggleTheme} className="p-2 text-institutional-500 hover:text-primary transition-all active:scale-90">
-                                    {isDarkMode ? <Sun size={18} className="text-warning" /> : <Moon size={18} className="text-primary" />}
+                                <button onClick={toggleTheme} className="p-1.5 sm:p-2 text-institutional-500 hover:text-primary transition-all active:scale-90">
+                                    {isDarkMode ? <Sun size={16} className="text-warning" /> : <Moon size={16} className="text-primary" />}
                                 </button>
-                                <button onClick={() => { enableAudio(); setIsNotifOpen(true); }} className="relative p-2 text-institutional-500 hover:text-primary transition-all active:scale-90">
-                                    <Bell size={18} />
+                                <button onClick={() => { enableAudio(); setIsNotifOpen(true); }} className="relative p-1.5 sm:p-2 text-institutional-500 hover:text-primary transition-all active:scale-90">
+                                    <Bell size={16} />
                                     {unreadCount > 0 && (
                                         <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-danger text-white text-[7px] font-black flex items-center justify-center rounded-full border border-surface dark:border-institutional-950">
                                             {unreadCount}
                                         </span>
                                     )}
                                 </button>
-                                <button onClick={logout} className="p-2 text-institutional-500 hover:text-danger transition-all active:scale-90">
-                                    <Power size={18} />
+                                <button onClick={logout} className="p-1.5 sm:p-2 text-institutional-500 hover:text-danger transition-all active:scale-90">
+                                    <Power size={16} />
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
 
-                <div className={`flex-1 overflow-y-auto p-6 lg:p-16 relative scroll-smooth ${isMobile ? 'pb-32 pt-28' : ''}`}>
+                <div className={`flex-1 overflow-y-auto p-3 sm:p-6 lg:p-12 relative scroll-smooth ${isMobile ? 'pb-28 pt-20' : ''}`}>
                     <div className="max-w-[1400px] mx-auto">
                         {children}
                     </div>
                 </div>
 
                 {isMobile && (
-                    <div className="fixed bottom-8 inset-x-0 flex justify-center z-50 px-4 pointer-events-none">
-                        <nav className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 flex items-center overflow-x-auto scroll-smooth scrollbar-hide p-2 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2.5rem] gap-1 pointer-events-auto max-w-full">
+                    <div className="fixed bottom-4 inset-x-0 flex justify-center z-50 px-2 pointer-events-none">
+                        <nav className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 flex items-center overflow-x-auto scroll-smooth scrollbar-hide p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] gap-1 pointer-events-auto max-w-full">
                             {routes.map((route) => {
                                 const Icon = route.icon;
                                 const isActive = currentPath === route.path;
@@ -515,11 +516,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                     <button 
                                         key={route.path}
                                         onClick={() => { enableAudio(); onNavigate(route.path); }}
-                                        className={`flex-shrink-0 flex flex-col items-center gap-1 p-3 rounded-[1.75rem] transition-all min-w-[70px] relative ${isActive ? 'text-primary bg-primary/5 scale-105' : 'text-institutional-400 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
+                                        className={`flex-shrink-0 flex flex-col items-center gap-1 p-2.5 rounded-[1.5rem] transition-all min-w-[60px] relative ${isActive ? 'text-primary bg-primary/5 scale-105' : 'text-institutional-400 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
                                     >
-                                        <Icon size={20} strokeWidth={isActive ? 3 : 2} />
-                                        <span className={`text-[8px] font-black uppercase tracking-[0.1em] transition-all ${isActive ? 'opacity-100' : 'opacity-60'}`}>{route.label}</span>
-                                        {isActive && <div className="absolute bottom-1.5 w-1 h-1 bg-primary rounded-full" />}
+                                        <Icon size={18} strokeWidth={isActive ? 3 : 2} />
+                                        <span className={`text-[7px] font-black uppercase tracking-[0.1em] transition-all ${isActive ? 'opacity-100' : 'opacity-60'}`}>{route.label}</span>
+                                        {isActive && <div className="absolute bottom-1 w-1 h-1 bg-primary rounded-full" />}
                                     </button>
                                 );
                             })}
