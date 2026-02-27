@@ -8,7 +8,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { usePlatform } from '../App';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
-import { FixedSizeList as List } from 'react-window';
+import * as ReactWindow from 'react-window';
+const { FixedSizeList: List } = ReactWindow;
 import { Skeleton } from '../components/Skeleton';
 
 const getRoleIcon = (role: UserRole) => {

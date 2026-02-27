@@ -2,8 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { usePlatform } from '../contexts/PlatformContext';
-import Logo from './Logo';
+import { usePlatform } from '../App';
 import { collection, onSnapshot, query, where, doc, updateDoc } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { Notification, AppLanguage } from '../types';
@@ -329,7 +328,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
             {/* DESKTOP SIDEBAR */}
             <aside className={`hidden lg:flex fixed inset-y-0 ${isRTL ? 'end-0 border-s' : 'start-0 border-e'} w-[300px] bg-surface dark:bg-institutional-950 border-institutional-200 dark:border-institutional-800 z-50 flex-col transition-all duration-300`}>
                 <div className="p-10 flex items-center gap-4">
-                    <Logo size="md" />
+                    <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-primary/30 transform -rotate-3 transition-transform hover:rotate-0">E</div>
                     <div>
                         <h1 className="text-2xl font-black tracking-tighter text-institutional-950 dark:text-white uppercase">{t('appName')}</h1>
                         <p className="text-[9px] font-black tracking-[0.3em] text-primary uppercase">{t('appSubName')}</p>
@@ -476,7 +475,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     <div className="fixed top-6 inset-x-0 z-[60] px-6 pointer-events-none">
                         <div className="flex items-center justify-between w-full">
                             <div className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 p-2 px-4 shadow-2xl rounded-2xl flex items-center gap-3 pointer-events-auto">
-                                <Logo size="sm" />
+                                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-black text-sm shadow-lg">E</div>
                                 <h2 className="text-xs font-black tracking-tight text-institutional-950 dark:text-white uppercase truncate max-w-[120px]">{getPageTitle()}</h2>
                             </div>
 

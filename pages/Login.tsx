@@ -6,7 +6,6 @@ import { collection, getDocs, query, where, doc, updateDoc } from 'firebase/fire
 import { db, collections } from '../services/firebase';
 import { User, AppLanguage } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import Logo from '../components/Logo';
 
 const Login: React.FC = () => {
     const { login } = useAuth();
@@ -158,7 +157,15 @@ const Login: React.FC = () => {
                         className="mb-12"
                     >
                         <div className="flex items-center justify-between mb-8">
-                            <Logo size="lg" />
+                            {/* Modern Logo */}
+                            <div className="w-14 h-14 bg-gradient-to-br from-primary to-[#004d26] rounded-2xl flex items-center justify-center shadow-xl shadow-primary/30 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-8 h-8 bg-white/10 rounded-bl-full"></div>
+                                <div className="absolute bottom-0 left-0 w-6 h-6 bg-algeria-red/20 rounded-tr-full"></div>
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="relative z-10">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                                </svg>
+                            </div>
                             
                             {/* Language Switcher */}
                             <div className="flex gap-2">
@@ -181,7 +188,6 @@ const Login: React.FC = () => {
                             {pendingUser ? "Update your security credentials to continue." : "Please enter your credentials to continue."}
                         </p>
                     </motion.div>
-
 
                     {error && (
                         <motion.div 

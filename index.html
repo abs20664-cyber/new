@@ -4,10 +4,61 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Edu-Alg - Professional Academic OS</title>
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', '"Plus Jakarta Sans"', 'sans-serif'],
+              arabic: ['"IBM Plex Sans Arabic"', 'sans-serif'],
+            },
+            colors: {
+              institutional: {
+                50: '#f9fafb',
+                100: '#f3f4f6',
+                200: '#e5e7eb',
+                300: '#d1d5db',
+                400: '#9ca3af',
+                500: '#6b7280',
+                600: '#4b5563',
+                700: '#374151',
+                800: '#1f2937',
+                900: '#111827',
+                950: '#030712',
+              },
+              primary: {
+                DEFAULT: '#006633', // Algerian Green
+                hover: '#00552b',
+                light: '#e6f0eb',
+                foreground: '#ffffff',
+              },
+              algeria: {
+                green: '#006633',
+                red: '#D21034',
+                white: '#FFFFFF',
+              },
+              success: '#10b981',
+              warning: '#f59e0b',
+              danger: '#f43f5e',
+              surface: 'var(--bg-surface)',
+              body: 'var(--bg-body)',
+              background: 'var(--bg-body)',
+              sidebar: 'var(--bg-surface)',
+              text: {
+                DEFAULT: 'var(--text-primary)',
+                secondary: 'var(--text-secondary)',
+              },
+              border: 'var(--border-color)',
+            }
+          }
+        }
+      }
+    </script>
     <style>
       :root {
         --bg-body: #f8fafc;
@@ -85,7 +136,22 @@
         50% { transform: translateY(-5px); }
       }
     </style>
-
+  <script type="importmap">
+{
+  "imports": {
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "firebase/": "https://esm.sh/firebase@^12.9.0/",
+    "html5-qrcode": "https://esm.sh/html5-qrcode@^2.3.8",
+    "lucide-react": "https://esm.sh/lucide-react@^0.564.0",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-qr-code": "https://esm.sh/react-qr-code@^2.0.18"
+  }
+}
+</script>
 </head>
   <body>
     <div id="root"></div>
