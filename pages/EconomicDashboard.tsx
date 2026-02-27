@@ -29,7 +29,7 @@ import {
     ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { usePlatform } from '../contexts/PlatformContext';
+import { usePlatform } from '../App';
 import { useLanguage } from '../contexts/LanguageContext';
 import { 
     BarChart, 
@@ -47,7 +47,8 @@ import {
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import Papa from 'papaparse';
-import { FixedSizeList as List } from 'react-window';
+import * as ReactWindow from 'react-window';
+const { FixedSizeList: List } = ReactWindow;
 import { Skeleton } from '../components/Skeleton';
 import StudentRow from '../components/StudentRow';
 import TeacherRow from '../components/TeacherRow';

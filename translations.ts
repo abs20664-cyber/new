@@ -73,9 +73,9 @@ export const translations = {
       deleteConfirm: "Delete this message permanently? This action cannot be undone.",
       editMessage: "Edit Message", pinMessage: "Pin Message", unpinMessage: "Unpin Message",
       pinned: "Pinned Messages", reactions: "Reactions", searchPlaceholder: "Search conversations or groups...",
-      createGroup: "Create Broadcast Channel", groupName: "Channel Name", groupDescription: "Description (Optional)",
+      createGroup: "Create Collaborative Group", groupName: "Group Name", groupDescription: "Description (Optional)",
       participants: "Participants", noResults: "No results matched your query",
-      edited: "edited", classGroups: "Broadcast Channels", dms: "Direct Messages", readOnlyChannel: "Only teachers can broadcast in this channel."
+      edited: "edited", classGroups: "Class Groups", dms: "Direct Messages"
     },
     scanner: {
       title: "Secure Scanner", hardwareError: "HARDWARE ERROR: CAMERA ACCESS DENIED",
@@ -234,9 +234,9 @@ export const translations = {
       deleteConfirm: "Supprimer ce message définitivement ?",
       editMessage: "Modifier le message", pinMessage: "Épingler", unpinMessage: "Désépingler",
       pinned: "Messages épinglés", reactions: "Réactions", searchPlaceholder: "Rechercher des conversations...",
-      createGroup: "Créer un Canal de Diffusion", groupName: "Nom du Canal", groupDescription: "Description",
+      createGroup: "Créer un groupe collaboratif", groupName: "Nom du groupe", groupDescription: "Description",
       participants: "Participants", noResults: "Aucun résultat",
-      edited: "modifié", classGroups: "Canaux de Diffusion", dms: "Messages Directs", readOnlyChannel: "Seuls les enseignants peuvent diffuser dans ce canal."
+      edited: "modifié", classGroups: "Groupes de classe", dms: "Direct Messages"
     },
     scanner: {
       title: "Scanner Sécurisé", hardwareError: "ERREUR MATÉRIELLE : ACCÈS CAMÉRA REFUSÉ",
@@ -395,9 +395,9 @@ export const translations = {
       deleteConfirm: "هل أنت متأكد من حذف هذه الرسالة نهائياً؟",
       editMessage: "تعديل الرسالة", pinMessage: "تثبيت", unpinMessage: "إلغاء التثبيت",
       pinned: "الرسائل المثبتة", reactions: "التفاعلات", searchPlaceholder: "بحث في المحادثات...",
-      createGroup: "إنشاء قناة بث", groupName: "اسم القناة", groupDescription: "الوصف",
+      createGroup: "إنشاء مجموعة تعاونية", groupName: "اسم المجموعة", groupDescription: "الوصف",
       participants: "المشاركون", noResults: "لا توجد نتائج",
-      edited: "معدل", classGroups: "قنوات البث", dms: "رسائل مباشرة", readOnlyChannel: "يمكن للأساتذة فقط النشر في هذه القناة."
+      edited: "معدل", classGroups: "مجموعات الحصص", dms: "رسائل مباشرة"
     },
     scanner: {
       title: "الماسح الضوئي الآمن", hardwareError: "خطأ في الجهاز",

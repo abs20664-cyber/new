@@ -5,10 +5,11 @@ import { User, UserRole } from '../types';
 import { Trash2, Plus, Settings, Shield, GraduationCap, X, Loader2, ShieldAlert, AlertTriangle, Mail, Key, User as UserIcon, DollarSign } from 'lucide-react';
 import { superAdminHardDelete } from '../services/adminTools';
 import { useAuth } from '../contexts/AuthContext';
-import { usePlatform } from '../contexts/PlatformContext';
+import { usePlatform } from '../App';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
-import { FixedSizeList as List } from 'react-window';
+import * as ReactWindow from 'react-window';
+const { FixedSizeList: List } = ReactWindow;
 import { Skeleton } from '../components/Skeleton';
 
 const getRoleIcon = (role: UserRole) => {
