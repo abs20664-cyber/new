@@ -1,24 +1,54 @@
 @import "tailwindcss";
 
+:root {
+  /* Light Theme - Slate based for professional clarity */
+  --bg-body: #f8fafc;
+  --bg-surface: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
+
+  --inst-50: #f9fafb;
+  --inst-100: #f3f4f6;
+  --inst-200: #e5e7eb;
+  --inst-300: #d1d5db;
+  --inst-400: #9ca3af;
+  --inst-500: #6b7280;
+  --inst-600: #4b5563;
+  --inst-700: #374151;
+  --inst-800: #1f2937;
+  --inst-900: #111827;
+  --inst-950: #030712;
+}
+
+.dark {
+  /* Dark Theme - Zinc based for deep professional feel */
+  --bg-body: #09090b;
+  --bg-surface: #18181b;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --border-color: #27272a;
+
+  --inst-50: #09090b;
+  --inst-100: #18181b;
+  --inst-200: #27272a;
+  --inst-300: #3f3f46;
+  --inst-400: #52525b;
+  --inst-500: #71717a;
+  --inst-600: #a1a1aa;
+  --inst-700: #d4d4d8;
+  --inst-800: #e4e4e7;
+  --inst-900: #f4f4f5;
+  --inst-950: #fafafa;
+}
+
 @theme {
   --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-arabic: "IBM Plex Sans Arabic", sans-serif;
 
-  --color-institutional-50: #f9fafb;
-  --color-institutional-100: #f3f4f6;
-  --color-institutional-200: #e5e7eb;
-  --color-institutional-300: #d1d5db;
-  --color-institutional-400: #9ca3af;
-  --color-institutional-500: #6b7280;
-  --color-institutional-600: #4b5563;
-  --color-institutional-700: #374151;
-  --color-institutional-800: #1f2937;
-  --color-institutional-900: #111827;
-  --color-institutional-950: #030712;
-
   --color-primary: #006633;
   --color-primary-hover: #00552b;
-  --color-primary-light: #e6f0eb;
+  --color-primary-light: rgba(0, 102, 51, 0.1);
   --color-primary-foreground: #ffffff;
 
   --color-algeria-green: #006633;
@@ -29,6 +59,7 @@
   --color-warning: #f59e0b;
   --color-danger: #f43f5e;
 
+  /* Semantic Colors mapped to variables */
   --color-surface: var(--bg-surface);
   --color-body: var(--bg-body);
   --color-background: var(--bg-body);
@@ -37,43 +68,77 @@
   --color-text-secondary: var(--text-secondary);
   --color-border: var(--border-color);
 
-  --color-ink: #121212;
-  --color-ink-light: #1e1e1e;
-  --color-paper: #EAE0D5;
-  --color-paper-dim: #C8BCA7;
-  --color-gold: #D4AF37;
-  --color-gold-muted: #B5952F;
+  /* Institutional Palette */
+  --color-institutional-50: var(--inst-50);
+  --color-institutional-100: var(--inst-100);
+  --color-institutional-200: var(--inst-200);
+  --color-institutional-300: var(--inst-300);
+  --color-institutional-400: var(--inst-400);
+  --color-institutional-500: var(--inst-500);
+  --color-institutional-600: var(--inst-600);
+  --color-institutional-700: var(--inst-700);
+  --color-institutional-800: var(--inst-800);
+  --color-institutional-900: var(--inst-900);
+  --color-institutional-950: var(--inst-950);
 }
 
 @layer base {
   body {
-    @apply bg-ink text-paper font-sans antialiased;
+    @apply bg-body text-text font-sans antialiased;
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif tracking-tight;
+    @apply tracking-tight;
   }
 
   code, pre {
     @apply font-mono;
   }
+
+  /* RTL TYPOGRAPHY */
+  [dir="rtl"] { 
+    font-family: "IBM Plex Sans Arabic", "Plus Jakarta Sans", sans-serif !important; 
+  }
+  [dir="rtl"] * { 
+    letter-spacing: normal !important; 
+  }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-thumb { @apply bg-institutional-300 rounded-full; }
+  .dark ::-webkit-scrollbar-thumb { @apply bg-institutional-800; }
 }
 
 @layer components {
   .academic-card {
-    @apply bg-ink-light border border-gold/20 rounded-sm shadow-xl transition-all duration-300 hover:border-gold/40;
+    @apply bg-surface border border-border rounded-2xl shadow-sm transition-all duration-300 hover:shadow-md;
   }
 
-  .gold-button {
-    @apply px-4 py-2 bg-gold text-ink font-serif font-bold uppercase tracking-widest text-xs transition-all hover:bg-gold-muted active:scale-95;
+  .glass {
+    @apply bg-surface/70 backdrop-blur-xl;
   }
 
-  .ink-button {
-    @apply px-4 py-2 border border-gold/30 text-gold font-serif font-bold uppercase tracking-widest text-xs transition-all hover:bg-gold/10 active:scale-95;
+  .live-now-glow {
+    @apply border-success bg-success/5 relative;
+  }
+  .live-now-glow::after {
+    content: '';
+    @apply absolute -inset-0.5 rounded-[inherit] border-2 border-success opacity-40 animate-pulse;
+    pointer-events: none;
   }
 
-  .editorial-label {
-    @apply font-mono text-[10px] uppercase tracking-[0.2em] text-paper-dim;
+  .fade-in { animation: fadeIn 0.4s ease-out; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
+
+  .animate-float { animation: float 6s ease-in-out infinite; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  .scroll-hide::-webkit-scrollbar { display: none; }
+  .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
 }
-
