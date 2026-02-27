@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Edu-Alg - Professional Academic OS</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-body: #f8fafc;
+        --bg-surface: #ffffff;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --border-color: #e2e8f0;
+        --primary-color: #006633;
+      }
+      .dark {
+        --bg-body: #030712;
+        --bg-surface: #0f172a;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --border-color: #1e293b;
+        --primary-color: #008040;
+      }
+      body {
+        background-color: var(--bg-body);
+        color: var(--text-primary);
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overscroll-behavior-y: contain;
+      }
+
+      /* RTL TYPOGRAPHY */
+      [dir="rtl"] { font-family: "IBM Plex Sans Arabic", "Plus Jakarta Sans", sans-serif !important; }
+      [dir="rtl"] *, [dir="rtl"] .tracking-tighter, [dir="rtl"] .tracking-tight { letter-spacing: normal !important; }
+
+      ::-webkit-scrollbar { width: 4px; height: 4px; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 20px; }
+      .dark ::-webkit-scrollbar-thumb { background: #334155; }
+      
+      .scroll-hide::-webkit-scrollbar { display: none; }
+      .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .dark .glass { background: rgba(15, 23, 42, 0.7); }
+
+      .live-now-glow {
+        border-color: #10b981 !important;
+        background: rgba(16, 185, 129, 0.03) !important;
+        position: relative;
+      }
+      .live-now-glow::after {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: inherit;
+        border: 2px solid #10b981;
+        opacity: 0.4;
+        animation: live-pulse 2s infinite;
+        pointer-events: none;
+      }
+      @keyframes live-pulse {
+        0% { transform: scale(1); opacity: 0.4; }
+        100% { transform: scale(1.03); opacity: 0; }
+      }
+
+      .fade-in { animation: fadeIn 0.4s ease-out; }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Optimized animations - transform only */
+      .animate-float { animation: float 6s ease-in-out infinite; }
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+      }
+    </style>
+
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
