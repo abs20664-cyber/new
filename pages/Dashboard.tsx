@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { usePlatform } from '../App';
+import { usePlatform } from '../contexts/PlatformContext';
 import Classes from './Classes';
 import QRIdentity from './QRIdentity';
 import AdminRegistry from './AdminRegistry';

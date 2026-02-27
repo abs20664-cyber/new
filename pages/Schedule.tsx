@@ -3,7 +3,7 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { ClassSession, HOURS_OF_DAY } from '../types';
 import { ChevronLeft, ChevronRight, Calendar, Clock, MapPin, CheckCircle2, XCircle, Info } from 'lucide-react';
-import { usePlatform } from '../App';
+import { usePlatform } from '../contexts/PlatformContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';

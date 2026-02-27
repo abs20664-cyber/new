@@ -10,7 +10,7 @@ import {
     Check, CheckCheck, ShieldCheck, Trash2, Edit2, Pin, PinOff, Smile, 
     Search, Users, MessageSquare, Plus, Info, X, ArrowDown, Hash, User as UserIcon
 } from 'lucide-react';
-import { usePlatform } from '../App';
+import { usePlatform } from '../contexts/PlatformContext';
 
 interface ChatTarget {
     type: 'dm' | 'group';
