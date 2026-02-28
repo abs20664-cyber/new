@@ -94,79 +94,107 @@ const Login: React.FC = () => {
 
     return (
         <div className={`min-h-screen flex bg-background relative overflow-hidden ${isRTL ? 'font-arabic' : ''}`}>
-            {/* Left Side - Decorative & Branding */}
-            <div className="hidden lg:flex lg:w-1/2 relative bg-primary overflow-hidden items-center justify-center p-12">
-                {/* Algerian Flag Inspired Background Elements */}
-                <div className="absolute top-0 left-0 w-full h-full opacity-10">
-                    <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-algeria-red rounded-full blur-[120px]" />
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-white rounded-full blur-[120px]" />
+            {/* Left Side - Immersive & Branding */}
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-12 bg-institutional-950">
+                {/* Atmospheric Background - Recipe 7 Inspired */}
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_30%,#1a3a3a_0%,transparent_70%)] opacity-40" />
+                    <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_80%,#9c1c1c_0%,transparent_60%)] opacity-20" />
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] mix-blend-overlay" />
                 </div>
+
+                {/* Animated Orbs */}
+                <motion.div 
+                    animate={{ 
+                        scale: [1, 1.2, 1],
+                        opacity: [0.3, 0.5, 0.3],
+                        x: [0, 50, 0],
+                        y: [0, -30, 0]
+                    }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[100px]"
+                />
+                <motion.div 
+                    animate={{ 
+                        scale: [1, 1.3, 1],
+                        opacity: [0.2, 0.4, 0.2],
+                        x: [0, -40, 0],
+                        y: [0, 60, 0]
+                    }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-algeria-red/10 rounded-full blur-[120px]"
+                />
                 
                 <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="relative z-10 text-white max-w-lg"
+                    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative z-10 text-white max-w-xl"
                 >
-                    <div className="mb-8 inline-flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-                        <GraduationCap className="text-white" size={20} />
-                        <span className="text-xs font-bold uppercase tracking-widest">Algerian Academic OS</span>
-                    </div>
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.5, duration: 0.8 }}
+                        className="mb-10 inline-flex items-center gap-3 px-5 py-2.5 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 shadow-2xl"
+                    >
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70">System Status: Operational</span>
+                    </motion.div>
                     
-                    <h1 className="text-6xl font-black mb-6 leading-[0.9] tracking-tighter uppercase">
-                        Empowering <br />
-                        <span className="text-algeria-red">Education</span> <br />
-                        in Algeria
+                    <h1 className="text-7xl xl:text-8xl font-black mb-8 leading-[0.85] tracking-tighter uppercase italic">
+                        The Future <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40">Of Academic</span> <br />
+                        <span className="text-algeria-red drop-shadow-[0_0_30px_rgba(156,28,28,0.4)]">Excellence</span>
                     </h1>
                     
-                    <p className="text-lg text-white/80 font-medium leading-relaxed mb-12">
-                        Welcome to the next generation of academic management. A secure, modern, and efficient platform designed for the future of Algerian institutions.
+                    <p className="text-xl text-white/60 font-medium leading-relaxed mb-16 max-w-md">
+                        Experience the most advanced institutional operating system in the region. Secure. Scalable. Seamless.
                     </p>
                     
-                    <div className="grid grid-cols-2 gap-8">
-                        <div>
-                            <p className="text-4xl font-black mb-1">100%</p>
-                            <p className="text-xs font-bold uppercase tracking-widest opacity-60">Secure Protocol</p>
+                    <div className="flex items-center gap-12">
+                        <div className="space-y-1">
+                            <p className="text-5xl font-black tracking-tighter">100<span className="text-primary text-2xl">%</span></p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Encrypted</p>
                         </div>
-                        <div>
-                            <p className="text-4xl font-black mb-1">24/7</p>
-                            <p className="text-xs font-bold uppercase tracking-widest opacity-60">Live Support</p>
+                        <div className="w-px h-12 bg-white/10" />
+                        <div className="space-y-1">
+                            <p className="text-5xl font-black tracking-tighter">0.2<span className="text-primary text-2xl">ms</span></p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Latency</p>
                         </div>
                     </div>
                 </motion.div>
                 
-                {/* Floating Elements */}
-                <motion.div 
-                    animate={{ y: [0, -20, 0] }}
-                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute top-20 right-20 w-32 h-32 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm"
-                />
-                <motion.div 
-                    animate={{ y: [0, 20, 0] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute bottom-20 left-20 w-24 h-24 bg-algeria-red/10 rounded-full border border-algeria-red/20 backdrop-blur-sm"
-                />
+                {/* Decorative Elements */}
+                <div className="absolute bottom-12 left-12 flex items-center gap-4 opacity-30">
+                    <div className="w-12 h-px bg-white" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.5em]">v2.5.0-Stable</span>
+                </div>
             </div>
 
             {/* Right Side - Login Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-white dark:bg-slate-950">
-                <div className="w-full max-w-md">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-white dark:bg-institutional-950 relative">
+                {/* Subtle Background Detail for Right Side */}
+                <div className="absolute inset-0 pointer-events-none opacity-[0.02] dark:opacity-[0.05]">
+                    <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_100%_0%,#000_0%,transparent_50%)]" />
+                </div>
+
+                <div className="w-full max-w-md relative z-10">
                     <motion.div 
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="mb-12"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                        className="mb-16"
                     >
-                        <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center justify-between mb-12">
                             <Logo size="lg" />
                             
-                            {/* Language Switcher */}
-                            <div className="flex gap-2">
+                            {/* Language Switcher - Modern Pill */}
+                            <div className="flex p-1 bg-institutional-50 dark:bg-institutional-900 rounded-full border border-institutional-100 dark:border-institutional-800">
                                 {languages.map((lang) => (
                                     <button
                                         key={lang.code}
                                         onClick={() => setLanguage(lang.code)}
-                                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${language === lang.code ? 'bg-primary text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200'}`}
+                                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${language === lang.code ? 'bg-white dark:bg-institutional-800 text-primary shadow-sm' : 'text-institutional-400 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
                                     >
                                         {lang.code}
                                     </button>
@@ -174,11 +202,11 @@ const Login: React.FC = () => {
                             </div>
                         </div>
                         
-                        <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none mb-3">
+                        <h2 className="text-5xl font-black text-institutional-900 dark:text-white tracking-tighter uppercase leading-[0.9] mb-4">
                             {pendingUser ? t('economic.changePassword') : t('login.welcome')}
                         </h2>
-                        <p className="text-slate-500 text-sm font-medium">
-                            {pendingUser ? "Update your security credentials to continue." : "Please enter your credentials to continue."}
+                        <p className="text-institutional-500 text-sm font-medium tracking-tight">
+                            {pendingUser ? "Update your security credentials to continue." : "Access the institutional mainframe with your credentials."}
                         </p>
                     </motion.div>
 
@@ -290,9 +318,9 @@ const Login: React.FC = () => {
                                 <button 
                                     type="submit" 
                                     disabled={isSubmitting}
-                                    className="w-full bg-primary text-white p-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-70"
+                                    className="w-full bg-institutional-900 dark:bg-white text-white dark:text-institutional-950 p-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-black/10 dark:shadow-white/5 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-70 group"
                                 >
-                                    {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <ShieldCheck size={20} />}
+                                    {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <ShieldCheck size={20} className="group-hover:rotate-12 transition-transform" />}
                                     <span>{isSubmitting ? t('login.verifying') : t('login.authenticate')}</span>
                                 </button>
                             </motion.form>
@@ -302,17 +330,16 @@ const Login: React.FC = () => {
                     <motion.div 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: 0.8 }}
-                        className="mt-12 text-center"
+                        transition={{ delay: 1 }}
+                        className="mt-16 text-center"
                     >
                         <button 
                             onClick={() => setShowCredentials(!showCredentials)}
-                            className="text-[10px] font-black uppercase text-slate-400 tracking-widest hover:text-primary transition-all flex items-center justify-center gap-2 mx-auto py-2 group"
+                            className="text-[10px] font-black uppercase text-institutional-400 tracking-[0.3em] hover:text-primary transition-all flex items-center justify-center gap-3 mx-auto py-3 group"
                         >
+                            <div className="w-8 h-px bg-institutional-200 dark:bg-institutional-800 group-hover:w-12 transition-all" />
                             {showCredentials ? t('common.close') : t('login.demoAccounts')}
-                            <div className={`transition-transform duration-300 ${showCredentials ? 'rotate-180' : ''}`}>
-                                <ChevronDown size={14} />
-                            </div>
+                            <div className="w-8 h-px bg-institutional-200 dark:bg-institutional-800 group-hover:w-12 transition-all" />
                         </button>
                     </motion.div>
 
@@ -348,15 +375,15 @@ const Login: React.FC = () => {
                         )}
                     </AnimatePresence>
                     
-                    <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-6 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
-                        <div className="flex items-center gap-2">
+                    <div className="mt-16 pt-10 border-t border-institutional-100 dark:border-institutional-900 flex items-center justify-center gap-8 opacity-30">
+                        <div className="flex items-center gap-2.5">
                             <Globe size={14} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Global Standards</span>
+                            <span className="text-[9px] font-black uppercase tracking-[0.3em]">Global Standards</span>
                         </div>
-                        <div className="w-1 h-1 bg-slate-300 rounded-full" />
-                        <div className="flex items-center gap-2">
+                        <div className="w-1 h-1 bg-institutional-300 rounded-full" />
+                        <div className="flex items-center gap-2.5">
                             <ShieldCheck size={14} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Secure Access</span>
+                            <span className="text-[9px] font-black uppercase tracking-[0.3em]">Secure Access</span>
                         </div>
                     </div>
                 </div>

@@ -37,28 +37,28 @@ const MessageItem = React.memo(({ message, isMe, isMobile, onDelete, onEdit, onP
     const [showActions, setShowActions] = useState(false);
     
     return (
-        <div className={`flex w-full ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300 ${!showMeta ? 'mt-0.5' : 'mt-5'}`}>
-            <div className={`max-w-[88%] sm:max-w-[75%] md:max-w-[65%] group flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+        <div className={`flex w-full ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300 ${!showMeta ? 'mt-1' : 'mt-4'}`}>
+            <div className={`max-w-[85%] sm:max-w-[70%] md:max-w-[60%] group flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                 {isGroupChat && !isMe && showMeta && (
-                    <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1 px-3">{message.senderName}</p>
+                    <p className="text-[12px] font-semibold text-institutional-400 mb-1 px-3">{message.senderName}</p>
                 )}
                 
-                <div className={`flex items-center gap-1 group/msg relative ${isMe ? 'flex-row' : 'flex-row-reverse'}`}>
+                <div className={`flex items-center gap-2 group/msg relative ${isMe ? 'flex-row' : 'flex-row-reverse'}`}>
                     {/* Actions bar for desktop */}
                     {!isMobile && (
-                        <div className={`opacity-0 group-hover/msg:opacity-100 flex items-center gap-0.5 transition-all p-1 bg-surface border border-institutional-200 dark:border-institutional-800 rounded-xl shadow-strong ${isMe ? 'mr-1' : 'ml-1'}`}>
-                            {isMe && <button onClick={() => onEdit(message)} className="p-1.5 text-institutional-400 hover:text-primary hover:bg-institutional-100 dark:hover:bg-institutional-800 rounded-lg"><Edit2 size={13} /></button>}
-                            <button onClick={() => onPin(message.id, !!message.isPinned)} className={`p-1.5 rounded-lg ${message.isPinned ? 'text-primary bg-primary/10' : 'text-institutional-400 hover:text-primary hover:bg-institutional-100 dark:hover:bg-institutional-800'}`}>{message.isPinned ? <PinOff size={13} /> : <Pin size={13} />}</button>
-                            {isMe && <button onClick={() => onDelete(message.id)} className="p-1.5 text-institutional-400 hover:text-danger hover:bg-danger/10 rounded-lg"><Trash2 size={13} /></button>}
+                        <div className={`opacity-0 group-hover/msg:opacity-100 flex items-center gap-1 transition-all p-1 bg-surface/80 backdrop-blur-md border border-institutional-100 dark:border-institutional-800 rounded-full shadow-sm ${isMe ? 'mr-2' : 'ml-2'}`}>
+                            {isMe && <button onClick={() => onEdit(message)} className="p-1.5 text-institutional-400 hover:text-primary hover:bg-primary/5 rounded-full transition-all"><Edit2 size={14} /></button>}
+                            <button onClick={() => onPin(message.id, !!message.isPinned)} className={`p-1.5 rounded-full transition-all ${message.isPinned ? 'text-primary bg-primary/10' : 'text-institutional-400 hover:text-primary hover:bg-primary/5'}`}>{message.isPinned ? <PinOff size={14} /> : <Pin size={14} />}</button>
+                            {isMe && <button onClick={() => onDelete(message.id)} className="p-1.5 text-institutional-400 hover:text-danger hover:bg-danger/5 rounded-full transition-all"><Trash2 size={14} /></button>}
                         </div>
                     )}
                     
                     <div className="relative">
                         <div 
                             onClick={() => isMobile && setShowActions(!showActions)}
-                            className={`px-4 py-3 text-sm md:text-[15px] font-medium leading-relaxed transition-all shadow-soft cursor-pointer md:cursor-default ${isMe ? `bg-primary text-white rounded-2xl ${isRTL ? 'rounded-bl-none' : 'rounded-br-none'}` : `bg-surface text-institutional-900 border border-institutional-200 dark:border-institutional-700/50 rounded-2xl ${isRTL ? 'rounded-br-none' : 'rounded-bl-none'}`}`}
+                            className={`px-4 py-2.5 text-[15px] md:text-[16px] font-normal leading-relaxed transition-all cursor-pointer md:cursor-default ${isMe ? `bg-primary text-white rounded-[20px] ${isRTL ? 'rounded-bl-none' : 'rounded-br-none'}` : `bg-institutional-50 dark:bg-institutional-900 text-institutional-900 dark:text-white rounded-[20px] ${isRTL ? 'rounded-br-none' : 'rounded-bl-none'}`}`}
                         >
-                            {message.isPinned && <Pin size={9} className="absolute -top-1.5 -right-1.5 text-white bg-primary rounded-full p-0.5 border-2 border-surface shadow-soft" />}
+                            {message.isPinned && <Pin size={12} className="absolute -top-2 -right-2 text-white bg-primary rounded-full p-1 border-2 border-surface shadow-sm" />}
                             <p className="whitespace-pre-wrap break-words text-start">{message.text}</p>
                         </div>
 
@@ -84,15 +84,15 @@ const MessageItem = React.memo(({ message, isMe, isMobile, onDelete, onEdit, onP
                 </div>
 
                 {showMeta && (
-                    <div className={`text-[9px] font-bold tracking-widest uppercase mt-1.5 flex items-center gap-2 ${isMe ? 'justify-end text-institutional-400' : 'justify-start text-institutional-400'}`}>
+                    <div className={`text-[11px] font-medium text-institutional-400 mt-1 flex items-center gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
                         {message.editedAt && <span>{language === 'ar' ? 'معدل' : language === 'fr' ? 'modifié' : 'edited'}</span>}
                         {message.timestamp?.seconds ? new Date(message.timestamp.seconds * 1000).toLocaleTimeString(language, {hour: '2-digit', minute:'2-digit'}) : '...'}
                         {isMe && !isGroupChat && (
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center">
                                 {message.seen ? (
-                                    <CheckCheck size={12} className="text-emerald-500" />
+                                    <CheckCheck size={14} className="text-primary" />
                                 ) : (
-                                    <Check size={12} className="text-institutional-300" />
+                                    <Check size={14} className="opacity-50" />
                                 )}
                             </div>
                         )}
@@ -388,55 +388,53 @@ const Inbox: React.FC = () => {
     }, [t]);
 
     return (
-        <div className={`flex h-[calc(100vh-140px)] lg:h-[calc(100vh-220px)] overflow-hidden shadow-strong rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 bg-surface transition-all duration-500`}>
+        <div className="flex h-screen overflow-hidden bg-surface dark:bg-institutional-950">
             
             {/* Sidebar View */}
-            <div className={`${showConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-[380px] flex-col bg-institutional-50/30 dark:bg-institutional-900/30 border-r border-institutional-200 dark:border-institutional-800 shrink-0 transition-all`}>
-                <div className="p-8 pb-4 space-y-6">
+            <div className={`${showConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-[380px] flex-col border-r border-institutional-100 dark:border-institutional-900 shrink-0 transition-all`}>
+                <div className="p-6 space-y-6">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-xl font-black text-institutional-900 dark:text-white leading-none uppercase tracking-tight">{t('nav.inbox')}</h3>
+                        <h3 className="text-2xl font-bold text-institutional-900 dark:text-white">{t('nav.inbox')}</h3>
                         {user?.role === 'teacher' && (
-                            <button onClick={() => setIsCreateGroupOpen(true)} className="p-2.5 bg-primary text-white rounded-xl shadow-lg shadow-primary/20 active:scale-90 transition-all">
-                                <Plus size={18} />
+                            <button onClick={() => setIsCreateGroupOpen(true)} className="p-2 text-institutional-900 dark:text-white hover:bg-institutional-100 dark:hover:bg-institutional-900 rounded-full transition-all">
+                                <Plus size={24} />
                             </button>
                         )}
                     </div>
                     <div className="relative group">
-                        <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors`} size={15} />
+                        <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-400`} size={18} />
                         <input 
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                             placeholder={t('inbox.searchPlaceholder')}
-                            className={`w-full bg-institutional-100 dark:bg-institutional-900/50 border border-institutional-200 dark:border-institutional-700 rounded-2xl ${isRTL ? 'pr-12 pl-4' : 'pl-12 pr-4'} py-3.5 text-xs font-bold outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/50 transition-all text-institutional-900 dark:text-white`}
+                            className={`w-full bg-institutional-50 dark:bg-institutional-900 rounded-xl ${isRTL ? 'pr-12 pl-4' : 'pl-12 pr-4'} py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all text-institutional-900 dark:text-white`}
                         />
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-8 scroll-hide">
+                <div className="flex-1 overflow-y-auto scroll-hide">
                     {/* Groups Section */}
                     {filteredSidebar.groups.length > 0 && (
-                        <div>
-                            <p className="text-[10px] font-black uppercase text-institutional-400 tracking-[0.25em] px-4 mb-3">{t('inbox.broadcastChannels') || 'Broadcast Channels'}</p>
-                            <div className="space-y-1">
+                        <div className="mb-4">
+                            <p className="text-[11px] font-bold uppercase text-institutional-400 px-6 mb-2">{t('inbox.broadcastChannels') || 'Broadcast Channels'}</p>
+                            <div className="space-y-0.5">
                                 {filteredSidebar.groups.map(g => (
                                     <button 
                                         key={g.id}
                                         onClick={() => selectTarget({ type: 'group', id: g.id, name: g.name, participantIds: g.participantIds })}
-                                        className={`w-full p-4 rounded-2xl flex items-center gap-4 transition-all ${activeTarget?.id === g.id ? 'bg-primary text-white shadow-xl translate-x-1' : 'hover:bg-institutional-100 dark:hover:bg-institutional-800 text-slate-600 dark:text-slate-300'}`}
+                                        className={`w-full px-6 py-4 flex items-center gap-4 transition-all ${activeTarget?.id === g.id ? 'bg-institutional-50 dark:bg-institutional-900' : 'hover:bg-institutional-50/50 dark:hover:bg-institutional-900/50'}`}
                                     >
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold shrink-0 ${activeTarget?.id === g.id ? 'bg-white/20' : 'bg-primary/10 text-primary border border-primary/20'}`}>
-                                            <ShieldCheck size={18} />
+                                        <div className="w-14 h-14 rounded-full flex items-center justify-center bg-primary/10 text-primary shrink-0">
+                                            <ShieldCheck size={24} />
                                         </div>
                                         <div className="text-start flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <p className={`text-sm font-black truncate ${activeTarget?.id === g.id ? 'text-white' : 'text-institutional-900 dark:text-white'}`}>{g.name}</p>
+                                            <div className="flex items-center justify-between mb-0.5">
+                                                <p className="text-[16px] font-semibold text-institutional-900 dark:text-white truncate">{g.name}</p>
                                                 {g.isBroadcast && (
-                                                    <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md ${activeTarget?.id === g.id ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'}`}>
-                                                        Live
-                                                    </span>
+                                                    <span className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded-full">Live</span>
                                                 )}
                                             </div>
-                                            <p className={`text-[10px] font-bold tracking-tight mt-0.5 ${activeTarget?.id === g.id ? 'text-white/60' : 'text-institutional-400'}`}>{g.participantIds?.length || 0} {t('inbox.participants')}</p>
+                                            <p className="text-[13px] text-institutional-400 truncate font-medium">{g.participantIds?.length || 0} {t('inbox.participants')}</p>
                                         </div>
                                     </button>
                                 ))}
@@ -447,8 +445,8 @@ const Inbox: React.FC = () => {
                     {/* DMs Section */}
                     {filteredSidebar.users.length > 0 && (
                         <div>
-                            <p className="text-[10px] font-black uppercase text-institutional-400 tracking-[0.25em] px-4 mb-3">{t('inbox.dms')}</p>
-                            <div className="space-y-1">
+                            <p className="text-[11px] font-bold uppercase text-institutional-400 px-6 mb-2">{t('inbox.dms')}</p>
+                            <div className="space-y-0.5">
                                 {filteredSidebar.users.map(u => {
                                     const chatId = [user?.id, u.id].sort().join('_');
                                     const unread = unreadCounts[chatId] || 0;
@@ -457,22 +455,24 @@ const Inbox: React.FC = () => {
                                         <button 
                                             key={u.id}
                                             onClick={() => selectTarget({ type: 'dm', id: u.id, name: u.name, role: u.role, lastSeen: u.lastSeen })}
-                                            className={`w-full p-4 rounded-2xl flex items-center gap-4 transition-all ${activeTarget?.id === u.id ? 'bg-primary text-white shadow-xl translate-x-1' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'}`}
+                                            className={`w-full px-6 py-4 flex items-center gap-4 transition-all ${activeTarget?.id === u.id ? 'bg-institutional-50 dark:bg-institutional-900' : 'hover:bg-institutional-50/50 dark:hover:bg-institutional-900/50'}`}
                                         >
                                             <div className="relative shrink-0">
-                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black ${activeTarget?.id === u.id ? 'bg-white/20' : 'bg-institutional-200 dark:bg-institutional-800'}`}>
+                                                <div className="w-14 h-14 rounded-full flex items-center justify-center bg-institutional-100 dark:bg-institutional-800 text-institutional-900 dark:text-white font-bold text-lg">
                                                     {u.name.charAt(0)}
                                                 </div>
-                                                <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-4 ${activeTarget?.id === u.id ? 'border-primary' : 'border-surface'} ${isOnline ? 'bg-emerald-500' : 'bg-institutional-300'}`} />
-                                                {unread > 0 && (
-                                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-danger text-white text-[9px] font-black flex items-center justify-center rounded-full border-2 border-surface animate-bounce">
-                                                        {unread}
-                                                    </span>
+                                                {isOnline && (
+                                                    <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-surface" />
                                                 )}
                                             </div>
                                             <div className="text-start flex-1 min-w-0">
-                                                <p className={`text-sm font-black truncate ${activeTarget?.id === u.id ? 'text-white' : 'text-institutional-900 dark:text-white'}`}>{u.name}</p>
-                                                <p className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${activeTarget?.id === u.id ? 'text-white/60' : 'text-institutional-400'}`}>{u.role}</p>
+                                                <div className="flex items-center justify-between mb-0.5">
+                                                    <p className={`text-[16px] font-semibold truncate ${unread > 0 ? 'text-institutional-900 dark:text-white' : 'text-institutional-700 dark:text-institutional-200'}`}>{u.name}</p>
+                                                    {unread > 0 && (
+                                                        <span className="w-2.5 h-2.5 bg-primary rounded-full" />
+                                                    )}
+                                                </div>
+                                                <p className="text-[13px] text-institutional-400 truncate uppercase tracking-wider font-medium">{u.role}</p>
                                             </div>
                                         </button>
                                     );
@@ -484,74 +484,61 @@ const Inbox: React.FC = () => {
             </div>
 
             {/* Main Conversation Window */}
-            <div className={`${!showConversation ? 'hidden lg:flex' : 'flex'} flex-1 flex-col bg-surface transition-all relative overflow-hidden`}>
+            <div className={`${!showConversation ? 'hidden lg:flex' : 'flex'} flex-1 flex-col bg-surface dark:bg-institutional-950 transition-all relative overflow-hidden`}>
                 {activeTarget ? (
                     <>
                         {/* Conversation Header */}
-                        <div className="px-6 py-4 md:px-10 border-b border-institutional-100 dark:border-institutional-800 flex items-center justify-between sticky top-20 lg:top-24 z-30 bg-surface/95 backdrop-blur-xl">
+                        <div className="px-6 py-4 border-b border-institutional-100 dark:border-institutional-900 flex items-center justify-between bg-surface/80 dark:bg-institutional-950/80 backdrop-blur-md sticky top-0 z-30">
                             <div className="flex items-center gap-4 min-w-0">
-                                <button onClick={() => setShowConversation(false)} className="lg:hidden p-2 -ml-2 rounded-xl hover:bg-institutional-100 dark:hover:bg-institutional-800">
-                                    <ChevronLeft size={22} className={isRTL ? 'rotate-180' : ''} />
+                                <button onClick={() => setShowConversation(false)} className="lg:hidden p-2 -ml-2 text-institutional-900 dark:text-white hover:bg-institutional-100 dark:hover:bg-institutional-900 rounded-full transition-all">
+                                    <ChevronLeft size={24} className={isRTL ? 'rotate-180' : ''} />
                                 </button>
-                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black shrink-0 bg-primary/10 text-primary border border-primary/20`}>
-                                    {activeTarget.type === 'dm' ? activeTarget.name.charAt(0) : <ShieldCheck size={20} />}
+                                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-institutional-100 dark:bg-institutional-800 text-institutional-900 dark:text-white font-bold shrink-0 text-lg">
+                                    {activeTarget.type === 'dm' ? activeTarget.name.charAt(0) : <ShieldCheck size={24} />}
                                 </div>
                                 <div className="text-start min-w-0">
-                                    <h4 className="font-black text-base text-institutional-900 dark:text-white truncate flex items-center gap-2 uppercase tracking-tight">
+                                    <h4 className="font-bold text-[17px] text-institutional-900 dark:text-white truncate flex items-center gap-2">
                                         {activeTarget.name}
-                                        {activeTarget.type === 'dm' && activeTarget.role === 'teacher' && <UserCheck size={14} className="text-primary" />}
-                                        {activeTarget.type === 'dm' && (
-                                            <button 
-                                                onClick={() => navigate(`/profile/${activeTarget.id}`)}
-                                                className="p-1 hover:bg-primary/10 rounded-lg text-primary transition-colors"
-                                                title={t('profile.title')}
-                                            >
-                                                <UserIcon size={14} />
-                                            </button>
-                                        )}
+                                        {activeTarget.type === 'dm' && activeTarget.role === 'teacher' && <UserCheck size={16} className="text-primary" />}
                                     </h4>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                        <p className="text-[10px] font-bold text-institutional-400 uppercase tracking-widest leading-none">
-                                            {activeTarget.type === 'dm' ? activeTarget.role : `${activeTarget.participantIds?.length || 0} ${t('inbox.participants')}`}
-                                        </p>
-                                        <span className="w-1 h-1 rounded-full bg-institutional-200"></span>
+                                    <div className="flex items-center gap-2">
                                         {remoteTyping ? (
-                                            <span className="text-[10px] font-black text-primary animate-pulse">{t('inbox.typing')}...</span>
+                                            <span className="text-[12px] text-primary animate-pulse font-medium">{t('inbox.typing')}...</span>
                                         ) : (
-                                            <span className={`text-[10px] font-bold uppercase tracking-widest ${activeTarget.type === 'dm' && getPresenceStatus(activeTarget as any).isOnline ? 'text-emerald-500' : 'text-institutional-300'}`}>
+                                            <span className={`text-[12px] font-medium ${activeTarget.type === 'dm' && getPresenceStatus(activeTarget as any).isOnline ? 'text-emerald-500' : 'text-institutional-400'}`}>
                                                 {activeTarget.type === 'dm' ? (
                                                     getPresenceStatus(activeTarget as any).isOnline 
                                                         ? t('common.online') 
                                                         : `${t('common.lastSeen')} ${getPresenceStatus(activeTarget as any).lastSeenStr}`
-                                                ) : t('common.online')}
+                                                ) : `${activeTarget.participantIds?.length || 0} ${t('inbox.participants')}`}
                                             </span>
                                         )}
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                                 {activeTarget.type === 'group' && user?.role === 'teacher' && (
                                     <button 
                                         onClick={deleteChannel}
-                                        className="p-2.5 text-institutional-400 hover:text-danger hover:bg-danger/10 rounded-xl transition-all"
+                                        className="p-2 text-institutional-400 hover:text-danger transition-all"
                                         title={t('inbox.deleteChannel') || 'Delete Channel'}
                                     >
                                         <Trash2 size={20} />
                                     </button>
                                 )}
-                                <button className="p-2.5 text-institutional-400 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"><Info size={20} /></button>
-                                <button className="p-2.5 text-institutional-400 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"><MoreVertical size={20} /></button>
+                                <button className="p-2 text-institutional-400 hover:text-primary transition-all"><Info size={20} /></button>
+                                <button className="p-2 text-institutional-400 hover:text-primary transition-all"><MoreVertical size={20} /></button>
                             </div>
                         </div>
 
-                        {/* Pinned Messages - Enhanced Section */}
+                        {/* Pinned Messages */}
                         {pinnedMessages.length > 0 && (
-                            <div className="bg-primary/10 border-b border-primary/20 p-3 flex gap-3 overflow-x-auto scroll-hide animate-in slide-in-from-top-2 duration-300">
+                            <div className="bg-institutional-50/50 dark:bg-institutional-900/50 border-b border-institutional-100 dark:border-institutional-900 p-2 flex gap-2 overflow-x-auto scroll-hide">
                                 {pinnedMessages.map(pm => (
-                                    <div key={pm.id} className="bg-surface p-2.5 px-4 rounded-2xl border border-primary/20 shadow-soft flex items-center gap-3 min-w-[200px] max-w-[320px] shrink-0 group">
+                                    <div key={pm.id} className="bg-surface dark:bg-institutional-800 p-2 px-3 rounded-full border border-institutional-100 dark:border-institutional-700 shadow-sm flex items-center gap-2 min-w-[150px] max-w-[250px] shrink-0 group">
                                         <Pin size={12} className="text-primary shrink-0" />
-                                        <p className="text-[11px] font-bold text-institutional-700 dark:text-institutional-200 truncate">{pm.text}</p>
-                                        <button onClick={() => handlePin(pm.id, true)} className="ml-auto p-1 text-institutional-300 hover:text-danger opacity-0 group-hover:opacity-100 transition-all"><X size={14} /></button>
+                                        <p className="text-[12px] text-institutional-700 dark:text-institutional-200 truncate">{pm.text}</p>
+                                        <button onClick={() => handlePin(pm.id, true)} className="ml-auto p-0.5 text-institutional-300 hover:text-danger opacity-0 group-hover:opacity-100 transition-all"><X size={12} /></button>
                                     </div>
                                 ))}
                             </div>
@@ -561,12 +548,12 @@ const Inbox: React.FC = () => {
                         <div 
                             ref={scrollRef} 
                             onScroll={handleScroll}
-                            className="flex-1 overflow-y-auto p-6 md:p-10 space-y-1.5 scroll-smooth relative"
+                            className="flex-1 overflow-y-auto px-4 py-6 space-y-1 scroll-smooth relative"
                         >
                             {messages.length === 0 && (
-                                <div className="h-full flex flex-col items-center justify-center opacity-10 select-none">
-                                    <ShieldCheck size={80} strokeWidth={1} />
-                                    <p className="mt-6 text-[11px] font-black uppercase tracking-[0.5em]">{t('inbox.protocolInitiated')}</p>
+                                <div className="h-full flex flex-col items-center justify-center opacity-20 select-none">
+                                    <ShieldCheck size={80} strokeWidth={1} className="text-institutional-300" />
+                                    <p className="mt-4 text-sm font-medium text-institutional-400 uppercase tracking-widest">{t('inbox.protocolInitiated')}</p>
                                 </div>
                             )}
                             
@@ -591,13 +578,11 @@ const Inbox: React.FC = () => {
                             })}
                             
                             {remoteTyping && (
-                                <div className="flex w-full justify-start mt-6 animate-in slide-in-from-left-4 duration-500">
-                                    <div className="bg-institutional-50 dark:bg-institutional-900 border border-institutional-100 dark:border-institutional-800 p-3.5 px-5 rounded-2xl rounded-bl-none flex items-center gap-3">
-                                        <div className="flex gap-1.5">
-                                            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce"></span>
-                                            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                                            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.4s]"></span>
-                                        </div>
+                                <div className="flex w-full justify-start mt-2">
+                                    <div className="bg-institutional-50 dark:bg-institutional-900 p-2 px-4 rounded-2xl rounded-bl-none flex items-center gap-1">
+                                        <span className="w-1 h-1 bg-institutional-400 rounded-full animate-bounce"></span>
+                                        <span className="w-1 h-1 bg-institutional-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                                        <span className="w-1 h-1 bg-institutional-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
                                     </div>
                                 </div>
                             )}
@@ -605,69 +590,67 @@ const Inbox: React.FC = () => {
                             {isScrollingUp && (
                                 <button 
                                     onClick={scrollToBottom}
-                                    className="fixed bottom-36 end-10 md:end-16 p-4 bg-surface border border-institutional-200 dark:border-institutional-700 rounded-full shadow-strong text-primary animate-in zoom-in-90 duration-300 hover:scale-110 active:scale-90 transition-all z-40"
+                                    className="fixed bottom-24 right-8 p-2 bg-surface dark:bg-institutional-800 border border-institutional-100 dark:border-institutional-700 rounded-full shadow-lg text-primary animate-in zoom-in-90 duration-300 z-40"
                                 >
-                                    <ArrowDown size={22} />
+                                    <ArrowDown size={18} />
                                 </button>
                             )}
                         </div>
 
                         {/* Input & Control Area */}
-                        <div className="p-6 md:p-10 bg-surface border-t border-institutional-100 dark:border-institutional-800">
+                        <div className="p-4 border-t border-institutional-100 dark:border-institutional-900">
                             {editingMessage && (
-                                <div className="mb-6 p-4 bg-primary/10 rounded-[1.5rem] flex items-center justify-between border border-primary/20 animate-in slide-in-from-bottom-4 duration-300">
-                                    <div className="flex items-center gap-4 min-w-0">
-                                        <div className="p-2.5 bg-primary text-white rounded-xl"><Edit2 size={16} /></div>
+                                <div className="mb-3 p-3 bg-primary/5 rounded-xl flex items-center justify-between border border-primary/10">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <div className="p-2 bg-primary text-white rounded-lg"><Edit2 size={16} /></div>
                                         <div className="min-w-0">
-                                            <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-1">{t('inbox.editMessage')}</p>
-                                            <p className="text-sm font-medium text-institutional-600 dark:text-institutional-400 truncate">{editingMessage.text}</p>
+                                            <p className="text-[11px] font-bold text-primary uppercase tracking-wider">{t('inbox.editMessage')}</p>
+                                            <p className="text-sm text-institutional-600 dark:text-institutional-300 truncate">{editingMessage.text}</p>
                                         </div>
                                     </div>
-                                    <button onClick={() => { setEditingMessage(null); setInputText(''); }} className="p-2 text-institutional-400 hover:text-danger"><X size={20} /></button>
+                                    <button onClick={() => { setEditingMessage(null); setInputText(''); }} className="p-1 text-institutional-400 hover:text-danger"><X size={18} /></button>
                                 </div>
                             )}
                             
                             {(activeTarget.type === 'group' && activeTarget.isBroadcast && user?.role === 'student') ? (
-                                <div className="flex items-center justify-center p-6 bg-institutional-50 dark:bg-institutional-900/50 rounded-2xl border border-institutional-200 dark:border-institutional-800">
-                                    <p className="text-xs font-black uppercase tracking-[0.2em] text-institutional-400 flex items-center gap-3">
-                                        <ShieldAlert size={16} className="text-primary" />
-                                        {t('inbox.broadcastOnly') || 'This is a broadcast channel. Only teachers can send messages.'}
+                                <div className="flex items-center justify-center p-4 bg-institutional-50 dark:bg-institutional-900/50 rounded-xl border border-dashed border-institutional-200 dark:border-institutional-800">
+                                    <p className="text-sm text-institutional-400 flex items-center gap-2">
+                                        <ShieldAlert size={16} />
+                                        {t('inbox.broadcastOnly') || 'Only teachers can send messages here.'}
                                     </p>
                                 </div>
                             ) : (
-                                <form onSubmit={handleSend} className="flex gap-4 items-center max-w-6xl mx-auto relative">
-                                    <button type="button" className="hidden sm:flex p-4 bg-institutional-50 dark:bg-institutional-900 text-institutional-400 hover:text-primary rounded-2xl transition-all shadow-soft"><Paperclip size={22} /></button>
+                                <form onSubmit={handleSend} className="flex gap-2 items-center max-w-4xl mx-auto">
+                                    <button type="button" className="p-2 text-institutional-400 hover:text-primary transition-all"><Paperclip size={22} /></button>
                                     <div className="flex-1 relative flex items-center">
                                         <input 
                                             value={inputText || (editingMessage?.text || '')}
                                             onChange={handleInputChange}
                                             placeholder={t('inbox.secureTrans')}
-                                            className={`w-full bg-institutional-100 dark:bg-institutional-900 border border-transparent focus:border-primary/50 p-4.5 rounded-2xl text-[15px] font-medium outline-none transition-all shadow-inner text-institutional-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
+                                            className="w-full bg-institutional-50 dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 focus:border-primary/50 p-2.5 px-4 rounded-full text-[15px] outline-none transition-all text-institutional-900 dark:text-white"
                                         />
-                                        {!isMobile && (
-                                            <button type="button" className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 p-2 text-institutional-400 hover:text-primary transition-colors`}>
-                                                <Smile size={20} />
-                                            </button>
-                                        )}
+                                        <button type="button" className={`absolute ${isRTL ? 'left-3' : 'right-3'} p-1.5 text-institutional-400 hover:text-primary transition-all`}>
+                                            <Smile size={20} />
+                                        </button>
                                     </div>
                                     <button 
                                         type="submit" 
                                         disabled={(!inputText.trim() && !editingMessage)} 
-                                        className="w-14 h-14 shrink-0 bg-primary text-white rounded-2xl flex items-center justify-center shadow-strong shadow-primary/30 active:scale-90 transition-all disabled:opacity-20 disabled:shadow-none"
+                                        className="p-2.5 bg-primary text-white rounded-full shadow-md active:scale-95 transition-all disabled:opacity-50 disabled:shadow-none hover:bg-primary-hover"
                                     >
-                                        <Send size={24} className={isRTL ? 'rotate-180' : ''} />
+                                        <Send size={20} className={isRTL ? 'rotate-180' : ''} />
                                     </button>
                                 </form>
                             )}
                         </div>
                     </>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center p-12 text-center opacity-30 select-none grayscale">
-                        <div className="w-32 h-32 bg-institutional-100 dark:bg-institutional-900 rounded-[3rem] flex items-center justify-center mb-8 rotate-3">
-                            <MessageSquare size={64} className="text-institutional-300" strokeWidth={1} />
+                    <div className="flex-1 flex flex-col items-center justify-center p-12 text-center opacity-50">
+                        <div className="w-20 h-20 bg-institutional-50 dark:bg-institutional-900 rounded-full flex items-center justify-center mb-4">
+                            <MessageSquare size={40} className="text-institutional-300" strokeWidth={1.5} />
                         </div>
-                        <h3 className="text-2xl font-black uppercase text-institutional-900 dark:text-white mb-4 tracking-tighter">{t('inbox.terminalSession')}</h3>
-                        <p className="text-[11px] font-black uppercase tracking-[0.4em] text-institutional-400 max-w-xs leading-loose">{t('inbox.chooseContact')}</p>
+                        <h3 className="text-xl font-bold text-institutional-900 dark:text-white mb-2">{t('inbox.terminalSession')}</h3>
+                        <p className="text-sm text-institutional-400 max-w-xs">{t('inbox.chooseContact')}</p>
                     </div>
                 )}
             </div>
@@ -675,35 +658,35 @@ const Inbox: React.FC = () => {
             {/* Modal: Create Collaborative Group */}
             {isCreateGroupOpen && (
                 <div className="fixed inset-0 z-[500] bg-institutional-950/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
-                    <div className="bg-surface rounded-[3.5rem] shadow-strong max-w-xl w-full p-10 relative border border-institutional-200 dark:border-institutional-800 animate-in zoom-in-95 duration-500">
-                        <button onClick={() => setIsCreateGroupOpen(false)} className={`absolute top-10 ${isRTL ? 'left-10' : 'right-10'} p-2 text-institutional-400 hover:text-danger transition-colors`}><X size={24} /></button>
-                        <div className="text-start mb-10">
-                            <h3 className="text-2xl font-black text-institutional-900 dark:text-white uppercase tracking-tight">{t('inbox.createBroadcast') || 'Create Broadcast Channel'}</h3>
-                            <p className="text-[10px] font-black text-institutional-400 uppercase tracking-[0.25em] mt-2">Protocol: One-Way Academic Channel</p>
+                    <div className="bg-surface dark:bg-institutional-900 rounded-2xl shadow-strong max-w-md w-full p-6 relative border border-institutional-200 dark:border-institutional-800 animate-in zoom-in-95 duration-200">
+                        <button onClick={() => setIsCreateGroupOpen(false)} className={`absolute top-6 ${isRTL ? 'left-6' : 'right-6'} p-2 text-institutional-400 hover:text-danger transition-colors`}><X size={20} /></button>
+                        <div className="text-start mb-6">
+                            <h3 className="text-xl font-bold text-institutional-900 dark:text-white">{t('inbox.createBroadcast') || 'Create Broadcast Channel'}</h3>
+                            <p className="text-xs text-institutional-400 mt-1">Select participants for the new channel.</p>
                         </div>
-                        <form onSubmit={createGroup} className="space-y-8 text-start">
-                            <div className="space-y-2">
-                                <label className="text-[11px] font-black uppercase text-institutional-500 tracking-widest px-2">{t('inbox.channelName') || 'Channel Name'}</label>
+                        <form onSubmit={createGroup} className="space-y-6 text-start">
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold uppercase text-institutional-500 tracking-wider px-1">{t('inbox.channelName') || 'Channel Name'}</label>
                                 <div className="relative group">
-                                    <Hash className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-300`} size={16} />
-                                    <input name="groupName" placeholder="Announcements, Study Tips..." className={`w-full bg-institutional-50 dark:bg-institutional-800/50 p-4 ${isRTL ? 'pr-12 pl-4' : 'pl-12 pr-4'} rounded-2xl border border-institutional-200 dark:border-institutional-700 text-sm font-bold outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-inner text-institutional-900 dark:text-white`} required />
+                                    <Hash className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 text-institutional-400`} size={16} />
+                                    <input name="groupName" placeholder="Announcements..." className={`w-full bg-institutional-50 dark:bg-institutional-800 p-2.5 ${isRTL ? 'pr-10 pl-4' : 'pl-10 pr-4'} rounded-xl border border-institutional-200 dark:border-institutional-700 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-institutional-900 dark:text-white`} required />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-[11px] font-black uppercase text-institutional-500 tracking-widest px-2">{t('inbox.participants')}</label>
-                                <div className="max-h-[280px] overflow-y-auto p-2 bg-institutional-50 dark:bg-institutional-800/50 border border-institutional-200 dark:border-institutional-700 rounded-[2rem] space-y-1.5 shadow-inner scroll-hide">
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold uppercase text-institutional-500 tracking-wider px-1">{t('inbox.participants')}</label>
+                                <div className="max-h-[300px] overflow-y-auto p-1 bg-institutional-50 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 rounded-xl space-y-0.5 scroll-hide">
                                     {users.map(u => (
-                                        <label key={u.id} className="flex items-center gap-4 p-4 hover:bg-surface dark:hover:bg-institutional-900 rounded-2xl cursor-pointer transition-all group border border-transparent hover:border-institutional-100 dark:hover:border-institutional-800">
-                                            <input type="checkbox" name="participants" value={u.id} className="w-5 h-5 rounded-lg border-2 border-institutional-300 checked:bg-primary text-primary transition-all cursor-pointer focus:ring-0" />
+                                        <label key={u.id} className="flex items-center gap-3 p-3 hover:bg-surface dark:hover:bg-institutional-900 rounded-lg cursor-pointer transition-all group">
+                                            <input type="checkbox" name="participants" value={u.id} className="w-4 h-4 rounded border-institutional-300 text-primary focus:ring-primary/20 transition-all cursor-pointer" />
                                             <div className="flex-1">
-                                                <p className="text-sm font-black text-institutional-800 dark:text-institutional-100 group-hover:text-primary transition-colors">{u.name}</p>
-                                                <p className="text-[9px] font-bold uppercase text-institutional-400 tracking-wider">{u.role}</p>
+                                                <p className="text-sm font-semibold text-institutional-800 dark:text-institutional-100 group-hover:text-primary transition-colors">{u.name}</p>
+                                                <p className="text-[10px] uppercase text-institutional-400 tracking-wider">{u.role}</p>
                                             </div>
                                         </label>
                                     ))}
                                 </div>
                             </div>
-                            <button type="submit" className="w-full bg-primary text-white py-5 rounded-2xl font-black text-xs uppercase tracking-[0.4em] shadow-strong shadow-primary/30 active:scale-[0.98] transition-all mt-4 hover:bg-primary-hover">
+                            <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-bold text-sm uppercase tracking-widest shadow-md active:scale-[0.98] transition-all hover:bg-primary-hover">
                                 {t('common.confirm')}
                             </button>
                         </form>
