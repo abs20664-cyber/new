@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { collection, onSnapshot, deleteDoc, doc, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { ClassSession, Attachment } from '../types';
-import { Trash2, SlidersHorizontal, MapPin, Clock, Plus, Scan, X, CalendarOff, Paperclip, FileText, ChevronRight } from 'lucide-react';
+import { Trash2, SlidersHorizontal, MapPin, Clock, Plus, Scan, X, CalendarOff, Paperclip, FileText, ChevronRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 
 const checkIsLive = (classDate: string, startTime: string, endTime: string) => {
     const now = new Date();
-    const today = now.toISOString().split('T')[0];
+    const today = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
     if (classDate !== today) return false;
     const nowStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
     return nowStr >= startTime && nowStr < endTime;
@@ -16,7 +17,7 @@ const checkIsLive = (classDate: string, startTime: string, endTime: string) => {
 
 const checkHasEnded = (classDate: string, endTime: string) => {
     const now = new Date();
-    const today = now.toISOString().split('T')[0];
+    const today = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
     if (classDate < today) return true;
     if (classDate > today) return false;
     const nowStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
@@ -30,10 +31,12 @@ interface ClassesProps {
 const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
     const { user } = useAuth();
     const { t, isRTL } = useLanguage();
+    const navigate = useNavigate();
     const [classes, setClasses] = useState<ClassSession[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingClass, setEditingClass] = useState<ClassSession | null>(null);
     const [attachments, setAttachments] = useState<{name: string, data: string}[]>([]);
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         const unsub = onSnapshot(collection(db, collections.classes), (snap) => {
@@ -51,6 +54,10 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
         const files = e.target.files;
         if (!files) return;
         Array.from(files).forEach((file: any) => {
+            if (file.size > 800 * 1024) {
+                alert(`File ${file.name} is too large. Maximum size is 800KB.`);
+                return;
+            }
             const reader = new FileReader();
             reader.onload = (ev) => {
                 if (ev.target?.result) setAttachments(prev => [...prev, { name: file.name, data: ev.target!.result as string }]);
@@ -64,23 +71,29 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
 
     const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const finalAttachments: Attachment[] = attachments.map(att => ({ ...att, teacherName: user?.name || 'Unknown Faculty', timestamp: Timestamp.now() }));
-        const data = {
-            name: formData.get('name') as string,
-            date: formData.get('date') as string,
-            time: formData.get('time') as string,
-            endTime: formData.get('endTime') as string,
-            room: formData.get('room') as string,
-            type: formData.get('type') as string,
-            timestamp: Timestamp.now(),
-            attachments: finalAttachments
-        };
+        setIsSaving(true);
         try {
+            const formData = new FormData(e.currentTarget);
+            const finalAttachments: Attachment[] = attachments.map(att => ({ ...att, teacherName: user?.name || 'Unknown Faculty', timestamp: Timestamp.now() }));
+            const data = {
+                name: formData.get('name') as string,
+                date: formData.get('date') as string,
+                time: formData.get('time') as string,
+                endTime: formData.get('endTime') as string,
+                room: formData.get('room') as string,
+                type: formData.get('type') as string,
+                timestamp: Timestamp.now(),
+                attachments: finalAttachments
+            };
             if (editingClass) await updateDoc(doc(db, collections.classes, editingClass.id), data);
             else await addDoc(collection(db, collections.classes), data);
             setIsModalOpen(false); setEditingClass(null); setAttachments([]);
-        } catch (error) { alert(t('common.error')); }
+        } catch (error) { 
+            console.error(error);
+            alert(t('common.error')); 
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const openModal = (cl?: ClassSession) => {
@@ -158,7 +171,7 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                             </div>
                             
                             <button 
-                                onClick={() => !hasEnded && onNavigate('/scanner', cl.id)}
+                                onClick={() => !hasEnded && navigate('/scanner', { state: { classId: cl.id } })}
                                 disabled={hasEnded}
                                 className={`w-full py-5 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-xl flex items-center justify-center gap-3 transition-all ${hasEnded ? 'bg-background text-text-secondary/30 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-primary/20 hover:scale-[1.02] active:scale-95'}`}
                             >
@@ -254,8 +267,9 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                                 </div>
                             </div>
 
-                            <button type="submit" className="w-full bg-primary text-white py-6 rounded-3xl font-black text-xs uppercase tracking-[0.3em] shadow-[0_20px_40px_rgba(99,102,241,0.3)] hover:bg-primary/90 hover:scale-[1.02] active:scale-95 transition-all mt-6">
-                                {t('hub.sync')}
+                            <button type="submit" disabled={isSaving} className="w-full bg-primary text-white py-6 rounded-3xl font-black text-xs uppercase tracking-[0.3em] shadow-[0_20px_40px_rgba(99,102,241,0.3)] hover:bg-primary/90 hover:scale-[1.02] active:scale-95 transition-all mt-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3">
+                                {isSaving && <Loader2 size={18} className="animate-spin" />}
+                                {isSaving ? 'SYNCING...' : t('hub.sync')}
                             </button>
                         </form>
                     </div>

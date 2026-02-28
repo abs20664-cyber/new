@@ -7,6 +7,7 @@ import { usePlatform } from '../contexts/PlatformContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { CheckCircle, X, ShieldCheck, AlertTriangle, FileUp, Clock } from 'lucide-react';
 import { ClassSession } from '../types';
+import { useLocation } from 'react-router-dom';
 
 interface ScannerProps {
     classId: string | null;
@@ -15,10 +16,13 @@ interface ScannerProps {
 
 const VERIFY_SOUND_URL = "https://cdn.freesound.org/previews/263/263133_2064400-lq.mp3";
 
-const Scanner: React.FC<ScannerProps> = ({ classId, onBack }) => {
+const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
     const { user } = useAuth();
     const { isMobile } = usePlatform();
     const { t } = useLanguage();
+    const location = useLocation();
+    
+    const classId = propClassId || location.state?.classId;
 
     useEffect(() => {
         if (user?.role === 'economic') {
@@ -50,7 +54,8 @@ const Scanner: React.FC<ScannerProps> = ({ classId, onBack }) => {
             return;
         }
 
-        const today = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const today = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
 
         const fetchSession = async () => {
             try {
@@ -58,7 +63,6 @@ const Scanner: React.FC<ScannerProps> = ({ classId, onBack }) => {
                 if (snap.exists()) {
                     const data = { id: snap.id, ...snap.data() } as ClassSession;
                     
-                    const now = new Date();
                     const nowStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
                     
                     const hasEnded = data.date < today || (data.date === today && nowStr >= data.endTime);
