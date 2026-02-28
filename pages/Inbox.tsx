@@ -217,6 +217,20 @@ const Inbox: React.FC = () => {
         return () => { unsub(); setRemoteTyping(false); };
     }, [user?.id, activeTarget?.id]);
 
+    const deleteChannel = async () => {
+        if (!activeTarget || activeTarget.type !== 'group' || user?.role !== 'teacher') return;
+        
+        if (window.confirm(t('inbox.deleteChannelConfirm') || 'Are you sure you want to delete this broadcast channel? This will kick all participants and delete all messages.')) {
+            try {
+                await deleteDoc(doc(db, collections.groups, activeTarget.id));
+                setActiveTarget(null);
+                setShowConversation(false);
+            } catch (e) {
+                alert(t('common.error'));
+            }
+        }
+    };
+
     const broadcastTyping = useCallback(async (isTyping: boolean) => {
         if (!user || !activeTarget || activeTarget.type === 'group') return;
         const now = Date.now();
@@ -516,6 +530,15 @@ const Inbox: React.FC = () => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
+                                {activeTarget.type === 'group' && user?.role === 'teacher' && (
+                                    <button 
+                                        onClick={deleteChannel}
+                                        className="p-2.5 text-institutional-400 hover:text-danger hover:bg-danger/10 rounded-xl transition-all"
+                                        title={t('inbox.deleteChannel') || 'Delete Channel'}
+                                    >
+                                        <Trash2 size={20} />
+                                    </button>
+                                )}
                                 <button className="p-2.5 text-institutional-400 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"><Info size={20} /></button>
                                 <button className="p-2.5 text-institutional-400 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"><MoreVertical size={20} /></button>
                             </div>
@@ -604,29 +627,38 @@ const Inbox: React.FC = () => {
                                 </div>
                             )}
                             
-                            <form onSubmit={handleSend} className="flex gap-4 items-center max-w-6xl mx-auto relative">
-                                <button type="button" className="hidden sm:flex p-4 bg-institutional-50 dark:bg-institutional-900 text-institutional-400 hover:text-primary rounded-2xl transition-all shadow-soft"><Paperclip size={22} /></button>
-                                <div className="flex-1 relative flex items-center">
-                                    <input 
-                                        value={inputText || (editingMessage?.text || '')}
-                                        onChange={handleInputChange}
-                                        placeholder={t('inbox.secureTrans')}
-                                        className={`w-full bg-institutional-100 dark:bg-institutional-900 border border-transparent focus:border-primary/50 p-4.5 rounded-2xl text-[15px] font-medium outline-none transition-all shadow-inner text-institutional-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                                    />
-                                    {!isMobile && (
-                                        <button type="button" className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 p-2 text-institutional-400 hover:text-primary transition-colors`}>
-                                            <Smile size={20} />
-                                        </button>
-                                    )}
+                            {(activeTarget.type === 'group' && activeTarget.isBroadcast && user?.role === 'student') ? (
+                                <div className="flex items-center justify-center p-6 bg-institutional-50 dark:bg-institutional-900/50 rounded-2xl border border-institutional-200 dark:border-institutional-800">
+                                    <p className="text-xs font-black uppercase tracking-[0.2em] text-institutional-400 flex items-center gap-3">
+                                        <ShieldAlert size={16} className="text-primary" />
+                                        {t('inbox.broadcastOnly') || 'This is a broadcast channel. Only teachers can send messages.'}
+                                    </p>
                                 </div>
-                                <button 
-                                    type="submit" 
-                                    disabled={(!inputText.trim() && !editingMessage)} 
-                                    className="w-14 h-14 shrink-0 bg-primary text-white rounded-2xl flex items-center justify-center shadow-strong shadow-primary/30 active:scale-90 transition-all disabled:opacity-20 disabled:shadow-none"
-                                >
-                                    <Send size={24} className={isRTL ? 'rotate-180' : ''} />
-                                </button>
-                            </form>
+                            ) : (
+                                <form onSubmit={handleSend} className="flex gap-4 items-center max-w-6xl mx-auto relative">
+                                    <button type="button" className="hidden sm:flex p-4 bg-institutional-50 dark:bg-institutional-900 text-institutional-400 hover:text-primary rounded-2xl transition-all shadow-soft"><Paperclip size={22} /></button>
+                                    <div className="flex-1 relative flex items-center">
+                                        <input 
+                                            value={inputText || (editingMessage?.text || '')}
+                                            onChange={handleInputChange}
+                                            placeholder={t('inbox.secureTrans')}
+                                            className={`w-full bg-institutional-100 dark:bg-institutional-900 border border-transparent focus:border-primary/50 p-4.5 rounded-2xl text-[15px] font-medium outline-none transition-all shadow-inner text-institutional-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
+                                        />
+                                        {!isMobile && (
+                                            <button type="button" className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 p-2 text-institutional-400 hover:text-primary transition-colors`}>
+                                                <Smile size={20} />
+                                            </button>
+                                        )}
+                                    </div>
+                                    <button 
+                                        type="submit" 
+                                        disabled={(!inputText.trim() && !editingMessage)} 
+                                        className="w-14 h-14 shrink-0 bg-primary text-white rounded-2xl flex items-center justify-center shadow-strong shadow-primary/30 active:scale-90 transition-all disabled:opacity-20 disabled:shadow-none"
+                                    >
+                                        <Send size={24} className={isRTL ? 'rotate-180' : ''} />
+                                    </button>
+                                </form>
+                            )}
                         </div>
                     </>
                 ) : (
@@ -647,7 +679,7 @@ const Inbox: React.FC = () => {
                         <button onClick={() => setIsCreateGroupOpen(false)} className={`absolute top-10 ${isRTL ? 'left-10' : 'right-10'} p-2 text-institutional-400 hover:text-danger transition-colors`}><X size={24} /></button>
                         <div className="text-start mb-10">
                             <h3 className="text-2xl font-black text-institutional-900 dark:text-white uppercase tracking-tight">{t('inbox.createBroadcast') || 'Create Broadcast Channel'}</h3>
-                            <p className="text-[10px] font-black text-institutional-400 uppercase tracking-[0.25em] mt-2">Protocol: Collaborative Academic Channel</p>
+                            <p className="text-[10px] font-black text-institutional-400 uppercase tracking-[0.25em] mt-2">Protocol: One-Way Academic Channel</p>
                         </div>
                         <form onSubmit={createGroup} className="space-y-8 text-start">
                             <div className="space-y-2">
