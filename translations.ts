@@ -18,10 +18,17 @@ export const translations = {
       myProfile: "My Profile", economic: "Finance"
     },
     login: {
-      title: "Secure Access Terminal", welcome: "Welcome back to EduTrack",
-      email: "Institutional ID", password: "Passcode", authenticate: "Authenticate",
-      verifying: "Verifying...", forgot: "Forgot Credentials?", demoAccounts: "Available Accounts",
-      clickToFill: "Click to Fill"
+      title: "Secure Access Terminal", welcome: "Welcome back",
+      email: "Email Address", password: "Password", authenticate: "Sign in",
+      verifying: "Signing in...", forgot: "Forgot Credentials?", demoAccounts: "View demo accounts",
+      clickToFill: "Click to Fill",
+      updatePasswordPrompt: "Please update your password to continue.",
+      enterDetailsPrompt: "Please enter your details to sign in.",
+      newPassword: "New Password",
+      minCharacters: "Min. 6 characters",
+      confirmPassword: "Confirm Password",
+      repeatPassword: "Repeat new password",
+      updateAndLogin: "Update & Sign in"
     },
     dashboard: {
       studentProfile: "Student Academic Profile", securityLevel: "Security Level",
@@ -179,10 +186,17 @@ export const translations = {
       myProfile: "Mon Profil", economic: "Finance"
     },
     login: {
-      title: "Terminal d'accès sécurisé", welcome: "Bienvenue sur EduTrack",
-      email: "Identifiant Institutionnel", password: "Code d'accès", authenticate: "S'authentifier",
-      verifying: "Vérification...", forgot: "Identifiants oubliés ?", demoAccounts: "Comptes disponibles",
-      clickToFill: "Cliquer pour remplir"
+      title: "Terminal d'accès sécurisé", welcome: "Content de vous revoir",
+      email: "Adresse Email", password: "Mot de passe", authenticate: "Se connecter",
+      verifying: "Connexion...", forgot: "Identifiants oubliés ?", demoAccounts: "Voir les comptes démo",
+      clickToFill: "Cliquer pour remplir",
+      updatePasswordPrompt: "Veuillez mettre à jour votre mot de passe pour continuer.",
+      enterDetailsPrompt: "Veuillez entrer vos coordonnées pour vous connecter.",
+      newPassword: "Nouveau mot de passe",
+      minCharacters: "Min. 6 caractères",
+      confirmPassword: "Confirmer le mot de passe",
+      repeatPassword: "Répéter le nouveau mot de passe",
+      updateAndLogin: "Mettre à jour et se connecter"
     },
     dashboard: {
       studentProfile: "Profil Académique Étudiant", securityLevel: "Niveau de Sécurité",
@@ -340,10 +354,17 @@ export const translations = {
       myProfile: "ملفي الشخصي", economic: "المالية"
     },
     login: {
-      title: "محطة الوصول الآمنة", welcome: "مرحباً بكم في EduTrack",
-      email: "الهوية المؤسسية", password: "رمز المرور", authenticate: "تحقق",
-      verifying: "جاري التحقق...", forgot: "نسيت بيانات الدخول؟", demoAccounts: "الحسابات المتاحة",
-      clickToFill: "اضغط للملء"
+      title: "محطة الوصول الآمنة", welcome: "مرحباً بعودتك",
+      email: "البريد الإلكتروني", password: "كلمة المرور", authenticate: "تسجيل الدخول",
+      verifying: "جاري تسجيل الدخول...", forgot: "نسيت بيانات الدخول؟", demoAccounts: "عرض الحسابات التجريبية",
+      clickToFill: "اضغط للملء",
+      updatePasswordPrompt: "يرجى تحديث كلمة المرور الخاصة بك للمتابعة.",
+      enterDetailsPrompt: "يرجى إدخال بياناتك لتسجيل الدخول.",
+      newPassword: "كلمة مرور جديدة",
+      minCharacters: "6 أحرف على الأقل",
+      confirmPassword: "تأكيد كلمة المرور",
+      repeatPassword: "إعادة كلمة المرور الجديدة",
+      updateAndLogin: "تحديث وتسجيل الدخول"
     },
     dashboard: {
       studentProfile: "الملف الأكاديمي للطالب", securityLevel: "مستوى الأمان",
