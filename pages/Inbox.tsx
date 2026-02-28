@@ -136,20 +136,10 @@ const Inbox: React.FC = () => {
     useEffect(() => {
         const unsubUsers = onSnapshot(collection(db, collections.users), (snap) => {
             const allUsers = snap.docs.map(d => ({ id: d.id, ...d.data() } as any));
-            let filtered = allUsers.filter(u => u.status !== 'deleted' && u.id !== user?.id && u.role !== 'economic');
-            
-            // Remove messaging between teacher and students
-            if (user?.role === 'student') {
-                // Students can only DM other students (if allowed) or maybe no one?
-                // User said "remove the messaging between the teacher and students"
-                // So students can't DM teachers.
-                filtered = filtered.filter(u => u.role !== 'teacher');
-            } else if (user?.role === 'teacher') {
-                // Teachers can't DM students
-                filtered = filtered.filter(u => u.role !== 'student');
-            }
-            
-            setUsers(filtered);
+            // Keep all non-deleted users except self and economic for the broad users state
+            // Filtering for DMs will happen in the filteredSidebar memo
+            const activeUsers = allUsers.filter(u => u.status !== 'deleted' && u.id !== user?.id && u.role !== 'economic');
+            setUsers(activeUsers);
         });
 
         const unsubGroups = onSnapshot(collection(db, collections.groups), (snap) => {
@@ -335,10 +325,25 @@ const Inbox: React.FC = () => {
 
     const filteredSidebar = useMemo(() => {
         const term = searchTerm.toLowerCase();
-        const filteredUsers = users.filter(u => u.name.toLowerCase().includes(term));
+        
+        // DM Visibility Rules:
+        // 1. Students: Cannot DM anyone
+        // 2. Teachers: Can DM other Teachers (Isolated from Students, Admins, and Economic)
+        // 3. Admins/Economic: Cannot DM anyone
+        const dmUsers = users.filter(u => {
+            if (!user) return false;
+            
+            if (user.role === 'teacher') {
+                return u.role === 'teacher';
+            }
+            
+            return false;
+        });
+
+        const filteredUsers = dmUsers.filter(u => u.name.toLowerCase().includes(term));
         const filteredGroups = groups.filter(g => g.name.toLowerCase().includes(term));
         return { users: filteredUsers, groups: filteredGroups };
-    }, [users, groups, searchTerm]);
+    }, [users, groups, searchTerm, user]);
 
     const pinnedMessages = useMemo(() => messages.filter(m => m.isPinned), [messages]);
 
@@ -599,38 +604,29 @@ const Inbox: React.FC = () => {
                                 </div>
                             )}
                             
-                            {(activeTarget.type === 'group' && activeTarget.isBroadcast && user?.role === 'student') ? (
-                                <div className="flex items-center justify-center p-6 bg-institutional-50 dark:bg-institutional-900/50 rounded-2xl border border-institutional-200 dark:border-institutional-800">
-                                    <p className="text-xs font-black uppercase tracking-[0.2em] text-institutional-400 flex items-center gap-3">
-                                        <ShieldAlert size={16} className="text-primary" />
-                                        {t('inbox.broadcastOnly') || 'This is a broadcast channel. Only teachers can send messages.'}
-                                    </p>
+                            <form onSubmit={handleSend} className="flex gap-4 items-center max-w-6xl mx-auto relative">
+                                <button type="button" className="hidden sm:flex p-4 bg-institutional-50 dark:bg-institutional-900 text-institutional-400 hover:text-primary rounded-2xl transition-all shadow-soft"><Paperclip size={22} /></button>
+                                <div className="flex-1 relative flex items-center">
+                                    <input 
+                                        value={inputText || (editingMessage?.text || '')}
+                                        onChange={handleInputChange}
+                                        placeholder={t('inbox.secureTrans')}
+                                        className={`w-full bg-institutional-100 dark:bg-institutional-900 border border-transparent focus:border-primary/50 p-4.5 rounded-2xl text-[15px] font-medium outline-none transition-all shadow-inner text-institutional-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
+                                    />
+                                    {!isMobile && (
+                                        <button type="button" className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 p-2 text-institutional-400 hover:text-primary transition-colors`}>
+                                            <Smile size={20} />
+                                        </button>
+                                    )}
                                 </div>
-                            ) : (
-                                <form onSubmit={handleSend} className="flex gap-4 items-center max-w-6xl mx-auto relative">
-                                    <button type="button" className="hidden sm:flex p-4 bg-institutional-50 dark:bg-institutional-900 text-institutional-400 hover:text-primary rounded-2xl transition-all shadow-soft"><Paperclip size={22} /></button>
-                                    <div className="flex-1 relative flex items-center">
-                                        <input 
-                                            value={inputText || (editingMessage?.text || '')}
-                                            onChange={handleInputChange}
-                                            placeholder={t('inbox.secureTrans')}
-                                            className={`w-full bg-institutional-100 dark:bg-institutional-900 border border-transparent focus:border-primary/50 p-4.5 rounded-2xl text-[15px] font-medium outline-none transition-all shadow-inner text-institutional-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                                        />
-                                        {!isMobile && (
-                                            <button type="button" className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 p-2 text-institutional-400 hover:text-primary transition-colors`}>
-                                                <Smile size={20} />
-                                            </button>
-                                        )}
-                                    </div>
-                                    <button 
-                                        type="submit" 
-                                        disabled={(!inputText.trim() && !editingMessage)} 
-                                        className="w-14 h-14 shrink-0 bg-primary text-white rounded-2xl flex items-center justify-center shadow-strong shadow-primary/30 active:scale-90 transition-all disabled:opacity-20 disabled:shadow-none"
-                                    >
-                                        <Send size={24} className={isRTL ? 'rotate-180' : ''} />
-                                    </button>
-                                </form>
-                            )}
+                                <button 
+                                    type="submit" 
+                                    disabled={(!inputText.trim() && !editingMessage)} 
+                                    className="w-14 h-14 shrink-0 bg-primary text-white rounded-2xl flex items-center justify-center shadow-strong shadow-primary/30 active:scale-90 transition-all disabled:opacity-20 disabled:shadow-none"
+                                >
+                                    <Send size={24} className={isRTL ? 'rotate-180' : ''} />
+                                </button>
+                            </form>
                         </div>
                     </>
                 ) : (
@@ -651,7 +647,7 @@ const Inbox: React.FC = () => {
                         <button onClick={() => setIsCreateGroupOpen(false)} className={`absolute top-10 ${isRTL ? 'left-10' : 'right-10'} p-2 text-institutional-400 hover:text-danger transition-colors`}><X size={24} /></button>
                         <div className="text-start mb-10">
                             <h3 className="text-2xl font-black text-institutional-900 dark:text-white uppercase tracking-tight">{t('inbox.createBroadcast') || 'Create Broadcast Channel'}</h3>
-                            <p className="text-[10px] font-black text-institutional-400 uppercase tracking-[0.25em] mt-2">Protocol: One-Way Academic Channel</p>
+                            <p className="text-[10px] font-black text-institutional-400 uppercase tracking-[0.25em] mt-2">Protocol: Collaborative Academic Channel</p>
                         </div>
                         <form onSubmit={createGroup} className="space-y-8 text-start">
                             <div className="space-y-2">
