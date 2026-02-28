@@ -97,8 +97,7 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                     { facingMode: "environment" },
                     {
                         fps: 15,
-                        qrbox: isMobile ? { width: 300, height: 300 } : { width: 250, height: 250 },
-                        aspectRatio: 1.0
+                        // Remove qrbox and aspectRatio to let the video fill the container naturally
                     },
                     async (decodedText) => {
                         if (isProcessing.current) return;
@@ -253,6 +252,30 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                     10% { opacity: 1; }
                     90% { opacity: 1; }
                     100% { top: 100%; opacity: 0; }
+                }
+                #reader {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                }
+                #reader video {
+                    width: 100% !important;
+                    height: 100% !important;
+                    object-fit: cover !important;
+                    position: absolute !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                }
+                #reader > div {
+                    width: 100% !important;
+                    height: 100% !important;
+                }
+                #qr-shaded-region {
+                    display: none !important;
                 }
             `}</style>
         </div>
