@@ -153,7 +153,8 @@ export interface Group {
   description?: string;
   creatorId: string;
   participantIds: string[];
-  type: 'class' | 'custom';
+  type: 'class' | 'custom' | 'broadcast';
+  isBroadcast?: boolean;
   createdAt: any;
 }
 

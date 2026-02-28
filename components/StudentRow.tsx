@@ -37,7 +37,7 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
     if (isMobile) {
         return (
             <div style={style} className="px-1 py-2">
-                <div className={`academic-card border-l-4 ${sub?.paymentStatus === 'Paid' ? 'border-emerald-500' : sub?.paymentStatus === 'Unpaid' ? 'border-rose-500' : 'border-primary/50'} p-6 text-start`}>
+                <div className={`academic-card border-l-4 ${sub?.paymentStatus === 'Paid' ? 'border-emerald-500' : sub?.paymentStatus === 'Unpaid' ? 'border-rose-500' : 'border-primary/50'} p-6 text-start shadow-soft`}>
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">

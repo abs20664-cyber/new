@@ -510,7 +510,7 @@ const EconomicDashboard: React.FC = () => {
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-sm' : 'text-institutional-500 hover:text-institutional-700'}`}>
+                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-500 hover:text-institutional-700'}`}>
                                 {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : 'Audit'}
                             </button>
                         ))}
@@ -542,7 +542,7 @@ const EconomicDashboard: React.FC = () => {
                             { label: t('economic.outstanding'), value: formatCurrencyDZD(financialSummary.outstandingPayments), icon: TrendingDown, color: 'text-rose-500' },
                             { label: t('economic.payroll'), value: formatCurrencyDZD(financialSummary.teacherPayrollTotal), icon: CreditCard, color: 'text-amber-500' },
                         ].map((kpi, i) => (
-                            <div key={i} className="bg-surface dark:bg-institutional-900 p-6 rounded-[2rem] border border-institutional-200 dark:border-institutional-800 shadow-sm hover:shadow-md transition-all group">
+                            <div key={i} className="bg-surface dark:bg-institutional-900 p-6 rounded-[2rem] border border-institutional-200 dark:border-institutional-800 shadow-soft hover:shadow-strong transition-all group">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className={`p-3 rounded-2xl bg-institutional-50 dark:bg-institutional-800 ${kpi.color} group-hover:scale-110 transition-transform`}>
                                         <kpi.icon size={20} />
@@ -557,7 +557,7 @@ const EconomicDashboard: React.FC = () => {
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Revenue Chart */}
-                        <div className="lg:col-span-2 bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-sm">
+                        <div className="lg:col-span-2 bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-soft">
                             <div className="flex items-center justify-between mb-8">
                                 <div className="text-start">
                                     <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white">{t('economic.revenue')} Analysis</h3>
@@ -588,7 +588,7 @@ const EconomicDashboard: React.FC = () => {
                         </div>
 
                         {/* Alerts Panel */}
-                        <div className="bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-sm">
+                        <div className="bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-soft">
                             <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-8 text-start">{t('economic.alerts')}</h3>
                             <div className="space-y-4">
                                 {[
@@ -632,7 +632,7 @@ const EconomicDashboard: React.FC = () => {
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
                                 placeholder={t('inbox.searchPlaceholder')}
-                                className={`w-full bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12' : 'pl-12'} py-4 text-sm font-bold outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-sm`}
+                                className={`w-full bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12' : 'pl-12'} py-4 text-sm font-bold outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-soft`}
                             />
                         </div>
                         <div className="flex gap-4">
@@ -641,7 +641,7 @@ const EconomicDashboard: React.FC = () => {
                                 <select 
                                     value={filterStatus}
                                     onChange={e => setFilterStatus(e.target.value)}
-                                    className={`bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12 pl-8' : 'pl-12 pr-8'} py-4 text-xs font-black uppercase tracking-widest outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all appearance-none cursor-pointer shadow-sm`}>
+                                    className={`bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12 pl-8' : 'pl-12 pr-8'} py-4 text-xs font-black uppercase tracking-widest outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all appearance-none cursor-pointer shadow-soft`}>
                                     <option value="all">All Status</option>
                                     <option value="active">{t('economic.active')}</option>
                                     <option value="expired">{t('economic.expired')}</option>
@@ -656,7 +656,7 @@ const EconomicDashboard: React.FC = () => {
                                     ? exportCSV(filteredStudents.map(s => ({ ...s, ...subscriptions[s.id] })), 'student_subscriptions')
                                     : exportCSV(filteredTeachers.map(t_user => ({ ...t_user, ...payments[t_user.id] })), 'teacher_payments')
                                 }
-                                className="p-4 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl text-institutional-400 hover:text-primary transition-all shadow-sm">
+                                className="p-4 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl text-institutional-400 hover:text-primary transition-all shadow-soft">
                                 <Download size={20} />
                             </button>
                         </div>

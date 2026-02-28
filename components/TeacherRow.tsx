@@ -38,7 +38,7 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
     if (isMobile) {
         return (
             <div style={style} className="px-1 py-2">
-                <div className="academic-card p-6 text-start space-y-4">
+                <div className="academic-card p-6 text-start space-y-4 shadow-soft">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">

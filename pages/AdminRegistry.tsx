@@ -29,7 +29,7 @@ const UserRow = memo(({ index, style, data }: { index: number, style: React.CSSP
     if (isMobile) {
         return (
             <div style={style} className="px-1 py-2">
-                <div className="p-5 card-edu rounded-2xl bg-surface dark:bg-institutional-900 border border-institutional-300 dark:border-institutional-800 text-start">
+                <div className="p-5 academic-card rounded-2xl text-start">
                     <div className="flex items-center gap-4 mb-4">
                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white shadow-sm ${u.role === 'admin' ? 'bg-danger' : 'bg-primary'}`}>
                             {u.name.charAt(0)}
@@ -238,7 +238,7 @@ const AdminRegistry: React.FC = () => {
                 {/* Dashboard Stats */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 grid grid-cols-2 gap-4">
-                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
+                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500">Total Users</h3>
                                 <div className="w-8 h-8 rounded-full bg-institutional-100 dark:bg-institutional-800 flex items-center justify-center text-institutional-600">
@@ -275,7 +275,7 @@ const AdminRegistry: React.FC = () => {
                             <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.staff}</p>
                         </div>
                     </div>
-                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col">
+                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft flex flex-col">
                         <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500 mb-4">Role Distribution</h3>
                         <div className="flex-1 min-h-[200px]">
                             <ResponsiveContainer width="100%" height="100%">
@@ -305,7 +305,7 @@ const AdminRegistry: React.FC = () => {
                 </div>
 
                 {/* Filters and Search */}
-                <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-4 rounded-[1.5rem] shadow-sm">
+                <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-4 rounded-[1.5rem] shadow-soft">
                     <div className="relative w-full md:w-96">
                         <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-institutional-400" />
                         <input 
@@ -348,7 +348,7 @@ const AdminRegistry: React.FC = () => {
                         {UserRow}
                     </List>
                 ) : (
-                    <div className="card-edu bg-surface dark:bg-institutional-900 border border-institutional-300 dark:border-institutional-800 rounded-[1.5rem] overflow-hidden shadow-2xl">
+                    <div className="academic-card rounded-[1.5rem] overflow-hidden shadow-strong">
                         <div className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] p-6 border-b border-institutional-200 dark:border-institutional-800 bg-institutional-50 dark:bg-institutional-950 font-black text-[10px] uppercase tracking-widest text-institutional-500 text-start`}>
                             <div>{t('admin.legalName')}</div>
                             <div>{t('admin.email')}</div>

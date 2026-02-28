@@ -245,7 +245,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     <div 
                         key={toast.id} 
                         onClick={() => handleNotificationClick(toast)}
-                        className="glass p-5 rounded-2xl shadow-2xl border border-white/20 dark:border-white/5 flex items-start gap-4 animate-in slide-in-from-right-10 fade-in duration-500 cursor-pointer group hover:scale-[1.02] active:scale-95 transition-all"
+                        className="glass p-5 rounded-2xl shadow-strong border border-white/20 dark:border-white/5 flex items-start gap-4 animate-in slide-in-from-right-10 fade-in duration-500 cursor-pointer group hover:scale-[1.02] active:scale-95 transition-all"
                         style={{ zIndex: 500 + idx }}
                     >
                         <div className={`p-3 rounded-xl shrink-0 ${getColorForType(toast.type)} shadow-sm`}>
@@ -275,7 +275,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
             {isNotifOpen && (
                 <>
                     <div className="fixed inset-0 bg-black/30 backdrop-blur-md z-[110] animate-in fade-in duration-300" onClick={() => setIsNotifOpen(false)} />
-                    <aside className={`fixed top-0 bottom-0 w-full sm:w-[450px] bg-surface dark:bg-institutional-950 z-[120] border-institutional-300 dark:border-institutional-800 shadow-2xl animate-in slide-in-from-right duration-500 flex flex-col ${isRTL ? 'start-0 border-e' : 'end-0 border-s'}`}>
+                    <aside className={`fixed top-0 bottom-0 w-full sm:w-[450px] bg-surface dark:bg-institutional-950 z-[120] border-institutional-300 dark:border-institutional-800 shadow-strong animate-in slide-in-from-right duration-500 flex flex-col ${isRTL ? 'start-0 border-e' : 'end-0 border-s'}`}>
                         <div className="p-8 flex justify-between items-center border-b border-institutional-200 dark:border-institutional-800">
                             <div>
                                 <h3 className="text-2xl font-black tracking-tight text-institutional-900 dark:text-white uppercase">Activity Ledger</h3>
@@ -294,7 +294,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                 <div 
                                     key={n.id} 
                                     onClick={() => handleNotificationClick(n)}
-                                    className={`p-6 rounded-3xl border transition-all cursor-pointer relative group ${n.read ? 'bg-transparent border-transparent opacity-60' : 'bg-surface dark:bg-institutional-900 border-institutional-200 dark:border-institutional-800 shadow-sm hover:shadow-xl hover:-translate-y-1'}`}
+                                    className={`p-6 rounded-3xl border transition-all cursor-pointer relative group ${n.read ? 'bg-transparent border-transparent opacity-60' : 'bg-surface dark:bg-institutional-900 border-institutional-200 dark:border-institutional-800 shadow-soft hover:shadow-strong hover:-translate-y-1'}`}
                                 >
                                     {!n.read && <div className={`absolute top-6 ${isRTL ? 'start-6' : 'end-6'} w-2.5 h-2.5 bg-primary rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]`} />}
                                     <div className="flex items-center gap-4 mb-4">
@@ -356,7 +356,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             <button 
                                 key={route.path}
                                 onClick={() => { enableAudio(); onNavigate(route.path); }}
-                                className={`group w-full flex items-center justify-between px-5 py-4 rounded-[1.25rem] font-bold transition-all duration-300 ${isActive ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-900 dark:text-institutional-400 hover:text-primary'}`}
+                                className={`group w-full flex items-center justify-between px-5 py-4 rounded-[1.25rem] font-bold transition-all duration-300 ${isActive ? 'bg-primary text-white shadow-strong shadow-primary/20' : 'text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-900 dark:text-institutional-400 hover:text-primary'}`}
                             >
                                 <div className="flex items-center gap-4">
                                     <Icon size={20} className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />

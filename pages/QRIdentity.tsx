@@ -27,7 +27,7 @@ const QRIdentity: React.FC = () => {
 
     return (
         <div className="min-h-full flex flex-col items-center justify-center p-4 md:p-8 fade-in">
-            <div className={`w-full max-w-lg bg-surface dark:bg-institutional-900 rounded-[3rem] shadow-[0_30px_70px_rgba(0,0,0,0.15)] border border-institutional-200 dark:border-institutional-800 overflow-hidden relative transition-all duration-500`}>
+            <div className={`w-full max-w-lg bg-surface dark:bg-institutional-900 rounded-[3rem] shadow-strong border border-institutional-200 dark:border-institutional-800 overflow-hidden relative transition-all duration-500`}>
                 
                 {/* Security Bar Animation */}
                 <div className="absolute top-0 inset-x-0 h-2 bg-institutional-100 dark:bg-institutional-800 overflow-hidden">
@@ -78,7 +78,7 @@ const QRIdentity: React.FC = () => {
                         <div className="absolute -top-4 -left-4 w-12 h-12 border-t-4 border-l-4 border-primary/20 rounded-tl-3xl transition-all group-hover:-top-2 group-hover:-left-2 group-hover:border-primary/40"></div>
                         <div className="absolute -bottom-4 -right-4 w-12 h-12 border-b-4 border-r-4 border-primary/20 rounded-br-3xl transition-all group-hover:-bottom-2 group-hover:-right-2 group-hover:border-primary/40"></div>
                         
-                        <div className="bg-white p-7 rounded-[3rem] shadow-2xl border border-institutional-100 transition-all duration-500 group-hover:scale-[1.03]">
+                        <div className="bg-white p-7 rounded-[3rem] shadow-strong border border-institutional-100 transition-all duration-500 group-hover:scale-[1.03]">
                              <QRCode 
                                 value={qrData}
                                 size={isMobile ? 200 : 240}

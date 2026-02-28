@@ -1,45 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  /* Light Theme - Slate based for professional clarity */
+  /* Light Theme - Refined Slate/Gray for ultimate clarity */
   --bg-body: #f8fafc;
   --bg-surface: #ffffff;
   --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --border-color: #e2e8f0;
+  --text-secondary: #64748b;
+  --border-color: #f1f5f9;
+  --muted: #94a3b8;
 
-  --inst-50: #f9fafb;
-  --inst-100: #f3f4f6;
-  --inst-200: #e5e7eb;
-  --inst-300: #d1d5db;
-  --inst-400: #9ca3af;
-  --inst-500: #6b7280;
-  --inst-600: #4b5563;
-  --inst-700: #374151;
-  --inst-800: #1f2937;
-  --inst-900: #111827;
-  --inst-950: #030712;
+  --inst-50: #f8fafc;
+  --inst-100: #f1f5f9;
+  --inst-200: #e2e8f0;
+  --inst-300: #cbd5e1;
+  --inst-400: #94a3b8;
+  --inst-500: #64748b;
+  --inst-600: #475569;
+  --inst-700: #334155;
+  --inst-800: #1e293b;
+  --inst-900: #0f172a;
+  --inst-950: #020617;
 }
 
 .dark {
-  /* Dark Theme - Zinc based for deep professional feel */
+  /* Dark Theme - Deep Zinc/Neutral for professional depth */
   --bg-body: #09090b;
-  --bg-surface: #18181b;
-  --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
-  --border-color: #27272a;
+  --bg-surface: #121215;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --border-color: #1e1e24;
+  --muted: #52525b;
 
   --inst-50: #09090b;
-  --inst-100: #18181b;
-  --inst-200: #27272a;
-  --inst-300: #3f3f46;
-  --inst-400: #52525b;
-  --inst-500: #71717a;
-  --inst-600: #a1a1aa;
-  --inst-700: #d4d4d8;
-  --inst-800: #e4e4e7;
-  --inst-900: #f4f4f5;
-  --inst-950: #fafafa;
+  --inst-100: #121215;
+  --inst-200: #1e1e24;
+  --inst-300: #27272a;
+  --inst-400: #3f3f46;
+  --inst-500: #52525b;
+  --inst-600: #71717a;
+  --inst-700: #a1a1aa;
+  --inst-800: #d4d4d8;
+  --inst-900: #e4e4e7;
+  --inst-950: #f8fafc;
 }
 
 @theme {
@@ -67,6 +69,10 @@
   --color-text: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-border: var(--border-color);
+  --color-muted: var(--muted);
+
+  --shadow-soft: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-strong: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
   /* Institutional Palette */
   --color-institutional-50: var(--inst-50);
@@ -85,11 +91,11 @@
 @layer base {
   body {
     @apply bg-body text-text font-sans antialiased;
-    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight;
+    @apply tracking-tight font-bold;
   }
 
   code, pre {
@@ -111,11 +117,11 @@
 
 @layer components {
   .academic-card {
-    @apply bg-surface border border-border rounded-2xl shadow-sm transition-all duration-300 hover:shadow-md;
+    @apply bg-surface border border-border rounded-2xl shadow-soft transition-all duration-300 hover:shadow-strong hover:-translate-y-0.5;
   }
 
   .glass {
-    @apply bg-surface/70 backdrop-blur-xl;
+    @apply bg-surface/80 backdrop-blur-xl border border-white/10 dark:border-white/5;
   }
 
   .live-now-glow {
