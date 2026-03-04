@@ -348,7 +348,43 @@ const EconomicDashboard: React.FC = () => {
     }, [subscriptions, payments, financialSummary]);
 
     const exportCSV = (data: any[], filename: string) => {
-        const csv = Papa.unparse(data);
+        const sanitizeValue = (value: any, depth = 0): any => {
+            if (depth > 3) return '[Depth Limit]';
+            if (value === null || value === undefined) return '';
+            
+            if (typeof value === 'object') {
+                // Handle Firestore Timestamp
+                if (value.seconds !== undefined && value.nanoseconds !== undefined) {
+                    return new Date(value.seconds * 1000).toISOString();
+                }
+                // Handle Date objects
+                if (value instanceof Date) {
+                    return value.toISOString();
+                }
+                // Handle arrays - join them
+                if (Array.isArray(value)) {
+                    return value.map(v => sanitizeValue(v, depth + 1)).join(', ');
+                }
+                
+                // Handle other objects - try to stringify, fallback to string representation
+                try {
+                    return JSON.stringify(value);
+                } catch (e) {
+                    return '[Complex Data]';
+                }
+            }
+            return value;
+        };
+
+        const sanitizedData = data.map(item => {
+            const newItem: any = {};
+            Object.keys(item).forEach(key => {
+                newItem[key] = sanitizeValue(item[key]);
+            });
+            return newItem;
+        });
+
+        const csv = Papa.unparse(sanitizedData);
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
