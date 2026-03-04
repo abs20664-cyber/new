@@ -496,16 +496,20 @@ const EconomicDashboard: React.FC = () => {
 
         if (isMobile) {
             return (
-                <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden">
-                    <List
-                        height={600}
-                        itemCount={filteredStudents.length}
-                        itemSize={350}
-                        width="100%"
-                        itemData={itemData}
-                    >
-                        {StudentRow}
-                    </List>
+                <div className="space-y-4">
+                    {filteredStudents.map((s, idx) => (
+                        <StudentRow 
+                            key={s.id} 
+                            index={idx} 
+                            style={{}} 
+                            data={itemData} 
+                        />
+                    ))}
+                    {filteredStudents.length === 0 && (
+                        <div className="p-20 text-center text-institutional-400 text-xs font-black uppercase tracking-widest">
+                            No students found matching filters.
+                        </div>
+                    )}
                 </div>
             );
         }
@@ -584,16 +588,20 @@ const EconomicDashboard: React.FC = () => {
 
         if (isMobile) {
             return (
-                <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden">
-                    <List
-                        height={600}
-                        itemCount={filteredTeachers.length}
-                        itemSize={280}
-                        width="100%"
-                        itemData={itemData}
-                    >
-                        {TeacherRow}
-                    </List>
+                <div className="space-y-4">
+                    {filteredTeachers.map((t_user, idx) => (
+                        <TeacherRow 
+                            key={t_user.id} 
+                            index={idx} 
+                            style={{}} 
+                            data={itemData} 
+                        />
+                    ))}
+                    {filteredTeachers.length === 0 && (
+                        <div className="p-20 text-center text-institutional-400 text-xs font-black uppercase tracking-widest">
+                            No teachers found matching filters.
+                        </div>
+                    )}
                 </div>
             );
         }
@@ -654,13 +662,13 @@ const EconomicDashboard: React.FC = () => {
                 </div>
 
                 {/* Mobile Tabs - Centered & Polished */}
-                <div className="md:hidden flex justify-center">
-                    <div className="inline-flex bg-institutional-100 dark:bg-institutional-800 p-1 rounded-2xl shadow-inner overflow-x-auto scrollbar-hide max-w-full">
+                <div className="md:hidden flex justify-center mb-6">
+                    <div className="inline-flex bg-institutional-100 dark:bg-institutional-800 p-1.5 rounded-2xl shadow-inner overflow-x-auto scrollbar-hide max-w-[95vw]">
                         {(['overview', 'students', 'teachers', 'audit'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-md scale-105' : 'text-institutional-500'}`}>
+                                className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-md scale-105' : 'text-institutional-500'}`}>
                                 {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs').split(' ')[0] : tab === 'teachers' ? t('economic.teacherPayments').split(' ')[0] : 'Audit'}
                             </button>
                         ))}
@@ -777,7 +785,7 @@ const EconomicDashboard: React.FC = () => {
                                 <select 
                                     value={filterStatus}
                                     onChange={e => setFilterStatus(e.target.value)}
-                                    className={`bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12 pl-8' : 'pl-12 pr-8'} py-4 text-xs font-black uppercase tracking-widest outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all appearance-none cursor-pointer shadow-soft`}>
+                                    className={`bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12 pl-8' : 'pl-12 pr-8'} py-4 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all appearance-none cursor-pointer shadow-soft`}>
                                     <option value="all">All Status</option>
                                     <option value="active">{t('economic.active')}</option>
                                     <option value="expired">{t('economic.expired')}</option>
