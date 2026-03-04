@@ -75,8 +75,9 @@ const EconomicDashboard: React.FC = () => {
     const [editingDate, setEditingDate] = useState<string | null>(null);
     const [dateValue, setDateValue] = useState<string>('');
     const [editingDuration, setEditingDuration] = useState<string | null>(null);
-        const [durationValue, setDurationValue] = useState<number>(1);
+    const [durationValue, setDurationValue] = useState<number>(1);
     const [loading, setLoading] = useState(true);
+    const [hasCheckedExpirations, setHasCheckedExpirations] = useState(false);
 
     const formatCurrencyDZD = (amount: number) => {
         return new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD' }).format(amount);
@@ -122,6 +123,46 @@ const EconomicDashboard: React.FC = () => {
             unsubStudents(); unsubTeachers(); unsubSubs(); unsubPayments(); unsubAudit(); unsubPaymentRecords();
         };
     }, []);
+
+    useEffect(() => {
+        if (hasCheckedExpirations || Object.keys(subscriptions).length === 0 || students.length === 0) return;
+
+        const checkExpiredSubscriptions = async () => {
+            const today = new Date().toISOString().split('T')[0];
+            let updated = false;
+            
+            for (const student of students) {
+                const sub = subscriptions[student.id];
+                if (!sub || !sub.endDate) continue;
+
+                if (sub.endDate < today && sub.paymentStatus !== 'Pending') {
+                    await updateDoc(doc(db, 'subscriptions', sub.id), { paymentStatus: 'Pending' });
+                    await updateDoc(doc(db, collections.users, student.id), { 
+                        accountStatus: 'pending',
+                        paymentStatus: 'pending'
+                    });
+                    await logAction(
+                        'Auto-Status Update',
+                        `Subscription expired. Status changed to Pending.`,
+                        student.id,
+                        student.name
+                    );
+                    updated = true;
+                }
+            }
+            setHasCheckedExpirations(true);
+        };
+
+        checkExpiredSubscriptions();
+    }, [subscriptions, students, hasCheckedExpirations]);
+
+    const calculateEndDate = (startDate: string, durationMonths: number) => {
+        if (!startDate) return '';
+        const date = new Date(startDate);
+        if (isNaN(date.getTime())) return '';
+        date.setMonth(date.getMonth() + durationMonths);
+        return date.toISOString().split('T')[0];
+    };
 
     const logAction = async (action: string, details: string, targetId?: string, targetName?: string) => {
         if (!currentUser) return;
@@ -204,11 +245,27 @@ const EconomicDashboard: React.FC = () => {
     };
 
     const handleUpdateStudentAmount = async (studentId: string) => {
-        const sub = subscriptions[studentId];
-        if (!sub) return;
+        const student = students.find(s => s.id === studentId);
+        if (!student) return;
 
-        await updateDoc(doc(db, 'subscriptions', sub.id), { monthlyAmount: amountValue });
-        await logAction('Student Amount Update', `Updated monthly amount to ${formatCurrencyDZD(amountValue)}`, studentId, sub.studentName);
+        const sub = subscriptions[studentId];
+        
+        if (sub) {
+            await updateDoc(doc(db, 'subscriptions', sub.id), { monthlyAmount: amountValue });
+        } else {
+            await setDoc(doc(db, 'subscriptions', studentId), {
+                studentId,
+                studentName: student.name,
+                status: 'active',
+                paymentStatus: 'Pending',
+                startDate: new Date().toISOString().split('T')[0],
+                endDate: '', // Will be calculated when duration is set or default
+                duration: 1,
+                monthlyAmount: amountValue
+            });
+        }
+
+        await logAction('Student Amount Update', `Updated monthly amount to ${formatCurrencyDZD(amountValue)}`, studentId, student.name);
         setEditingAmount(null);
     };
 
@@ -222,11 +279,32 @@ const EconomicDashboard: React.FC = () => {
     };
 
     const handleUpdateSubscriptionDuration = async (studentId: string) => {
-        const sub = subscriptions[studentId];
-        if (!sub) return;
+        const student = students.find(s => s.id === studentId);
+        if (!student) return;
 
-        await updateDoc(doc(db, 'subscriptions', sub.id), { duration: durationValue });
-        await logAction('Subscription Duration Update', `Updated duration to ${durationValue} months`, studentId, sub.studentName);
+        const sub = subscriptions[studentId];
+        const startDate = sub?.startDate || new Date().toISOString().split('T')[0];
+        const newEndDate = calculateEndDate(startDate, durationValue);
+
+        if (sub) {
+            await updateDoc(doc(db, 'subscriptions', sub.id), { 
+                duration: durationValue,
+                endDate: newEndDate
+            });
+        } else {
+            await setDoc(doc(db, 'subscriptions', studentId), {
+                studentId,
+                studentName: student.name,
+                status: 'active',
+                paymentStatus: 'Pending',
+                startDate,
+                endDate: newEndDate,
+                duration: durationValue,
+                monthlyAmount: 0
+            });
+        }
+
+        await logAction('Subscription Duration Update', `Updated duration to ${durationValue} months (End Date: ${newEndDate})`, studentId, student.name);
         setEditingDuration(null);
     };
 
@@ -679,13 +757,20 @@ const EconomicDashboard: React.FC = () => {
                                                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">ID: {s.id}</p>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    {s.accountStatus === 'disabled' 
-                                                        ? <ShieldOff size={16} className="text-rose-500" /> 
-                                                        : <ShieldCheck size={16} className="text-emerald-500" />
-                                                    }
-                                                    <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${s.accountStatus === 'disabled' ? getStatusColor('disabled') : getStatusColor('active')}`}>
-                                                        {s.accountStatus || 'active'}
+                                                <div className="flex flex-col items-end gap-1">
+                                                    <div className="flex items-center gap-2">
+                                                        {s.accountStatus === 'disabled' || s.accountStatus === 'suspended'
+                                                            ? <ShieldOff size={16} className="text-rose-500" /> 
+                                                            : s.accountStatus === 'pending'
+                                                            ? <Clock size={16} className="text-amber-500" />
+                                                            : <ShieldCheck size={16} className="text-emerald-500" />
+                                                        }
+                                                        <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? getStatusColor('disabled') : s.accountStatus === 'pending' ? getStatusColor('pending') : getStatusColor('active')}`}>
+                                                            {s.accountStatus || 'active'}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">
+                                                        {formatCurrencyDZD(sub?.monthlyAmount || 0)}
                                                     </span>
                                                 </div>
                                             </div>
@@ -707,6 +792,32 @@ const EconomicDashboard: React.FC = () => {
                                                         </select>
                                                         <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                                                     </div>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">Monthly Amount</p>
+                                                    {editingAmount === s.id ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <input type="number" value={amountValue} onChange={(e) => setAmountValue(Number(e.target.value))} className="w-full bg-slate-100 dark:bg-slate-800 p-2 rounded-lg border-2 border-primary text-xs outline-none" />
+                                                            <button onClick={() => handleUpdateStudentAmount(s.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={14} /></button>
+                                                        </div>
+                                                    ) : (
+                                                        <div onClick={() => { setEditingAmount(s.id); setAmountValue(sub?.monthlyAmount || 0); }} className="cursor-pointer hover:text-primary transition-colors">
+                                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{formatCurrencyDZD(sub?.monthlyAmount || 0)}</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">Duration</p>
+                                                    {editingDuration === s.id ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <input type="number" value={durationValue} onChange={(e) => setDurationValue(Number(e.target.value))} className="w-full bg-slate-100 dark:bg-slate-800 p-2 rounded-lg border-2 border-primary text-xs outline-none" />
+                                                            <button onClick={() => handleUpdateSubscriptionDuration(s.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={14} /></button>
+                                                        </div>
+                                                    ) : (
+                                                        <div onClick={() => { setEditingDuration(s.id); setDurationValue(sub?.duration || 1); }} className="cursor-pointer hover:text-primary transition-colors">
+                                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{sub?.duration || 1} Months</p>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                             <button 
@@ -769,13 +880,20 @@ const EconomicDashboard: React.FC = () => {
                                                             </div>
                                                         </td>
                                                         <td className="px-8 py-6">
-                                                            <div className="flex items-center gap-2">
-                                                                {(s.accountStatus === 'disabled' || s.accountStatus === 'suspended')
-                                                                    ? <ShieldOff size={16} className="text-rose-500" /> 
-                                                                    : <ShieldCheck size={16} className="text-emerald-500" />
-                                                                }
-                                                                <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? getStatusColor('suspended') : getStatusColor('active')}`}>
-                                                                    {s.accountStatus || 'active'}
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="flex items-center gap-2">
+                                                                    {(s.accountStatus === 'disabled' || s.accountStatus === 'suspended')
+                                                                        ? <ShieldOff size={16} className="text-rose-500" /> 
+                                                                        : s.accountStatus === 'pending'
+                                                                        ? <Clock size={16} className="text-amber-500" />
+                                                                        : <ShieldCheck size={16} className="text-emerald-500" />
+                                                                    }
+                                                                    <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? getStatusColor('suspended') : s.accountStatus === 'pending' ? getStatusColor('pending') : getStatusColor('active')}`}>
+                                                                        {s.accountStatus || 'active'}
+                                                                    </span>
+                                                                </div>
+                                                                <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                                                                    {formatCurrencyDZD(sub?.monthlyAmount || 0)}
                                                                 </span>
                                                             </div>
                                                         </td>

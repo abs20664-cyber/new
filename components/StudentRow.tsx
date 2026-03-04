@@ -48,13 +48,20 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                                 <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400 truncate">ID: {s.id}</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            {s.accountStatus === 'disabled' 
-                                ? <ShieldOff size={16} className="text-rose-500" /> 
-                                : <ShieldCheck size={16} className="text-emerald-500" />
-                            }
-                            <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${getStatusColor(s.accountStatus || 'active')}`}>
-                                {s.accountStatus || 'active'}
+                        <div className="flex flex-col items-end gap-1">
+                            <div className="flex items-center gap-2">
+                                {s.accountStatus === 'disabled' || s.accountStatus === 'suspended'
+                                    ? <ShieldOff size={16} className="text-rose-500" /> 
+                                    : s.accountStatus === 'pending'
+                                    ? <Clock size={16} className="text-amber-500" />
+                                    : <ShieldCheck size={16} className="text-emerald-500" />
+                                }
+                                <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? getStatusColor('disabled') : s.accountStatus === 'pending' ? getStatusColor('pending') : getStatusColor('active')}`}>
+                                    {s.accountStatus || 'active'}
+                                </span>
+                            </div>
+                            <span className="text-[10px] font-bold text-institutional-600 dark:text-institutional-400">
+                                {formatCurrencyDZD(sub?.monthlyAmount || 0)}
                             </span>
                         </div>
                     </div>
@@ -118,13 +125,20 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                 </div>
             </td>
             <td className="px-8 py-6">
-                <div className="flex items-center gap-2">
-                    {s.accountStatus === 'disabled' 
-                        ? <ShieldOff size={16} className="text-rose-500" /> 
-                        : <ShieldCheck size={16} className="text-emerald-500" />
-                    }
-                    <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${getStatusColor(s.accountStatus || 'active')}`}>
-                        {s.accountStatus || 'active'}
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                        {s.accountStatus === 'disabled' || s.accountStatus === 'suspended'
+                            ? <ShieldOff size={16} className="text-rose-500" /> 
+                            : s.accountStatus === 'pending'
+                            ? <Clock size={16} className="text-amber-500" />
+                            : <ShieldCheck size={16} className="text-emerald-500" />
+                        }
+                        <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? getStatusColor('disabled') : s.accountStatus === 'pending' ? getStatusColor('pending') : getStatusColor('active')}`}>
+                            {s.accountStatus || 'active'}
+                        </span>
+                    </div>
+                    <span className="text-xs font-bold text-institutional-600 dark:text-institutional-400">
+                        {formatCurrencyDZD(sub?.monthlyAmount || 0)}
                     </span>
                 </div>
             </td>

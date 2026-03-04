@@ -32,6 +32,7 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
 
     const [status, setStatus] = useState<string>(t('scanner.init'));
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [isPaused, setIsPaused] = useState(false);
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const isProcessing = useRef(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -125,7 +126,8 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
 
                             if (!existingSnap.empty) {
                                 setStatus(`${t('scanner.alreadyVerified')}: ${studentName}`);
-                                setTimeout(() => setStatus(t('scanner.scanningActive')), 2000);
+                                setIsPaused(true);
+                                if (scannerRef.current?.pause) scannerRef.current.pause();
                             } else {
                                 // 1. Record Attendance
                                 await addDoc(collection(db, collections.attendance), {
@@ -174,11 +176,12 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                                 }
 
                                 setStatus(`${t('scanner.verified')}: ${studentName}`);
+                                setIsPaused(true);
+                                if (scannerRef.current?.pause) scannerRef.current.pause();
                             }
                         } catch (error) {
                             console.error(error);
                             setStatus(t('common.error'));
-                        } finally {
                             setTimeout(() => {
                                 setStatus(t('scanner.scanningActive'));
                                 isProcessing.current = false;
@@ -241,10 +244,28 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                     </div>
 
                     <div className="bg-black/60 backdrop-blur-xl border border-white/10 text-white px-8 py-4 rounded-2xl flex items-center gap-3 shadow-2xl w-full max-w-xs justify-center transition-all">
-                        {status.includes(t('scanner.verified')) ? <CheckCircle size={20} className="text-success animate-pulse" /> : status.includes(t('scanner.delivering')) ? <FileUp size={20} className="text-primary animate-bounce" /> : <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />}
+                        {status.includes(t('scanner.verified')) || status.includes(t('scanner.alreadyVerified')) ? <CheckCircle size={20} className="text-success animate-pulse" /> : status.includes(t('scanner.delivering')) ? <FileUp size={20} className="text-primary animate-bounce" /> : <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />}
                         <span className="text-[10px] font-black uppercase tracking-widest">{status}</span>
                     </div>
                 </div>
+
+                {isPaused && (
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-50 pointer-events-auto">
+                        <CheckCircle size={64} className="text-success mb-6" />
+                        <h3 className="text-2xl font-black text-white uppercase mb-8 text-center px-4">{status}</h3>
+                        <button 
+                            onClick={() => {
+                                if (scannerRef.current?.resume) scannerRef.current.resume();
+                                setIsPaused(false);
+                                setStatus(t('scanner.scanningActive'));
+                                isProcessing.current = false;
+                            }}
+                            className="bg-primary text-white px-12 py-4 rounded-2xl font-black uppercase tracking-[0.2em] hover:scale-105 transition-transform shadow-[0_10px_30px_rgba(99,102,241,0.4)]"
+                        >
+                            Scan Next Student
+                        </button>
+                    </div>
+                )}
             </div>
             <style>{`
                 @keyframes scan-line {

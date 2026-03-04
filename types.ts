@@ -15,7 +15,7 @@ export interface User {
   fieldOfStudy?: string;
   subjectsTaught?:string;
   createdAt?: any;
-  accountStatus?: 'active' | 'disabled' | 'suspended';
+  accountStatus?: 'active' | 'disabled' | 'suspended' | 'pending';
   paymentStatus?: 'paid' | 'unpaid' | 'pending';
   monthlyFee?: number;
   subscriptionDuration?: number; // in months
@@ -145,6 +145,10 @@ export interface Message {
   editedAt?: any;
   isPinned?: boolean;
   reactions?: Record<string, string[]>; // emoji -> [userIds]
+  attachment?: {
+    name: string;
+    data: string;
+  };
 }
 
 export interface Group {

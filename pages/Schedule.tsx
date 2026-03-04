@@ -13,12 +13,6 @@ const Schedule: React.FC = () => {
     const { t, language, isRTL } = useLanguage();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (user?.role === 'economic') {
-            navigate('/');
-        }
-    }, [user?.role, navigate]);
-
     const [classes, setClasses] = useState<ClassSession[]>([]);
     const [attendance, setAttendance] = useState<any[]>([]);
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -225,7 +219,7 @@ const Schedule: React.FC = () => {
                                                         </div>
                                                     ) : (
                                                         <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-xl flex flex-col items-center">
-                                                            <span className="text-[9px] font-bold uppercase tracking-wider">{t('schedule.present')}</span>
+                                                            <span className="text-[9px] font-bold uppercase tracking-wider">{(user?.role === 'economic' || user?.role === 'admin') ? 'Attendees' : t('schedule.present')}</span>
                                                             <span className="text-sm font-bold">{status}</span>
                                                         </div>
                                                     )}

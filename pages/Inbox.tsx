@@ -59,7 +59,18 @@ const MessageItem = React.memo(({ message, isMe, isMobile, onDelete, onEdit, onP
                             className={`px-4 py-2.5 text-[15px] md:text-[16px] font-normal leading-relaxed transition-all cursor-pointer md:cursor-default ${isMe ? `bg-primary text-white rounded-[20px] ${isRTL ? 'rounded-bl-none' : 'rounded-br-none'}` : `bg-institutional-50 dark:bg-institutional-900 text-institutional-900 dark:text-white rounded-[20px] ${isRTL ? 'rounded-br-none' : 'rounded-bl-none'}`}`}
                         >
                             {message.isPinned && <Pin size={12} className="absolute -top-2 -right-2 text-white bg-primary rounded-full p-1 border-2 border-surface shadow-sm" />}
-                            <p className="whitespace-pre-wrap break-words text-start">{message.text}</p>
+                            {message.text && <p className="whitespace-pre-wrap break-words text-start">{message.text}</p>}
+                            {message.attachment && (
+                                <a 
+                                    href={message.attachment.data} 
+                                    download={message.attachment.name}
+                                    className={`flex items-center gap-2 mt-2 p-2 rounded-xl border ${isMe ? 'bg-white/10 border-white/20 hover:bg-white/20 text-white' : 'bg-institutional-100 dark:bg-institutional-800 border-institutional-200 dark:border-institutional-700 hover:bg-institutional-200 dark:hover:bg-institutional-700 text-institutional-900 dark:text-white'} transition-colors`}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <Paperclip size={16} />
+                                    <span className="text-sm font-medium truncate max-w-[150px]">{message.attachment.name}</span>
+                                </a>
+                            )}
                         </div>
 
                         {/* Actions popover for mobile */}
@@ -121,6 +132,9 @@ const Inbox: React.FC = () => {
     const [showConversation, setShowConversation] = useState(false);
     const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
     const [isScrollingUp, setIsScrollingUp] = useState(false);
+    const [attachment, setAttachment] = useState<{name: string, data: string} | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     
     useEffect(() => {
         if (user?.role === 'economic') {
@@ -253,10 +267,29 @@ const Inbox: React.FC = () => {
         }
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) {
+            alert('File is too large. Maximum size is 2MB.');
+            return;
+        }
+        setIsUploading(true);
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            if (ev.target?.result) {
+                setAttachment({ name: file.name, data: ev.target.result as string });
+            }
+            setIsUploading(false);
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    };
+
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
         const text = inputText.trim();
-        if (!text || !user || !activeTarget) return;
+        if ((!text && !attachment) || !user || !activeTarget) return;
 
         if (editingMessage) {
             try {
@@ -274,6 +307,8 @@ const Inbox: React.FC = () => {
             : activeTarget.id;
             
         setInputText('');
+        const currentAttachment = attachment;
+        setAttachment(null);
         try {
             await addDoc(collection(db, collections.messages), { 
                 chatId, 
@@ -281,14 +316,32 @@ const Inbox: React.FC = () => {
                 senderName: user.name,
                 text, 
                 timestamp: Timestamp.now(), 
-                seen: false 
+                seen: false,
+                ...(currentAttachment ? { attachment: currentAttachment } : {})
             });
             if (activeTarget.type === 'dm') {
                 await addDoc(collection(db, collections.notifications), {
-                    userId: activeTarget.id, title: 'New Message', message: `${user.name}: ${text.substring(0, 50)}`, type: 'message', read: false, timestamp: Timestamp.now(), link: '/inbox'
+                    userId: activeTarget.id, title: 'New Message', message: `${user.name}: ${text.substring(0, 50) || 'Attachment'}`, type: 'message', read: false, timestamp: Timestamp.now(), link: '/inbox'
                 });
+            } else if (activeTarget.type === 'group' && activeTarget.isBroadcast) {
+                const participantsToNotify = activeTarget.participantIds?.filter(id => id !== user.id) || [];
+                const notifOps = participantsToNotify.map(pid => 
+                    addDoc(collection(db, collections.notifications), {
+                        userId: pid,
+                        title: `Broadcast: ${activeTarget.name}`,
+                        message: `${user.name}: ${text.substring(0, 50) || 'Attachment'}`,
+                        type: 'message',
+                        read: false,
+                        timestamp: Timestamp.now(),
+                        link: '/inbox'
+                    })
+                );
+                await Promise.all(notifOps);
             }
-        } catch (error) { setInputText(text); }
+        } catch (error) { 
+            setInputText(text); 
+            if (currentAttachment) setAttachment(currentAttachment);
+        }
     };
 
     const handlePin = async (messageId: string, current: boolean) => {
@@ -620,26 +673,38 @@ const Inbox: React.FC = () => {
                                     </p>
                                 </div>
                             ) : (
-                                <form onSubmit={handleSend} className="flex gap-2 items-center max-w-4xl mx-auto">
-                                    <button type="button" className="p-2 text-institutional-400 hover:text-primary transition-all"><Paperclip size={22} /></button>
-                                    <div className="flex-1 relative flex items-center">
-                                        <input 
-                                            value={inputText || (editingMessage?.text || '')}
-                                            onChange={handleInputChange}
-                                            placeholder={t('inbox.secureTrans')}
-                                            className="w-full bg-institutional-50 dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 focus:border-primary/50 p-2.5 px-4 rounded-full text-[15px] outline-none transition-all text-institutional-900 dark:text-white"
-                                        />
-                                        <button type="button" className={`absolute ${isRTL ? 'left-3' : 'right-3'} p-1.5 text-institutional-400 hover:text-primary transition-all`}>
-                                            <Smile size={20} />
+                                <form onSubmit={handleSend} className="flex flex-col gap-2 max-w-4xl mx-auto">
+                                    {attachment && (
+                                        <div className="flex items-center gap-2 p-2 bg-institutional-100 dark:bg-institutional-800 rounded-xl w-fit">
+                                            <Paperclip size={16} className="text-primary" />
+                                            <span className="text-xs font-medium text-institutional-700 dark:text-institutional-200 truncate max-w-[200px]">{attachment.name}</span>
+                                            <button type="button" onClick={() => setAttachment(null)} className="p-1 hover:text-danger text-institutional-400"><X size={14} /></button>
+                                        </div>
+                                    )}
+                                    <div className="flex gap-2 items-center w-full">
+                                        <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
+                                        <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="p-2 text-institutional-400 hover:text-primary transition-all disabled:opacity-50">
+                                            <Paperclip size={22} />
+                                        </button>
+                                        <div className="flex-1 relative flex items-center">
+                                            <input 
+                                                value={inputText || (editingMessage?.text || '')}
+                                                onChange={handleInputChange}
+                                                placeholder={t('inbox.secureTrans')}
+                                                className="w-full bg-institutional-50 dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 focus:border-primary/50 p-2.5 px-4 rounded-full text-[15px] outline-none transition-all text-institutional-900 dark:text-white"
+                                            />
+                                            <button type="button" className={`absolute ${isRTL ? 'left-3' : 'right-3'} p-1.5 text-institutional-400 hover:text-primary transition-all`}>
+                                                <Smile size={20} />
+                                            </button>
+                                        </div>
+                                        <button 
+                                            type="submit" 
+                                            disabled={((!inputText.trim() && !attachment) && !editingMessage) || isUploading} 
+                                            className="p-2.5 bg-primary text-white rounded-full shadow-md active:scale-95 transition-all disabled:opacity-50 disabled:shadow-none hover:bg-primary-hover"
+                                        >
+                                            <Send size={20} className={isRTL ? 'rotate-180' : ''} />
                                         </button>
                                     </div>
-                                    <button 
-                                        type="submit" 
-                                        disabled={(!inputText.trim() && !editingMessage)} 
-                                        className="p-2.5 bg-primary text-white rounded-full shadow-md active:scale-95 transition-all disabled:opacity-50 disabled:shadow-none hover:bg-primary-hover"
-                                    >
-                                        <Send size={20} className={isRTL ? 'rotate-180' : ''} />
-                                    </button>
                                 </form>
                             )}
                         </div>
