@@ -149,6 +149,8 @@ export interface Message {
     name: string;
     data: string;
   };
+  audio?: string;
+  audioDuration?: number;
 }
 
 export interface Group {

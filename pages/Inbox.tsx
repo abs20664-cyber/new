@@ -8,9 +8,11 @@ import { User, Message, Group, EMOJI_SET } from '../types';
 import { 
     Send, ShieldAlert, UserCheck, ChevronLeft, MoreVertical, Paperclip, 
     Check, CheckCheck, ShieldCheck, Trash2, Edit2, Pin, PinOff, Smile, 
-    Search, Users, MessageSquare, Plus, Info, X, ArrowDown, Hash, User as UserIcon
+    Search, Users, MessageSquare, Plus, Info, X, ArrowDown, Hash, User as UserIcon,
+    Mic, Square, Play, Pause, StopCircle
 } from 'lucide-react';
 import { usePlatform } from '../contexts/PlatformContext';
+import VoiceMessagePlayer from '../components/VoiceMessagePlayer';
 
 interface ChatTarget {
     type: 'dm' | 'group';
@@ -60,6 +62,11 @@ const MessageItem = React.memo(({ message, isMe, isMobile, onDelete, onEdit, onP
                         >
                             {message.isPinned && <Pin size={12} className="absolute -top-2 -right-2 text-white bg-primary rounded-full p-1 border-2 border-surface shadow-sm" />}
                             {message.text && <p className="whitespace-pre-wrap break-words text-start">{message.text}</p>}
+                            {message.audio && (
+                                <div className="mt-1">
+                                    <VoiceMessagePlayer src={message.audio} duration={message.audioDuration} isMe={isMe} />
+                                </div>
+                            )}
                             {message.attachment && (
                                 <a 
                                     href={message.attachment.data} 
@@ -134,6 +141,11 @@ const Inbox: React.FC = () => {
     const [isScrollingUp, setIsScrollingUp] = useState(false);
     const [attachment, setAttachment] = useState<{name: string, data: string} | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const [recordingTime, setRecordingTime] = useState(0);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     
     useEffect(() => {
@@ -254,6 +266,129 @@ const Inbox: React.FC = () => {
             try { await setDoc(doc(db, collections.typing, chatId), { [user.id]: isTyping }, { merge: true }); } catch (e) {}
         }
     }, [user?.id, activeTarget?.id]);
+
+    // Cancel recording if chat changes
+    useEffect(() => {
+        cancelRecording();
+    }, [activeTarget?.id]);
+
+    const startTimeRef = useRef<number>(0);
+
+    const sendAudioMessage = async (audioData: string, duration: number) => {
+        if (!user || !activeTarget) return;
+
+        const chatId = activeTarget.type === 'dm' 
+            ? [user.id, activeTarget.id].sort().join('_')
+            : activeTarget.id;
+            
+        try {
+            await addDoc(collection(db, collections.messages), { 
+                chatId, 
+                senderId: user.id, 
+                senderName: user.name,
+                text: '', 
+                audio: audioData,
+                audioDuration: duration,
+                timestamp: Timestamp.now(), 
+                seen: false
+            });
+            
+            if (activeTarget.type === 'dm') {
+                await addDoc(collection(db, collections.notifications), {
+                    userId: activeTarget.id, title: 'New Voice Message', message: `${user.name} sent a voice message`, type: 'message', read: false, timestamp: Timestamp.now(), link: '/inbox'
+                });
+            } else if (activeTarget.type === 'group' && activeTarget.isBroadcast) {
+                const participantsToNotify = activeTarget.participantIds?.filter(id => id !== user.id) || [];
+                const notifOps = participantsToNotify.map(pid => 
+                    addDoc(collection(db, collections.notifications), {
+                        userId: pid,
+                        title: `Broadcast: ${activeTarget.name}`,
+                        message: `${user.name} sent a voice message`,
+                        type: 'message',
+                        read: false,
+                        timestamp: Timestamp.now(),
+                        link: '/inbox'
+                    })
+                );
+                await Promise.all(notifOps);
+            }
+        } catch (error) { 
+            console.error("Error sending audio message:", error);
+            alert("Failed to send voice message");
+        }
+    };
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            audioChunksRef.current = [];
+            startTimeRef.current = Date.now();
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                const reader = new FileReader();
+                reader.readAsDataURL(audioBlob);
+                reader.onloadend = () => {
+                    const base64Audio = reader.result as string;
+                    const duration = Math.round((Date.now() - startTimeRef.current) / 1000);
+                    sendAudioMessage(base64Audio, duration);
+                };
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+            setRecordingTime(0);
+            
+            if (timerRef.current) clearInterval(timerRef.current);
+            timerRef.current = setInterval(() => {
+                setRecordingTime(prev => {
+                    if (prev >= 60) {
+                        stopRecording();
+                        return 60;
+                    }
+                    return prev + 1;
+                });
+            }, 1000);
+
+        } catch (err) {
+            console.error("Error accessing microphone:", err);
+            alert("Could not access microphone. Please check permissions.");
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+            }
+        }
+    };
+
+    const cancelRecording = () => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            mediaRecorderRef.current.onstop = null;
+            mediaRecorderRef.current.stop();
+            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+            setIsRecording(false);
+            setRecordingTime(0);
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+            }
+        }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
@@ -672,6 +807,22 @@ const Inbox: React.FC = () => {
                                         {t('inbox.broadcastOnly') || 'Only teachers can send messages here.'}
                                     </p>
                                 </div>
+                            ) : isRecording ? (
+                                <div className="flex items-center gap-4 w-full bg-institutional-50 dark:bg-institutional-900 p-2 rounded-full border border-primary/20 animate-in fade-in duration-200 max-w-4xl mx-auto">
+                                    <div className="flex items-center gap-2 px-4 flex-1">
+                                        <div className="w-3 h-3 bg-danger rounded-full animate-pulse" />
+                                        <span className="text-sm font-mono font-bold text-danger">
+                                            {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
+                                        </span>
+                                        <span className="text-xs text-institutional-400 ml-2">/ 1:00</span>
+                                    </div>
+                                    <button type="button" onClick={cancelRecording} className="p-2 text-institutional-400 hover:text-danger transition-colors">
+                                        <Trash2 size={20} />
+                                    </button>
+                                    <button type="button" onClick={stopRecording} className="p-2 bg-primary text-white rounded-full shadow-md hover:bg-primary-hover transition-all">
+                                        <Send size={20} className={isRTL ? 'rotate-180' : ''} />
+                                    </button>
+                                </div>
                             ) : (
                                 <form onSubmit={handleSend} className="flex flex-col gap-2 max-w-4xl mx-auto">
                                     {attachment && (
@@ -686,6 +837,13 @@ const Inbox: React.FC = () => {
                                         <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="p-2 text-institutional-400 hover:text-primary transition-all disabled:opacity-50">
                                             <Paperclip size={22} />
                                         </button>
+                                        
+                                        {user?.role === 'teacher' && !inputText && !attachment && (
+                                            <button type="button" onClick={startRecording} className="p-2 text-institutional-400 hover:text-danger transition-all">
+                                                <Mic size={22} />
+                                            </button>
+                                        )}
+
                                         <div className="flex-1 relative flex items-center">
                                             <input 
                                                 value={inputText || (editingMessage?.text || '')}
