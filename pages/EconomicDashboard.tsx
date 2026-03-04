@@ -80,6 +80,7 @@ const EconomicDashboard: React.FC = () => {
     const [sessionsValue, setSessionsValue] = useState<number>(4);
     const [loading, setLoading] = useState(true);
     const [hasCheckedExpirations, setHasCheckedExpirations] = useState(false);
+    const [studentToEdit, setStudentToEdit] = useState<User | null>(null);
 
     const formatCurrencyDZD = (amount: number) => {
         return new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD' }).format(amount);
@@ -269,6 +270,14 @@ const EconomicDashboard: React.FC = () => {
 
         await logAction('Student Amount Update', `Updated monthly amount to ${formatCurrencyDZD(amountValue)}`, studentId, student.name);
         setEditingAmount(null);
+    };
+
+    const handleUpdateAccountStatus = async (userId: string, status: string) => {
+        const user = [...students, ...teachers].find(u => u.id === userId);
+        if (!user) return;
+
+        await updateDoc(doc(db, collections.users, userId), { accountStatus: status });
+        await logAction('Account Status Update', `Updated account status to ${status}`, userId, user.name);
     };
 
     const handleUpdateTeacherSalary = async (teacherId: string) => {
@@ -473,25 +482,15 @@ const EconomicDashboard: React.FC = () => {
             isMobile,
             t,
             getStatusColor,
-            handleUpdateStudentPayment,
             selectedStudentId,
             setSelectedStudentId,
             paymentRecords,
             formatCurrencyDZD,
-            editingAmount,
-            setEditingAmount,
-            amountValue,
             setAmountValue,
-            handleUpdateStudentAmount,
-            editingDuration,
-            setEditingDuration,
-            durationValue,
             setDurationValue,
-            handleUpdateSubscriptionDuration,
-            subscriptionType,
             setSubscriptionType,
-            sessionsValue,
-            setSessionsValue
+            setSessionsValue,
+            setStudentToEdit
         };
 
         if (isMobile) {
@@ -1021,6 +1020,139 @@ const EconomicDashboard: React.FC = () => {
                                     No audit entries found.
                                 </div>
                             )}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Student Settings Modal */}
+            {studentToEdit && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+                    <div className="absolute inset-0 bg-institutional-900/60 backdrop-blur-sm" onClick={() => setStudentToEdit(null)} />
+                    <div className="relative w-full max-w-2xl bg-surface dark:bg-institutional-900 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="p-8 border-b border-institutional-100 dark:border-institutional-800 flex items-center justify-between bg-institutional-50/50 dark:bg-institutional-800/30">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-xl border border-primary/20">
+                                    {studentToEdit.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black text-institutional-900 dark:text-white">{studentToEdit.name}</h3>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400">Edit Student Subscription</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setStudentToEdit(null)} className="p-3 hover:bg-rose-500/10 hover:text-rose-500 text-institutional-400 rounded-2xl transition-all">
+                                <XCircle size={24} />
+                            </button>
+                        </div>
+
+                        <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                            {/* Subscription Type & Amount */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-institutional-500 ml-1">Subscription Type</label>
+                                    <div className="flex bg-institutional-100 dark:bg-institutional-800 p-1.5 rounded-2xl">
+                                        <button 
+                                            onClick={() => setSubscriptionType('time')}
+                                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${subscriptionType === 'time' ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-500'}`}
+                                        >
+                                            Time Based
+                                        </button>
+                                        <button 
+                                            onClick={() => setSubscriptionType('session')}
+                                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${subscriptionType === 'session' ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-500'}`}
+                                        >
+                                            Session Based
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-institutional-500 ml-1">Monthly Amount (DZD)</label>
+                                    <div className="relative">
+                                        <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-institutional-400" size={18} />
+                                        <input 
+                                            type="number"
+                                            value={amountValue}
+                                            onChange={(e) => setAmountValue(Number(e.target.value))}
+                                            className="w-full bg-institutional-50 dark:bg-institutional-800 border-2 border-institutional-200 dark:border-institutional-700 pl-12 pr-4 py-4 rounded-2xl text-sm font-bold text-institutional-900 dark:text-white focus:border-primary outline-none transition-all"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Duration / Sessions */}
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-institutional-500 ml-1">
+                                    {subscriptionType === 'time' ? 'Subscription Duration (Months)' : 'Total Sessions'}
+                                </label>
+                                <div className="relative">
+                                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-institutional-400" size={18} />
+                                    <input 
+                                        type="number"
+                                        value={subscriptionType === 'time' ? durationValue : sessionsValue}
+                                        onChange={(e) => subscriptionType === 'time' ? setDurationValue(Number(e.target.value)) : setSessionsValue(Number(e.target.value))}
+                                        className="w-full bg-institutional-50 dark:bg-institutional-800 border-2 border-institutional-200 dark:border-institutional-700 pl-12 pr-4 py-4 rounded-2xl text-sm font-bold text-institutional-900 dark:text-white focus:border-primary outline-none transition-all"
+                                        placeholder={subscriptionType === 'time' ? 'Enter months' : 'Enter sessions'}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Status Quick Actions */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-institutional-500 ml-1">Payment Status</label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {[
+                                            { status: 'Paid', icon: CheckCircle, color: 'bg-emerald-500' },
+                                            { status: 'Pending', icon: Clock, color: 'bg-amber-500' },
+                                            { status: 'Unpaid', icon: XCircle, color: 'bg-rose-500' }
+                                        ].map(item => (
+                                            <button 
+                                                key={item.status}
+                                                onClick={() => handleUpdateStudentPayment(studentToEdit.id, item.status as any)}
+                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-1 transition-all ${subscriptions[studentToEdit.id]?.paymentStatus === item.status ? `${item.color} text-white shadow-lg` : 'bg-institutional-50 dark:bg-institutional-800 text-institutional-400 border border-institutional-200 dark:border-institutional-700'}`}
+                                            >
+                                                <item.icon size={14} /> {item.status}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-institutional-500 ml-1">Account Status</label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {[
+                                            { status: 'active', icon: ShieldCheck, color: 'bg-emerald-500' },
+                                            { status: 'pending', icon: Clock, color: 'bg-amber-500' },
+                                            { status: 'disabled', icon: ShieldOff, color: 'bg-rose-500' }
+                                        ].map(item => (
+                                            <button 
+                                                key={item.status}
+                                                onClick={() => handleUpdateAccountStatus(studentToEdit.id, item.status)}
+                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-1 transition-all ${studentToEdit.accountStatus === item.status ? `${item.color} text-white shadow-lg` : 'bg-institutional-50 dark:bg-institutional-800 text-institutional-400 border border-institutional-200 dark:border-institutional-700'}`}
+                                            >
+                                                <item.icon size={14} /> {item.status}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-8 bg-institutional-50/50 dark:bg-institutional-800/30 border-t border-institutional-100 dark:border-institutional-800 flex gap-4">
+                            <button 
+                                onClick={() => setStudentToEdit(null)}
+                                className="flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all"
+                            >
+                                Close
+                            </button>
+                            <button 
+                                onClick={async () => {
+                                    await handleUpdateStudentAmount(studentToEdit.id);
+                                    await handleUpdateSubscriptionDuration(studentToEdit.id);
+                                    setStudentToEdit(null);
+                                }}
+                                className="flex-[2] py-4 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                            >
+                                <Save size={18} /> Save All Changes
+                            </button>
                         </div>
                     </div>
                 </div>

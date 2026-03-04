@@ -83,7 +83,11 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
                             {editingAmount === t_user.id ? (
                                 <div className="flex items-center gap-2">
                                     <input type="number" value={amountValue} onChange={(e) => setAmountValue(Number(e.target.value))} className="w-full bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 p-2 rounded-xl text-xs text-institutional-900 dark:text-white outline-none" />
-                                    <button onClick={() => handleUpdateTeacherSalary(t_user.id)} className="p-2 bg-primary text-white rounded-xl"><Save size={14} /></button>
+                                    <button onClick={() => handleUpdateTeacherSalary(t_user.id)} className="px-3 py-2 bg-primary text-white rounded-xl flex items-center gap-2">
+                                        <Save size={14} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Save</span>
+                                    </button>
+                                    <button onClick={() => setEditingAmount(null)} className="p-2 bg-rose-500/10 text-rose-500 rounded-xl"><XCircle size={14} /></button>
                                 </div>
                             ) : (
                                 <div onClick={() => { setEditingAmount(t_user.id); setAmountValue(pay?.monthlySalary || 0); }} className="cursor-pointer bg-institutional-50 dark:bg-institutional-900/50 border border-institutional-200 dark:border-institutional-800 p-3 rounded-xl">
@@ -100,7 +104,10 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
                                         onChange={e => setNoteValue(e.target.value)}
                                         className="flex-1 bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 rounded-xl p-3 text-xs font-bold text-institutional-900 dark:text-white outline-none"
                                     />
-                                    <button onClick={() => handleSaveNote(t_user.id)} className="p-3 bg-primary text-white rounded-xl"><Save size={16} /></button>
+                                    <button onClick={() => handleSaveNote(t_user.id)} className="px-3 py-2 bg-primary text-white rounded-xl flex items-center gap-2">
+                                        <Save size={16} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Save</span>
+                                    </button>
                                 </div>
                             ) : (
                                 <div className="flex items-center justify-between gap-4 p-3 bg-institutional-50 dark:bg-institutional-900/50 rounded-xl border border-institutional-200 dark:border-institutional-800">
