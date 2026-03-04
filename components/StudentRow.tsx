@@ -29,7 +29,11 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
         setEditingDuration,
         durationValue,
         setDurationValue,
-        handleUpdateSubscriptionDuration
+        handleUpdateSubscriptionDuration,
+        subscriptionType,
+        setSubscriptionType,
+        sessionsValue,
+        setSessionsValue
     } = data;
     const s = students[index];
     const sub = subscriptions[s.id];
@@ -79,10 +83,47 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                             <p className="text-[11px] font-bold text-institutional-600 dark:text-institutional-400">{sub?.startDate || '---'}</p>
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400 mb-1">End Date</p>
-                            <p className="text-[11px] font-bold text-institutional-600 dark:text-institutional-400">{sub?.endDate || '---'}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400 mb-1">
+                                {sub?.subscriptionType === 'session' ? 'Sessions' : 'End Date'}
+                            </p>
+                            <p className="text-[11px] font-bold text-institutional-600 dark:text-institutional-400">
+                                {sub?.subscriptionType === 'session' 
+                                    ? `${sub?.sessionsUsed || 0} / ${sub?.totalSessions || 0}`
+                                    : (sub?.endDate || '---')
+                                }
+                            </p>
                         </div>
                     </div>
+
+                    {editingDuration === s.id ? (
+                        <div className="mt-4 p-4 bg-institutional-50 dark:bg-institutional-800/50 rounded-xl border border-institutional-200 dark:border-institutional-800 animate-in slide-in-from-top-2">
+                            <div className="flex gap-2 mb-3">
+                                <button onClick={() => setSubscriptionType('time')} className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${subscriptionType === 'time' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-institutional-800 text-institutional-400 border border-institutional-200 dark:border-institutional-700'}`}>Time</button>
+                                <button onClick={() => setSubscriptionType('session')} className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${subscriptionType === 'session' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-institutional-800 text-institutional-400 border border-institutional-200 dark:border-institutional-700'}`}>Session</button>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {subscriptionType === 'time' ? (
+                                    <input type="number" value={durationValue} onChange={(e) => setDurationValue(Number(e.target.value))} className="flex-1 bg-white dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 p-3 rounded-xl text-xs font-bold text-institutional-900 dark:text-white focus:border-primary outline-none" placeholder="Months" />
+                                ) : (
+                                    <input type="number" value={sessionsValue} onChange={(e) => setSessionsValue(Number(e.target.value))} className="flex-1 bg-white dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 p-3 rounded-xl text-xs font-bold text-institutional-900 dark:text-white focus:border-primary outline-none" placeholder="Sessions" />
+                                )}
+                                <button onClick={() => handleUpdateSubscriptionDuration(s.id)} className="p-3 bg-primary text-white rounded-xl shadow-lg hover:scale-105 transition-transform"><Save size={18} /></button>
+                            </div>
+                            <button onClick={() => setEditingDuration(null)} className="w-full mt-2 py-2 text-[10px] font-black uppercase tracking-widest text-institutional-400 hover:text-danger">Cancel</button>
+                        </div>
+                    ) : (
+                        <button 
+                            onClick={() => { 
+                                setEditingDuration(s.id); 
+                                setDurationValue(sub?.duration || 1); 
+                                setSubscriptionType(sub?.subscriptionType || 'time');
+                                setSessionsValue(sub?.totalSessions || 4);
+                            }}
+                            className="w-full mt-2 py-3 bg-institutional-50 dark:bg-institutional-800/50 rounded-xl border border-institutional-200 dark:border-institutional-800 text-[10px] font-black uppercase tracking-widest text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-colors"
+                        >
+                            Edit Duration / Type
+                        </button>
+                    )}
 
                     <button 
                         onClick={() => setSelectedStudentId(selectedStudentId === s.id ? null : s.id)}
@@ -164,14 +205,34 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
             </td>
             <td className="px-8 py-6">
                 {editingDuration === s.id ? (
-                    <div className="flex items-center gap-2">
-                        <input type="number" value={durationValue} onChange={(e) => setDurationValue(Number(e.target.value))} className="w-20 bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 p-2 rounded-xl text-xs text-institutional-900 dark:text-white focus:border-primary outline-none" />
-                        <button onClick={() => handleUpdateSubscriptionDuration(s.id)} className="p-2 bg-primary text-white rounded-xl"><Save size={16} /></button>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex gap-1">
+                            <button onClick={() => setSubscriptionType('time')} className={`flex-1 py-1 rounded text-[10px] font-bold uppercase ${subscriptionType === 'time' ? 'bg-primary text-white' : 'bg-institutional-100 dark:bg-institutional-800 text-institutional-400'}`}>Time</button>
+                            <button onClick={() => setSubscriptionType('session')} className={`flex-1 py-1 rounded text-[10px] font-bold uppercase ${subscriptionType === 'session' ? 'bg-primary text-white' : 'bg-institutional-100 dark:bg-institutional-800 text-institutional-400'}`}>Session</button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {subscriptionType === 'time' ? (
+                                <input type="number" value={durationValue} onChange={(e) => setDurationValue(Number(e.target.value))} className="w-20 bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 p-2 rounded-xl text-xs text-institutional-900 dark:text-white focus:border-primary outline-none" placeholder="Months" />
+                            ) : (
+                                <input type="number" value={sessionsValue} onChange={(e) => setSessionsValue(Number(e.target.value))} className="w-20 bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 p-2 rounded-xl text-xs text-institutional-900 dark:text-white focus:border-primary outline-none" placeholder="Sessions" />
+                            )}
+                            <button onClick={() => handleUpdateSubscriptionDuration(s.id)} className="p-2 bg-primary text-white rounded-xl"><Save size={16} /></button>
+                        </div>
                     </div>
                 ) : (
-                    <div onClick={() => { setEditingDuration(s.id); setDurationValue(sub?.duration || 1); }} className="cursor-pointer bg-institutional-50 dark:bg-institutional-900/50 border border-institutional-200 dark:border-institutional-800 p-3 rounded-xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-colors">
-                        <p className="font-bold text-sm text-institutional-900 dark:text-white">{sub?.duration || 1} Months</p>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400">Edit Duration</p>
+                    <div onClick={() => { 
+                        setEditingDuration(s.id); 
+                        setDurationValue(sub?.duration || 1); 
+                        setSubscriptionType(sub?.subscriptionType || 'time');
+                        setSessionsValue(sub?.totalSessions || 4);
+                    }} className="cursor-pointer bg-institutional-50 dark:bg-institutional-900/50 border border-institutional-200 dark:border-institutional-800 p-3 rounded-xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-colors">
+                        <p className="font-bold text-sm text-institutional-900 dark:text-white">
+                            {sub?.subscriptionType === 'session' 
+                                ? `${sub?.sessionsUsed || 0} / ${sub?.totalSessions || 0} Sessions`
+                                : `${sub?.duration || 1} Months`
+                            }
+                        </p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400">Edit Duration / Type</p>
                     </div>
                 )}
             </td>

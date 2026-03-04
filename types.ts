@@ -34,6 +34,9 @@ export interface StudentSubscription {
   paymentStatus: 'paid' | 'unpaid' | 'pending';
   monthlyFee?: number;
   duration?: number; // in months
+  subscriptionType?: 'time' | 'session';
+  totalSessions?: number;
+  sessionsUsed?: number;
 }
 
 export interface TeacherPayment {

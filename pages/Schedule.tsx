@@ -16,6 +16,7 @@ const Schedule: React.FC = () => {
     const [classes, setClasses] = useState<ClassSession[]>([]);
     const [attendance, setAttendance] = useState<any[]>([]);
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [expandedSession, setExpandedSession] = useState<string | null>(null);
 
     useEffect(() => {
         const unsubClasses = onSnapshot(collection(db, collections.classes), (snap) => {
@@ -191,9 +192,15 @@ const Schedule: React.FC = () => {
                                 {todaysClasses.length > 0 ? todaysClasses.map((s) => {
                                     const isLive = checkIsLive(s.date, s.time, s.endTime);
                                     const status = getAttendanceStatus(s.id, s.date);
+                                    const attendees = user?.role !== 'student' ? attendance.filter(a => a.classId === s.id && a.date === s.date) : [];
+                                    const isExpanded = expandedSession === s.id;
                                     
                                     return (
-                                        <div key={s.id} className={`bg-white dark:bg-slate-900 p-5 rounded-2xl border transition-all relative overflow-hidden ${isLive ? 'border-primary shadow-md ring-1 ring-primary/20' : 'border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md'}`}>
+                                        <div 
+                                            key={s.id} 
+                                            onClick={() => user?.role !== 'student' && setExpandedSession(isExpanded ? null : s.id)}
+                                            className={`bg-white dark:bg-slate-900 p-5 rounded-2xl border transition-all relative overflow-hidden ${isLive ? 'border-primary shadow-md ring-1 ring-primary/20' : 'border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md'} ${user?.role !== 'student' ? 'cursor-pointer' : ''}`}
+                                        >
                                             {isLive && (
                                                 <div className="absolute top-0 right-0 p-3">
                                                     <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-wide animate-pulse">
@@ -218,7 +225,7 @@ const Schedule: React.FC = () => {
                                                             {t(`schedule.${status}`)}
                                                         </div>
                                                     ) : (
-                                                        <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-xl flex flex-col items-center">
+                                                        <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-xl flex flex-col items-center group-hover:bg-primary group-hover:text-white transition-colors">
                                                             <span className="text-[9px] font-bold uppercase tracking-wider">{(user?.role === 'economic' || user?.role === 'admin') ? 'Attendees' : t('schedule.present')}</span>
                                                             <span className="text-sm font-bold">{status}</span>
                                                         </div>
@@ -236,6 +243,37 @@ const Schedule: React.FC = () => {
                                                     <span className="text-xs font-medium truncate max-w-[120px]">{s.room}</span>
                                                 </div>
                                             </div>
+
+                                            {isExpanded && user?.role !== 'student' && (
+                                                <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 animate-in slide-in-from-top-2 duration-200" onClick={(e) => e.stopPropagation()}>
+                                                    <div className="flex items-center justify-between mb-4">
+                                                        <h5 className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Present Students ({attendees.length})</h5>
+                                                    </div>
+                                                    
+                                                    {attendees.length > 0 ? (
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-1 scroll-hide">
+                                                            {attendees.map((a: any) => (
+                                                                <div key={a.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 transition-colors shadow-sm">
+                                                                    <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center text-success shrink-0 font-bold text-xs">
+                                                                        {a.studentName.charAt(0)}
+                                                                    </div>
+                                                                    <div className="min-w-0 flex-1">
+                                                                        <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{a.studentName}</p>
+                                                                        <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                                                                            <CheckCircle2 size={10} className="text-success" />
+                                                                            {a.timestamp?.seconds ? new Date(a.timestamp.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Verified'}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="text-center py-8 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
+                                                            <p className="text-xs font-medium text-slate-400 italic">No students scanned yet.</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     );
                                 }) : (

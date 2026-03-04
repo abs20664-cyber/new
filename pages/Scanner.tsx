@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { addDoc, collection, Timestamp, getDoc, doc, query, where, getDocs, setDoc } from 'firebase/firestore';
+import { addDoc, collection, Timestamp, getDoc, doc, query, where, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { usePlatform } from '../contexts/PlatformContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { CheckCircle, X, ShieldCheck, AlertTriangle, FileUp, Clock } from 'lucide-react';
-import { ClassSession } from '../types';
+import { ClassSession, StudentSubscription } from '../types';
 import { useLocation } from 'react-router-dom';
 
 interface ScannerProps {
@@ -169,6 +169,40 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                                     read: false,
                                     timestamp: Timestamp.now()
                                 });
+
+                                // 4. Update Session Count if applicable
+                                const subRef = doc(db, 'subscriptions', studentId);
+                                const subSnap = await getDoc(subRef);
+                                if (subSnap.exists()) {
+                                    const subData = subSnap.data() as StudentSubscription;
+                                    if (subData.subscriptionType === 'session') {
+                                        const newSessionsUsed = (subData.sessionsUsed || 0) + 1;
+                                        const updates: any = { sessionsUsed: newSessionsUsed };
+                                        
+                                        if (subData.totalSessions && newSessionsUsed >= subData.totalSessions) {
+                                            updates.status = 'pending';
+                                            updates.paymentStatus = 'Pending';
+                                            
+                                            // Also update user status
+                                            await updateDoc(doc(db, collections.users, studentId), {
+                                                accountStatus: 'pending',
+                                                paymentStatus: 'pending'
+                                            });
+                                            
+                                            // Notify student about expiration
+                                            await addDoc(collection(db, collections.notifications), {
+                                                userId: studentId,
+                                                title: 'Subscription Ended',
+                                                message: `You have used all ${subData.totalSessions} sessions. Please renew your subscription.`,
+                                                type: 'system',
+                                                read: false,
+                                                timestamp: Timestamp.now()
+                                            });
+                                        }
+                                        
+                                        await updateDoc(subRef, updates);
+                                    }
+                                }
 
                                 if (audioRef.current) {
                                     audioRef.current.currentTime = 0;

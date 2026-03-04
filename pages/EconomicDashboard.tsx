@@ -76,6 +76,8 @@ const EconomicDashboard: React.FC = () => {
     const [dateValue, setDateValue] = useState<string>('');
     const [editingDuration, setEditingDuration] = useState<string | null>(null);
     const [durationValue, setDurationValue] = useState<number>(1);
+    const [subscriptionType, setSubscriptionType] = useState<'time' | 'session'>('time');
+    const [sessionsValue, setSessionsValue] = useState<number>(4);
     const [loading, setLoading] = useState(true);
     const [hasCheckedExpirations, setHasCheckedExpirations] = useState(false);
 
@@ -284,27 +286,43 @@ const EconomicDashboard: React.FC = () => {
 
         const sub = subscriptions[studentId];
         const startDate = sub?.startDate || new Date().toISOString().split('T')[0];
-        const newEndDate = calculateEndDate(startDate, durationValue);
+        
+        let newEndDate = sub?.endDate;
+        if (subscriptionType === 'time') {
+            newEndDate = calculateEndDate(startDate, durationValue);
+        }
+
+        const updateData: any = {
+            subscriptionType,
+            startDate
+        };
+
+        if (subscriptionType === 'time') {
+            updateData.duration = durationValue;
+            updateData.endDate = newEndDate;
+            updateData.totalSessions = null;
+            updateData.sessionsUsed = null;
+        } else {
+            updateData.totalSessions = sessionsValue;
+            updateData.sessionsUsed = (sub?.subscriptionType === 'session' ? sub.sessionsUsed : 0) || 0;
+            updateData.duration = null;
+            updateData.endDate = null;
+        }
 
         if (sub) {
-            await updateDoc(doc(db, 'subscriptions', sub.id), { 
-                duration: durationValue,
-                endDate: newEndDate
-            });
+            await updateDoc(doc(db, 'subscriptions', sub.id), updateData);
         } else {
             await setDoc(doc(db, 'subscriptions', studentId), {
                 studentId,
                 studentName: student.name,
                 status: 'active',
                 paymentStatus: 'Pending',
-                startDate,
-                endDate: newEndDate,
-                duration: durationValue,
-                monthlyAmount: 0
+                monthlyAmount: 0,
+                ...updateData
             });
         }
 
-        await logAction('Subscription Duration Update', `Updated duration to ${durationValue} months (End Date: ${newEndDate})`, studentId, student.name);
+        await logAction('Subscription Update', `Updated subscription to ${subscriptionType === 'time' ? durationValue + ' months' : sessionsValue + ' sessions'}`, studentId, student.name);
         setEditingDuration(null);
     };
 
@@ -469,7 +487,11 @@ const EconomicDashboard: React.FC = () => {
             setEditingDuration,
             durationValue,
             setDurationValue,
-            handleUpdateSubscriptionDuration
+            handleUpdateSubscriptionDuration,
+            subscriptionType,
+            setSubscriptionType,
+            sessionsValue,
+            setSessionsValue
         };
 
         if (isMobile) {
@@ -776,270 +798,8 @@ const EconomicDashboard: React.FC = () => {
                         </div>
                     </div>
 
-                    {activeTab === 'students' ? (
-                        isMobile ? (
-                            <div className="space-y-4">
-                                {filteredStudents.map(s => {
-                                    const sub = subscriptions[s.id];
-                                    return (
-                                        <div key={s.id} className={`bg-white dark:bg-slate-900 border-l-4 ${sub?.paymentStatus === 'Paid' ? 'border-emerald-500' : sub?.paymentStatus === 'Unpaid' ? 'border-rose-500' : 'border-amber-500'} rounded-2xl p-6 text-start shadow-sm`}>
-                                            <div className="flex items-center justify-between mb-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 font-black text-sm">
-                                                        {s.name.charAt(0)}
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-black text-sm text-slate-900 dark:text-white">{s.name}</p>
-                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">ID: {s.id}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex flex-col items-end gap-1">
-                                                    <div className="flex items-center gap-2">
-                                                        {s.accountStatus === 'disabled' || s.accountStatus === 'suspended'
-                                                            ? <ShieldOff size={16} className="text-rose-500" /> 
-                                                            : s.accountStatus === 'pending'
-                                                            ? <Clock size={16} className="text-amber-500" />
-                                                            : <ShieldCheck size={16} className="text-emerald-500" />
-                                                        }
-                                                        <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? getStatusColor('disabled') : s.accountStatus === 'pending' ? getStatusColor('pending') : getStatusColor('active')}`}>
-                                                            {s.accountStatus || 'active'}
-                                                        </span>
-                                                    </div>
-                                                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">
-                                                        {formatCurrencyDZD(sub?.monthlyAmount || 0)}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 dark:border-slate-800">
-                                                <div>
-                                                    <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">{t('economic.plan')}</p>
-                                                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{sub?.plan || '---'}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">{t('economic.payment')}</p>
-                                                    <div className="relative mt-1">
-                                                        <select 
-                                                            value={sub?.paymentStatus || 'Pending'}
-                                                            onChange={(e) => handleUpdateStudentPayment(s.id, e.target.value as 'Paid' | 'Unpaid' | 'Pending')}
-                                                            className={`w-full appearance-none text-xs font-bold p-2 rounded-lg border-2 bg-transparent transition-all ${sub?.paymentStatus === 'Paid' ? 'border-emerald-200 text-emerald-700' : sub?.paymentStatus === 'Unpaid' ? 'border-rose-200 text-rose-700' : 'border-amber-200 text-amber-700'}`}>
-                                                            <option value="Paid">Paid</option>
-                                                            <option value="Unpaid">Unpaid</option>
-                                                            <option value="Pending">Pending</option>
-                                                        </select>
-                                                        <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">Monthly Amount</p>
-                                                    {editingAmount === s.id ? (
-                                                        <div className="flex items-center gap-2">
-                                                            <input type="number" value={amountValue} onChange={(e) => setAmountValue(Number(e.target.value))} className="w-full bg-slate-100 dark:bg-slate-800 p-2 rounded-lg border-2 border-primary text-xs outline-none" />
-                                                            <button onClick={() => handleUpdateStudentAmount(s.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={14} /></button>
-                                                        </div>
-                                                    ) : (
-                                                        <div onClick={() => { setEditingAmount(s.id); setAmountValue(sub?.monthlyAmount || 0); }} className="cursor-pointer hover:text-primary transition-colors">
-                                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{formatCurrencyDZD(sub?.monthlyAmount || 0)}</p>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div>
-                                                    <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">Duration</p>
-                                                    {editingDuration === s.id ? (
-                                                        <div className="flex items-center gap-2">
-                                                            <input type="number" value={durationValue} onChange={(e) => setDurationValue(Number(e.target.value))} className="w-full bg-slate-100 dark:bg-slate-800 p-2 rounded-lg border-2 border-primary text-xs outline-none" />
-                                                            <button onClick={() => handleUpdateSubscriptionDuration(s.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={14} /></button>
-                                                        </div>
-                                                    ) : (
-                                                        <div onClick={() => { setEditingDuration(s.id); setDurationValue(sub?.duration || 1); }} className="cursor-pointer hover:text-primary transition-colors">
-                                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{sub?.duration || 1} Months</p>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <button 
-                                                onClick={() => setSelectedStudentId(selectedStudentId === s.id ? null : s.id)}
-                                                className="w-full mt-4 py-3 text-[9px] font-black uppercase tracking-widest text-primary flex items-center justify-center gap-2">
-                                                <History size={14} /> {selectedStudentId === s.id ? 'Hide Timeline' : t('economic.timeline')}
-                                            </button>
-                                            {selectedStudentId === s.id && (
-                                                <div className="mt-4 pt-4 border-t border-slate-50 dark:border-slate-800 space-y-3 animate-in slide-in-from-top-2 duration-300">
-                                                    {paymentRecords.filter(r => r.studentId === s.id).map(r => (
-                                                        <div key={r.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className={`w-2 h-2 rounded-full ${getStatusColor(r.status)}`} />
-                                                                <div>
-                                                                    <p className="text-[10px] font-bold text-slate-700 dark:text-slate-300">{r.date}</p>
-                                                                    <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{formatCurrencyDZD(r.amount)} • {r.method}</p>
-                                                                </div>
-                                                            </div>
-                                                            <span className={`text-[8px] font-black uppercase tracking-widest ${getStatusColor(r.status)}`}>{r.status}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        ) : (
-                            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-xl">
-                                <table className="w-full text-start border-collapse">
-                                    <thead>
-                                        <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('admin.legalName')}</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">Account Status</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.status')}</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.plan')}</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.payment')}</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.start')} / {t('economic.end')}</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">Duration</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">Monthly Amount</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-end">Timeline</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-end">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                        {filteredStudents.map(s => {
-                                            const sub = subscriptions[s.id];
-                                            return (
-                                                <React.Fragment key={s.id}>
-                                                    <tr className={`transition-colors ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? 'bg-rose-50 dark:bg-rose-950/50' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}>
-                                                        <td className="px-8 py-6">
-                                                            <div className="flex items-center gap-4">
-                                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-slate-500 font-black text-sm ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? 'bg-slate-200 dark:bg-slate-800' : 'bg-slate-100 dark:bg-slate-800'}`}>
-                                                                    {s.name.charAt(0)}
-                                                                </div>
-                                                                <div>
-                                                                    <p className="font-bold text-sm text-slate-900 dark:text-white">{s.name}</p>
-                                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ID: {s.id}</p>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-8 py-6">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="flex items-center gap-2">
-                                                                    {(s.accountStatus === 'disabled' || s.accountStatus === 'suspended')
-                                                                        ? <ShieldOff size={16} className="text-rose-500" /> 
-                                                                        : s.accountStatus === 'pending'
-                                                                        ? <Clock size={16} className="text-amber-500" />
-                                                                        : <ShieldCheck size={16} className="text-emerald-500" />
-                                                                    }
-                                                                    <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? getStatusColor('suspended') : s.accountStatus === 'pending' ? getStatusColor('pending') : getStatusColor('active')}`}>
-                                                                        {s.accountStatus || 'active'}
-                                                                    </span>
-                                                                </div>
-                                                                <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
-                                                                    {formatCurrencyDZD(sub?.monthlyAmount || 0)}
-                                                                </span>
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-8 py-6">
-                                                            <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest ${getStatusColor(sub?.status || 'Pending')}`}>
-                                                                {sub?.status || t('economic.pending')}
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-8 py-6">
-                                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{sub?.plan || '---'}</p>
-                                                        </td>
-                                                        <td className="px-8 py-6">
-                                                            <div className="relative w-36">
-                                                                <select 
-                                                                    value={sub?.paymentStatus || 'Pending'}
-                                                                    onChange={(e) => handleUpdateStudentPayment(s.id, e.target.value as 'Paid' | 'Unpaid' | 'Pending')}
-                                                                    className={`w-full appearance-none text-xs font-bold p-2 rounded-lg border-2 bg-transparent transition-all ${sub?.paymentStatus === 'Paid' ? 'border-emerald-200 text-emerald-700' : sub?.paymentStatus === 'Unpaid' ? 'border-rose-200 text-rose-700' : 'border-amber-200 text-amber-700'}`}>
-                                                                    <option value="Paid">Paid</option>
-                                                                    <option value="Unpaid">Unpaid</option>
-                                                                    <option value="Pending">Pending</option>
-                                                                </select>
-                                                                <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-8 py-6">
-                                                            <div className="flex flex-col gap-1">
-                                                                <p className="text-xs font-bold text-institutional-700 dark:text-institutional-300">{sub?.startDate || '---'}</p>
-                                                                <p className="text-[10px] font-bold text-institutional-400">{sub?.endDate || '---'}</p>
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-8 py-6">
-                                                            {editingAmount === s.id ? (
-                                                                <div className="flex items-center gap-2">
-                                                                    <input type="number" value={amountValue} onChange={(e) => setAmountValue(Number(e.target.value))} className="w-24 bg-institutional-100 dark:bg-institutional-800 p-2 rounded-lg border-2 border-primary" />
-                                                                    <button onClick={() => handleUpdateStudentAmount(s.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={16} /></button>
-                                                                </div>
-                                                            ) : (
-                                                                <div onClick={() => { setEditingAmount(s.id); setAmountValue(sub?.monthlyAmount || 0); }} className="cursor-pointer">
-                                                                    <p className="text-sm font-black text-institutional-900 dark:text-white">{formatCurrencyDZD(sub?.monthlyAmount || 0)}</p>
-                                                                </div>
-                                                            )}
-                                                        </td>
-                                                        <td className="px-8 py-6">
-                                                            {editingDuration === s.id ? (
-                                                                <div className="flex items-center gap-2">
-                                                                    <input type="number" value={durationValue} onChange={(e) => setDurationValue(Number(e.target.value))} className="w-20 bg-institutional-100 dark:bg-institutional-800 p-2 rounded-lg border-2 border-primary" />
-                                                                    <button onClick={() => handleUpdateSubscriptionDuration(s.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={16} /></button>
-                                                                </div>
-                                                            ) : (
-                                                                <div onClick={() => { setEditingDuration(s.id); setDurationValue(sub?.duration || 1); }} className="cursor-pointer">
-                                                                    <p className="text-sm font-bold text-institutional-700 dark:text-institutional-300">{sub?.duration || 1} Months</p>
-                                                                </div>
-                                                            )}
-                                                        </td>
-                                                        <td className="px-8 py-6 text-end">
-                                                            <button 
-                                                                onClick={() => setSelectedStudentId(selectedStudentId === s.id ? null : s.id)}
-                                                                className={`p-3 rounded-xl transition-all ${selectedStudentId === s.id ? 'bg-primary text-white' : 'text-institutional-400 hover:text-primary hover:bg-primary/5'}`}>
-                                                                <History size={18} />
-                                                            </button>
-                                                        </td>
-                                                        <td className="px-8 py-6 text-end">
-                                                            <div className="flex justify-end gap-3">
-                                                                <button 
-                                                                    onClick={() => handleUpdateStudentPayment(s.id, 'Paid')}
-                                                                    className={`p-3 rounded-2xl transition-all ${sub?.paymentStatus === 'Paid' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-institutional-100 dark:bg-institutional-800 text-institutional-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-500'}`}>
-                                                                    <CheckCircle size={20} />
-                                                                </button>
-                                                                <button 
-                                                                    onClick={() => handleUpdateStudentPayment(s.id, 'Unpaid')}
-                                                                    className={`p-3 rounded-2xl transition-all ${sub?.paymentStatus === 'Unpaid' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'bg-institutional-100 dark:bg-institutional-800 text-institutional-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-500'}`}>
-                                                                    <XCircle size={20} />
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    {selectedStudentId === s.id && (
-                                                        <tr>
-                                                            <td colSpan={8} className="px-8 py-8 bg-institutional-50 dark:bg-institutional-950/50">
-                                                                <div className="max-w-4xl mx-auto">
-                                                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-institutional-400 mb-6 flex items-center gap-3">
-                                                                        <History size={14} className="text-primary" />
-                                                                        {t('economic.timeline')}
-                                                                    </h4>
-                                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                                        {paymentRecords.filter(r => r.studentId === s.id).map(r => (
-                                                                            <div key={r.id} className="bg-surface dark:bg-institutional-900 p-5 rounded-2xl border border-institutional-200 dark:border-institutional-800 shadow-sm flex flex-col gap-3">
-                                                                                <div className="flex items-center justify-between">
-                                                                                    <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest ${getStatusColor(r.status)}`}>{r.status}</span>
-                                                                                    <p className="text-[10px] font-bold text-institutional-400">{r.date}</p>
-                                                                                </div>
-                                                                                <div className="flex items-center justify-between">
-                                                                                    <p className="text-lg font-black text-institutional-900 dark:text-white">{formatCurrencyDZD(r.amount)}</p>
-                                                                                    <p className="text-[9px] font-bold text-institutional-500 uppercase tracking-widest">{r.method}</p>
-                                                                                </div>
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    )}
-                                                </React.Fragment>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )
-                    ) : (
+                    {activeTab === 'students' && <StudentList />}
+                    {activeTab === 'teachers' && (
                         isMobile ? (
                             <div className="space-y-4">
                                 {filteredTeachers.map(t_user => {
