@@ -31,21 +31,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             await signIn();
             
             // Check if Admin exists, if not, SEED IT
-            // We wrap this in a try-catch because it might fail if auth is not fully working
-            try {
-                const adminRef = doc(db, collections.users, DEFAULT_ADMIN.id);
-                const adminSnap = await getDoc(adminRef);
-                
-                if (!adminSnap.exists()) {
-                    await setDoc(adminRef, { 
-                        ...DEFAULT_ADMIN, 
-                        lastSeen: Timestamp.now(), 
-                        createdAt: Timestamp.now(),
-                        accountStatus: 'active'
-                    });
-                }
-            } catch (firestoreError) {
-                console.warn("[Auth] Firestore seeding skipped or failed (likely due to restricted auth)", firestoreError);
+            const adminRef = doc(db, collections.users, DEFAULT_ADMIN.id);
+            const adminSnap = await getDoc(adminRef);
+            
+            if (!adminSnap.exists()) {
+                await setDoc(adminRef, { 
+                    ...DEFAULT_ADMIN, 
+                    lastSeen: Timestamp.now(), 
+                    createdAt: Timestamp.now(),
+                    accountStatus: 'active'
+                });
             }
         } catch (e) {
             console.error("[Auth] Initialization failure", e);

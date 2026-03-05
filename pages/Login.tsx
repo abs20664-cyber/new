@@ -3,8 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ShieldCheck, Mail, Lock, Loader2, AlertCircle, ChevronDown, ChevronUp, GraduationCap, Globe } from 'lucide-react';
 import { collection, getDocs, query, where, doc, updateDoc } from 'firebase/firestore';
-import { auth, db, collections } from '../services/firebase';
-import { updatePassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { db, collections } from '../services/firebase';
 import { User, AppLanguage } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import Logo from '../components/Logo';
@@ -21,7 +20,6 @@ const Login: React.FC = () => {
     const [pendingUser, setPendingUser] = useState<User | null>(null);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [showBootstrap, setShowBootstrap] = useState(false);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -34,49 +32,26 @@ const Login: React.FC = () => {
         fetchUsers();
     }, []);
 
-    const handleBootstrap = async () => {
-        setIsSubmitting(true);
-        setError(null);
-        try {
-            // Create the admin account in Firebase Auth
-            await createUserWithEmailAndPassword(auth, 'admin@edu.alg', 'admin123');
-            // AuthContext will handle the Firestore record creation automatically
-            alert("Admin account bootstrapped successfully! You can now log in with admin@edu.alg / admin123");
-            setShowBootstrap(false);
-        } catch (err: any) {
-            setError("Bootstrap failed: " + err.message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         setIsSubmitting(true);
         try { 
-            // 1. Attempt secure login via Firebase Auth
-            await login(email, password);
-            
-            // 2. AuthContext will update the user state. 
-            // We need to check if this user needs to change their password.
             const q = query(collection(db, collections.users), where('email', '==', email));
             const snap = await getDocs(q);
-            if (!snap.empty) {
-                const u = { id: snap.docs[0].id, ...snap.docs[0].data() } as any;
-                if (u.mustChangePassword) {
-                    setPendingUser(u);
-                    setIsSubmitting(false);
-                }
+            if (snap.empty) throw new Error("Invalid email or password.");
+            
+            const u = { id: snap.docs[0].id, ...snap.docs[0].data() } as User;
+            if (u.password !== password) throw new Error("Invalid email or password.");
+
+            if (u.mustChangePassword) {
+                setPendingUser(u);
+                setIsSubmitting(false);
+            } else {
+                await login(email, password); 
             }
         } catch (err: any) {
-            console.error("Login Error:", err.code, err.message);
             setError(err.message || "Authentication failed.");
-            
-            // If admin login fails with invalid-credential, offer bootstrap
-            if (email === 'admin@edu.alg' && (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found')) {
-                setShowBootstrap(true);
-            }
             setIsSubmitting(false);
         }
     };
@@ -95,27 +70,20 @@ const Login: React.FC = () => {
         
         setIsSubmitting(true);
         try {
-            // Update password in Firebase Auth (user is already signed in)
-            if (auth.currentUser) {
-                await updatePassword(auth.currentUser, newPassword);
-            }
-
-            // Update Firestore record
             await updateDoc(doc(db, collections.users, pendingUser.id), {
+                password: newPassword,
                 mustChangePassword: false
             });
-            
-            // Success - AuthContext state will handle the rest
+            await login(pendingUser.email, newPassword);
         } catch (err: any) {
-            console.error("Password update failed", err);
-            setError("Failed to update password. You may need to log in again.");
+            setError("Failed to update password.");
             setIsSubmitting(false);
         }
     };
 
     const fillCredentials = (u: User) => {
         setEmail(u.email);
-        setPassword('admin123'); // Default demo password for all migrated accounts
+        if (u.password) setPassword(u.password);
     };
 
     const languages: { code: AppLanguage; label: string; flag: string }[] = [
@@ -215,20 +183,10 @@ const Login: React.FC = () => {
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="mb-8 p-4 bg-rose-50 dark:bg-rose-900/10 border border-rose-200 dark:border-rose-900/20 rounded-2xl flex flex-col gap-3 text-rose-600 dark:text-rose-400 text-sm font-bold"
+                            className="mb-8 p-4 bg-rose-50 dark:bg-rose-900/10 border border-rose-200 dark:border-rose-900/20 rounded-2xl flex items-center gap-3 text-rose-600 dark:text-rose-400 text-sm font-bold"
                         >
-                            <div className="flex items-center gap-3">
-                                <AlertCircle size={18} className="shrink-0" />
-                                {error}
-                            </div>
-                            {showBootstrap && (
-                                <button 
-                                    onClick={handleBootstrap}
-                                    className="mt-2 w-full bg-rose-600 text-white p-3 rounded-xl hover:bg-rose-700 transition-colors text-xs uppercase tracking-widest"
-                                >
-                                    Bootstrap Admin Account
-                                </button>
-                            )}
+                            <AlertCircle size={18} className="shrink-0" />
+                            {error}
                         </motion.div>
                     )}
                     

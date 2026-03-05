@@ -1,8 +1,6 @@
 import React, { useEffect, useState, memo, useMemo } from 'react';
 import { collection, onSnapshot, doc, setDoc, updateDoc, getDocs, Timestamp } from 'firebase/firestore';
-import { initializeApp, deleteApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, updatePassword, updateEmail } from 'firebase/auth';
-import { db, collections, auth as mainAuth } from '../services/firebase';
+import { db, collections } from '../services/firebase';
 import { User, UserRole } from '../types';
 import { Trash2, Plus, Settings, Shield, GraduationCap, X, Loader2, ShieldAlert, AlertTriangle, User as UserIcon, DollarSign, Users, Search, Filter } from 'lucide-react';
 import { superAdminHardDelete } from '../services/adminTools';
@@ -13,17 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import { FixedSizeList as List } from 'react-window';
 import { Skeleton } from '../components/Skeleton';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
-
-// Re-import config to create secondary app for user creation
-const firebaseConfig = {
-  apiKey: "AIzaSyD2aOVfl6bXOpWCL9eaiM85g14WB25aXYg",
-  authDomain: "alpha-26f1e.firebaseapp.com",
-  projectId: "alpha-26f1e",
-  storageBucket: "alpha-26f1e.firebasestorage.app",
-  messagingSenderId: "838970744952",
-  appId: "1:838970744952:web:4b190d95010ecf23e18d8d",
-  measurementId: "G-230TGXB20M"
-};
 
 const getRoleIcon = (role: UserRole) => {
     switch(role) {
@@ -156,57 +143,46 @@ const AdminRegistry: React.FC = () => {
         const role = formData.get('role') as UserRole;
         const id = editingUser ? editingUser.id : (formData.get('id') as string);
 
-        setProcessingId('saving');
         try {
             if (editingUser) {
                 const updates: any = {};
                 if (name !== editingUser.name) updates.name = name;
                 if (role !== editingUser.role) updates.role = role;
-                if (email && email !== editingUser.email) updates.email = email;
+                
+                // Credential Safeguards: Only update if explicitly changed
+                if (email && email !== editingUser.email) {
+                    updates.email = email;
+                    console.log(`[Admin] Explicit email change for ${id}`);
+                }
+                if (password && password.trim() !== '') {
+                    updates.password = password;
+                    console.log(`[Admin] Explicit password reset for ${id}`);
+                }
 
                 if (Object.keys(updates).length > 0) {
                     await updateDoc(doc(db, collections.users, id), updates);
                 }
-                
-                // Note: Password/Email updates in Firebase Auth for other users 
-                // usually require Admin SDK. For this demo, we focus on secure creation.
             } else {
                 if (!password) throw new Error("Password required");
-
-                // SECURE USER CREATION using a secondary app instance
-                // This prevents the current admin from being logged out
-                const secondaryApp = initializeApp(firebaseConfig, `Secondary-${Date.now()}`);
-                const secondaryAuth = getAuth(secondaryApp);
-                
-                try {
-                    const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-                    const uid = userCredential.user.uid;
-
-                    const newUser = {
-                        id: uid, // Use Firebase Auth UID as the document ID
-                        systemId: id, // Keep the custom ID as a reference
-                        name,
-                        email,
-                        role,
-                        lastSeen: null,
-                        createdAt: Timestamp.now(),
-                        accountStatus: 'active',
-                        mustChangePassword: role === 'economic'
-                    };
-
-                    await setDoc(doc(db, collections.users, uid), newUser);
-                    if (role === 'economic') setTempPassword(password);
-                } finally {
-                    await deleteApp(secondaryApp);
-                }
+                const newUser = {
+                    id,
+                    name,
+                    email,
+                    password,
+                    role,
+                    lastSeen: null,
+                    createdAt: Timestamp.now(),
+                    accountStatus: 'active',
+                    mustChangePassword: role === 'economic'
+                };
+                await setDoc(doc(db, collections.users, id), newUser);
+                if (role === 'economic') setTempPassword(password);
             }
             if (role !== 'economic' || editingUser) setIsModalOpen(false);
             setEditingUser(null);
         } catch (error: any) {
             console.error("Save failed", error);
-            alert(error.message || t('common.error'));
-        } finally {
-            setProcessingId(null);
+            alert(t('common.error'));
         }
     };
 
@@ -469,9 +445,7 @@ const AdminRegistry: React.FC = () => {
                                     <input name="id" defaultValue={editingUser?.id} placeholder="ID_000" className={`w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold outline-none ${editingUser ? 'opacity-50' : ''}`} readOnly={!!editingUser} required />
                                 </div>
                             </div>
-                            <button type="submit" disabled={processingId === 'saving'} className="w-full bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 p-4 rounded-xl font-black uppercase tracking-widest shadow-xl mt-4 flex items-center justify-center gap-2">
-                                {processingId === 'saving' ? <Loader2 size={18} className="animate-spin" /> : t('admin.confirmChanges')}
-                            </button>
+                            <button type="submit" className="w-full bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 p-4 rounded-xl font-black uppercase tracking-widest shadow-xl mt-4">{t('admin.confirmChanges')}</button>
                         </form>
                         )}
                     </div>

@@ -32,20 +32,8 @@ export const collections = {
 
 export const signIn = async () => {
     try {
-        // Check if already authenticated
-        if (auth.currentUser) return auth.currentUser;
-        
-        // Try to sign in anonymously
-        const result = await signInAnonymously(auth);
-        return result.user;
-    } catch (error: any) {
-        // Handle the specific error 'auth/admin-restricted-operation'
-        // which usually means Anonymous Auth is disabled in the Firebase Console.
-        if (error.code === 'auth/admin-restricted-operation') {
-            console.warn("[Firebase] Anonymous authentication is disabled in the Firebase Console. Please enable it under Authentication > Sign-in method > Anonymous.");
-        } else {
-            console.error("[Firebase] Auth error:", error.code, error.message);
-        }
-        return null;
+        await signInAnonymously(auth);
+    } catch (error) {
+        console.error("Auth error", error);
     }
 };
