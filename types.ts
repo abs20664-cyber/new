@@ -5,7 +5,6 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  password?: string;
   role: UserRole;
   language?: AppLanguage;
   lastSeen?: any;
@@ -21,7 +20,6 @@ export interface User {
   subscriptionDuration?: number; // in months
   subscriptionStartDate?: any;
   nextPaymentDate?: any;
-  customQrCodeUrl?: string;
 }
 
 export interface StudentSubscription {

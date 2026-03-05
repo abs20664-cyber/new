@@ -1,7 +1,8 @@
 import React, { useEffect, useState, memo, useMemo } from 'react';
 import { collection, onSnapshot, doc, setDoc, updateDoc, getDocs, Timestamp } from 'firebase/firestore';
-import { db, collections, storage } from '../services/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { initializeApp, deleteApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword, updatePassword, updateEmail } from 'firebase/auth';
+import { db, collections, auth as mainAuth } from '../services/firebase';
 import { User, UserRole } from '../types';
 import { Trash2, Plus, Settings, Shield, GraduationCap, X, Loader2, ShieldAlert, AlertTriangle, User as UserIcon, DollarSign, Users, Search, Filter } from 'lucide-react';
 import { superAdminHardDelete } from '../services/adminTools';
@@ -12,6 +13,17 @@ import { useNavigate } from 'react-router-dom';
 import { FixedSizeList as List } from 'react-window';
 import { Skeleton } from '../components/Skeleton';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
+
+// Re-import config to create secondary app for user creation
+const firebaseConfig = {
+  apiKey: "AIzaSyD2aOVfl6bXOpWCL9eaiM85g14WB25aXYg",
+  authDomain: "alpha-26f1e.firebaseapp.com",
+  projectId: "alpha-26f1e",
+  storageBucket: "alpha-26f1e.firebasestorage.app",
+  messagingSenderId: "838970744952",
+  appId: "1:838970744952:web:4b190d95010ecf23e18d8d",
+  measurementId: "G-230TGXB20M"
+};
 
 const getRoleIcon = (role: UserRole) => {
     switch(role) {
@@ -143,57 +155,58 @@ const AdminRegistry: React.FC = () => {
         const password = formData.get('password') as string;
         const role = formData.get('role') as UserRole;
         const id = editingUser ? editingUser.id : (formData.get('id') as string);
-        const qrFile = formData.get('qrCode') as File;
 
+        setProcessingId('saving');
         try {
-            let customQrCodeUrl = editingUser?.customQrCodeUrl;
-            if (qrFile && qrFile.size > 0) {
-                const storageRef = ref(storage, `qrcodes/${id}`);
-                await uploadBytes(storageRef, qrFile);
-                customQrCodeUrl = await getDownloadURL(storageRef);
-            }
-
             if (editingUser) {
                 const updates: any = {};
                 if (name !== editingUser.name) updates.name = name;
                 if (role !== editingUser.role) updates.role = role;
-                if (customQrCodeUrl !== editingUser.customQrCodeUrl) updates.customQrCodeUrl = customQrCodeUrl;
-                
-                // Credential Safeguards: Only update if explicitly changed
-                if (email && email !== editingUser.email) {
-                    updates.email = email;
-                    console.log(`[Admin] Explicit email change for ${id}`);
-                }
-                if (password && password.trim() !== '') {
-                    updates.password = password;
-                    console.log(`[Admin] Explicit password reset for ${id}`);
-                }
+                if (email && email !== editingUser.email) updates.email = email;
 
                 if (Object.keys(updates).length > 0) {
                     await updateDoc(doc(db, collections.users, id), updates);
                 }
+                
+                // Note: Password/Email updates in Firebase Auth for other users 
+                // usually require Admin SDK. For this demo, we focus on secure creation.
             } else {
                 if (!password) throw new Error("Password required");
-                const newUser = {
-                    id,
-                    name,
-                    email,
-                    password,
-                    role,
-                    customQrCodeUrl,
-                    lastSeen: null,
-                    createdAt: Timestamp.now(),
-                    accountStatus: 'active',
-                    mustChangePassword: role === 'economic'
-                };
-                await setDoc(doc(db, collections.users, id), newUser);
-                if (role === 'economic') setTempPassword(password);
+
+                // SECURE USER CREATION using a secondary app instance
+                // This prevents the current admin from being logged out
+                const secondaryApp = initializeApp(firebaseConfig, `Secondary-${Date.now()}`);
+                const secondaryAuth = getAuth(secondaryApp);
+                
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+                    const uid = userCredential.user.uid;
+
+                    const newUser = {
+                        id: uid, // Use Firebase Auth UID as the document ID
+                        systemId: id, // Keep the custom ID as a reference
+                        name,
+                        email,
+                        role,
+                        lastSeen: null,
+                        createdAt: Timestamp.now(),
+                        accountStatus: 'active',
+                        mustChangePassword: role === 'economic'
+                    };
+
+                    await setDoc(doc(db, collections.users, uid), newUser);
+                    if (role === 'economic') setTempPassword(password);
+                } finally {
+                    await deleteApp(secondaryApp);
+                }
             }
             if (role !== 'economic' || editingUser) setIsModalOpen(false);
             setEditingUser(null);
         } catch (error: any) {
             console.error("Save failed", error);
-            alert(t('common.error'));
+            alert(error.message || t('common.error'));
+        } finally {
+            setProcessingId(null);
         }
     };
 
@@ -452,15 +465,13 @@ const AdminRegistry: React.FC = () => {
                                     </select>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-institutional-500">Custom QR Code</label>
-                                    <input name="qrCode" type="file" accept="image/*" className="w-full bg-institutional-100 dark:bg-institutional-800 p-3 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none" />
+                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.systemId')}</label>
+                                    <input name="id" defaultValue={editingUser?.id} placeholder="ID_000" className={`w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold outline-none ${editingUser ? 'opacity-50' : ''}`} readOnly={!!editingUser} required />
                                 </div>
                             </div>
-                            <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.systemId')}</label>
-                                <input name="id" defaultValue={editingUser?.id} placeholder="ID_000" className={`w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold outline-none ${editingUser ? 'opacity-50' : ''}`} readOnly={!!editingUser} required />
-                            </div>
-                            <button type="submit" className="w-full bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 p-4 rounded-xl font-black uppercase tracking-widest shadow-xl mt-4">{t('admin.confirmChanges')}</button>
+                            <button type="submit" disabled={processingId === 'saving'} className="w-full bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 p-4 rounded-xl font-black uppercase tracking-widest shadow-xl mt-4 flex items-center justify-center gap-2">
+                                {processingId === 'saving' ? <Loader2 size={18} className="animate-spin" /> : t('admin.confirmChanges')}
+                            </button>
                         </form>
                         )}
                     </div>

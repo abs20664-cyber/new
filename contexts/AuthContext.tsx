@@ -22,10 +22,7 @@ const DEFAULT_ADMIN: User = {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(() => {
-        const savedUser = localStorage.getItem('user');
-        return savedUser ? JSON.parse(savedUser) : null;
-    });
+    const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -58,15 +55,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     init();
   }, []);
-
-  // Sync user to localStorage
-  useEffect(() => {
-      if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
-      } else {
-          localStorage.removeItem('user');
-      }
-  }, [user]);
 
   // Real-time user sync
   useEffect(() => {
@@ -135,7 +123,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
   };
 
   return (
