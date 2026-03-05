@@ -24,13 +24,14 @@ interface ChatTarget {
     isBroadcast?: boolean;
 }
 
-const MessageItem = React.memo(({ message, isMe, isMobile, onDelete, onEdit, onPin, language, isRTL, showMeta, isGroupChat }: {
+const MessageItem = React.memo(({ message, isMe, isMobile, onDelete, onEdit, onPin, onImageClick, language, isRTL, showMeta, isGroupChat }: {
     message: Message;
     isMe: boolean;
     isMobile: boolean;
     onDelete: (id: string) => void;
     onEdit: (m: Message) => void;
     onPin: (id: string, current: boolean) => void;
+    onImageClick: (data: string) => void;
     language: string;
     isRTL: boolean;
     showMeta: boolean;
@@ -68,15 +69,50 @@ const MessageItem = React.memo(({ message, isMe, isMobile, onDelete, onEdit, onP
                                 </div>
                             )}
                             {message.attachment && (
-                                <a 
-                                    href={message.attachment.data} 
-                                    download={message.attachment.name}
-                                    className={`flex items-center gap-2 mt-2 p-2 rounded-xl border ${isMe ? 'bg-white/10 border-white/20 hover:bg-white/20 text-white' : 'bg-institutional-100 dark:bg-institutional-800 border-institutional-200 dark:border-institutional-700 hover:bg-institutional-200 dark:hover:bg-institutional-700 text-institutional-900 dark:text-white'} transition-colors`}
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <Paperclip size={16} />
-                                    <span className="text-sm font-medium truncate max-w-[150px]">{message.attachment.name}</span>
-                                </a>
+                                <div className="mt-2">
+                                    {(() => {
+                                        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+                                        const ext = message.attachment.name.split('.').pop()?.toLowerCase();
+                                        const isImg = (ext && imageExtensions.includes(ext)) || message.attachment.data.startsWith('data:image/');
+                                        
+                                        if (isImg) {
+                                            return (
+                                                <div className="relative group/img max-w-full">
+                                                    <img 
+                                                        src={message.attachment.data} 
+                                                        alt={message.attachment.name}
+                                                        className="max-h-[300px] w-auto rounded-lg border border-institutional-200 dark:border-institutional-700 cursor-pointer hover:opacity-95 transition-opacity object-contain"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onImageClick(message.attachment!.data);
+                                                        }}
+                                                    />
+                                                    <a 
+                                                        href={message.attachment.data} 
+                                                        download={message.attachment.name}
+                                                        className="absolute bottom-2 right-2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full opacity-0 group-hover/img:opacity-100 transition-opacity shadow-lg"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        title={language === 'ar' ? 'تحميل' : 'Download'}
+                                                    >
+                                                        <ArrowDown size={16} />
+                                                    </a>
+                                                </div>
+                                            );
+                                        }
+                                        
+                                        return (
+                                            <a 
+                                                href={message.attachment.data} 
+                                                download={message.attachment.name}
+                                                className={`flex items-center gap-2 p-2 rounded-xl border ${isMe ? 'bg-white/10 border-white/20 hover:bg-white/20 text-white' : 'bg-institutional-100 dark:bg-institutional-800 border-institutional-200 dark:border-institutional-700 hover:bg-institutional-200 dark:hover:bg-institutional-700 text-institutional-900 dark:text-white'} transition-colors`}
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <Paperclip size={16} />
+                                                <span className="text-sm font-medium truncate max-w-[150px]">{message.attachment.name}</span>
+                                            </a>
+                                        );
+                                    })()}
+                                </div>
                             )}
                         </div>
 
@@ -139,6 +175,8 @@ const Inbox: React.FC = () => {
     const [showConversation, setShowConversation] = useState(false);
     const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
     const [isScrollingUp, setIsScrollingUp] = useState(false);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [showChannelInfo, setShowChannelInfo] = useState(false);
     const [attachment, setAttachment] = useState<{name: string, data: string} | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
@@ -549,6 +587,22 @@ const Inbox: React.FC = () => {
 
     const pinnedMessages = useMemo(() => messages.filter(m => m.isPinned), [messages]);
 
+    const channelParticipants = useMemo(() => {
+        if (!activeTarget || activeTarget.type !== 'group') return [];
+        const allPotentialUsers = user ? [...users, user] : users;
+        return allPotentialUsers.filter(u => activeTarget.participantIds?.includes(u.id));
+    }, [activeTarget, users, user]);
+
+    const participantsByRole = useMemo(() => {
+        const grouped: Record<string, User[]> = {};
+        channelParticipants.forEach(u => {
+            const role = u.role || 'other';
+            if (!grouped[role]) grouped[role] = [];
+            grouped[role].push(u);
+        });
+        return grouped;
+    }, [channelParticipants]);
+
     const selectTarget = (t: ChatTarget) => {
         const group = groups.find(g => g.id === t.id);
         setActiveTarget({ ...t, isBroadcast: group?.isBroadcast });
@@ -714,7 +768,12 @@ const Inbox: React.FC = () => {
                                         <Trash2 size={20} />
                                     </button>
                                 )}
-                                <button className="p-2 text-institutional-400 hover:text-primary transition-all"><Info size={20} /></button>
+                                <button 
+                                    onClick={() => setShowChannelInfo(true)}
+                                    className="p-2 text-institutional-400 hover:text-primary transition-all"
+                                >
+                                    <Info size={20} />
+                                </button>
                                 <button className="p-2 text-institutional-400 hover:text-primary transition-all"><MoreVertical size={20} /></button>
                             </div>
                         </div>
@@ -757,6 +816,7 @@ const Inbox: React.FC = () => {
                                         onDelete={handleDeleteMessage}
                                         onEdit={setEditingMessage}
                                         onPin={handlePin}
+                                        onImageClick={setPreviewImage}
                                         language={language}
                                         isRTL={isRTL}
                                         showMeta={showMeta}
@@ -914,6 +974,73 @@ const Inbox: React.FC = () => {
                             </button>
                         </form>
                     </div>
+                </div>
+            )}
+            {/* Channel Info Modal */}
+            {showChannelInfo && activeTarget && activeTarget.type === 'group' && (
+                <div className="fixed inset-0 z-[500] bg-institutional-950/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
+                    <div className="bg-surface dark:bg-institutional-900 rounded-2xl shadow-strong max-w-md w-full p-6 relative border border-institutional-200 dark:border-institutional-800 animate-in zoom-in-95 duration-200">
+                        <button onClick={() => setShowChannelInfo(false)} className={`absolute top-6 ${isRTL ? 'left-6' : 'right-6'} p-2 text-institutional-400 hover:text-danger transition-colors`}><X size={20} /></button>
+                        
+                        <div className="text-start mb-6">
+                            <h3 className="text-xl font-bold text-institutional-900 dark:text-white">{activeTarget.name}</h3>
+                            <p className="text-xs text-institutional-400 mt-1">{t('inbox.participants')}</p>
+                        </div>
+
+                        <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2 scroll-hide">
+                            {Object.entries(participantsByRole).map(([role, roleUsers]) => (
+                                <div key={role} className="space-y-2">
+                                    <h4 className="text-[11px] font-bold uppercase text-institutional-500 tracking-wider px-1">
+                                        {t(`roles.${role}`) || role} ({roleUsers.length})
+                                    </h4>
+                                    <div className="space-y-1">
+                                        {roleUsers.map(u => (
+                                            <div key={u.id} className="flex items-center gap-3 p-3 rounded-xl bg-institutional-50 dark:bg-institutional-800/50 border border-institutional-100 dark:border-institutional-800">
+                                                <div className="w-10 h-10 rounded-full bg-institutional-200 dark:bg-institutional-700 flex items-center justify-center text-sm font-bold text-institutional-600 dark:text-institutional-300">
+                                                    {u.name.charAt(0)}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-semibold text-institutional-900 dark:text-white truncate">
+                                                        {u.name} {u.id === user?.id && `(${t('common.you') || 'You'})`}
+                                                    </p>
+                                                    <p className="text-[10px] text-institutional-400 uppercase tracking-wider">{t(`roles.${u.role}`) || u.role}</p>
+                                                </div>
+                                                {u.role === 'teacher' && <ShieldCheck size={16} className="text-primary" />}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <button 
+                            onClick={() => setShowChannelInfo(false)}
+                            className="w-full mt-6 bg-primary text-white py-3 rounded-xl font-bold text-sm uppercase tracking-widest shadow-md active:scale-[0.98] transition-all hover:bg-primary-hover"
+                        >
+                            {t('common.close') || 'Close'}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Image Preview Modal */}
+            {previewImage && (
+                <div 
+                    className="fixed inset-0 z-[600] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300"
+                    onClick={() => setPreviewImage(null)}
+                >
+                    <button 
+                        onClick={() => setPreviewImage(null)}
+                        className="absolute top-6 right-6 p-2 text-white/50 hover:text-white transition-colors z-10"
+                    >
+                        <X size={32} />
+                    </button>
+                    <img 
+                        src={previewImage} 
+                        alt="Preview" 
+                        className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-300"
+                        onClick={(e) => e.stopPropagation()}
+                    />
                 </div>
             )}
         </div>

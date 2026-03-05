@@ -21,6 +21,7 @@ export interface User {
   subscriptionDuration?: number; // in months
   subscriptionStartDate?: any;
   nextPaymentDate?: any;
+  customQrCodeUrl?: string;
 }
 
 export interface StudentSubscription {

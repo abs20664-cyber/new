@@ -57,7 +57,6 @@ export const superAdminHardDelete = async (identifier: string): Promise<string[]
             // FALLBACK: If we can't delete, we wipe the account data to render it useless.
             try {
                 await updateDoc(doc(db, collections.users, userId), {
-                    password: `DELETED_${Date.now()}`,
                     email: `deleted_${userId}@edu.alg`,
                     status: 'deleted',
                     name: `(Deleted User)`,
