@@ -16,7 +16,6 @@ const Settings = lazy(() => import('./pages/Settings'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Login = lazy(() => import('./pages/Login'));
 const EconomicDashboard = lazy(() => import('./pages/EconomicDashboard'));
-const SessionManagement = lazy(() => import('./pages/SessionManagement'));
 
 const PageLoader = () => (
   <div className="flex-1 flex items-center justify-center min-h-[400px]">
@@ -48,9 +47,7 @@ const AppContent: React.FC = () => {
   if (!user || !user.role) {
       return (
         <Suspense fallback={<div className="h-screen bg-slate-950" />}>
-          <Routes>
-            <Route path="*" element={<Login />} />
-          </Routes>
+          <Login />
         </Suspense>
       );
   }
@@ -69,7 +66,6 @@ const AppContent: React.FC = () => {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/profile/:id" element={<Profile />} />
                 <Route path="/economic" element={<EconomicDashboard />} />
-                <Route path="/session-management" element={<SessionManagement />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

@@ -5,6 +5,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  password?: string;
   role: UserRole;
   language?: AppLanguage;
   lastSeen?: any;
@@ -13,7 +14,6 @@ export interface User {
   bio?: string;
   fieldOfStudy?: string;
   subjectsTaught?:string;
-  password?: string;
   createdAt?: any;
   accountStatus?: 'active' | 'disabled' | 'suspended' | 'pending';
   paymentStatus?: 'paid' | 'unpaid' | 'pending';
@@ -154,29 +154,6 @@ export interface Message {
   };
   audio?: string;
   audioDuration?: number;
-}
-
-export interface StudentTeacherAssignment {
-  id: string;
-  studentId: string;
-  teacherId: string;
-}
-
-export interface SessionTemplate {
-  id: string;
-  teacherId: string;
-  dayOfWeek: number; // 0-6
-  startTime: string; // "HH:mm"
-  endTime: string; // "HH:mm"
-  startDate: any;
-}
-
-export interface SessionOverride {
-  id: string;
-  templateId: string;
-  originalDate: any;
-  newDate?: any;
-  isCancelled?: boolean;
 }
 
 export interface Group {

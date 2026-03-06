@@ -648,23 +648,15 @@ const EconomicDashboard: React.FC = () => {
                     </div>
                     
                     {/* Desktop Tabs */}
-                    <div className="flex items-center gap-4">
-                        <button 
-                            onClick={() => navigate('/session-management')}
-                            className="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-primary text-white shadow-soft hover:bg-primary/90 transition-all"
-                        >
-                            Manage Sessions
-                        </button>
-                        <div className="flex bg-institutional-100 dark:bg-institutional-800 p-1 rounded-2xl">
-                            {(['overview', 'students', 'teachers', 'audit'] as const).map(tab => (
-                                <button 
-                                    key={tab}
-                                    onClick={() => setActiveTab(tab)}
-                                    className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-500 hover:text-institutional-700'}`}>
-                                    {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : 'Audit'}
-                                </button>
-                            ))}
-                        </div>
+                    <div className="hidden md:flex bg-institutional-100 dark:bg-institutional-800 p-1 rounded-2xl">
+                        {(['overview', 'students', 'teachers', 'audit'] as const).map(tab => (
+                            <button 
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-500 hover:text-institutional-700'}`}>
+                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : 'Audit'}
+                            </button>
+                        ))}
                     </div>
                 </div>
 

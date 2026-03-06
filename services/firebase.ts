@@ -1,7 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyD2aOVfl6bXOpWCL9eaiM85g14WB25aXYg",
@@ -16,7 +15,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const storage = getStorage(app);
 export const APP_ID = 'edusaas-live-demo-v2';
 
 export const collections = {
@@ -29,28 +27,13 @@ export const collections = {
     submissions: `artifacts/${APP_ID}/public/data/submissions`,
     notifications: `artifacts/${APP_ID}/public/data/notifications`,
     typing: `artifacts/${APP_ID}/public/data/typing`,
-    groups: `artifacts/${APP_ID}/public/data/groups`,
-    studentTeacherAssignments: `artifacts/${APP_ID}/public/data/studentTeacherAssignments`,
-    sessionTemplates: `artifacts/${APP_ID}/public/data/sessionTemplates`,
-    sessionOverrides: `artifacts/${APP_ID}/public/data/sessionOverrides`
+    groups: `artifacts/${APP_ID}/public/data/groups`
 };
 
 export const signIn = async () => {
     try {
-        // Check if already authenticated
-        if (auth.currentUser) return auth.currentUser;
-        
-        // Try to sign in anonymously
-        const result = await signInAnonymously(auth);
-        return result.user;
-    } catch (error: any) {
-        // Handle the specific error 'auth/admin-restricted-operation'
-        // which usually means Anonymous Auth is disabled in the Firebase Console.
-        if (error.code === 'auth/admin-restricted-operation') {
-            console.warn("[Firebase] Anonymous authentication is disabled in the Firebase Console. Please enable it under Authentication > Sign-in method > Anonymous.");
-        } else {
-            console.error("[Firebase] Auth error:", error.code, error.message);
-        }
-        return null;
+        await signInAnonymously(auth);
+    } catch (error) {
+        console.error("Auth error", error);
     }
 };

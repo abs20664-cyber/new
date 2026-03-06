@@ -1,7 +1,6 @@
 import React, { useEffect, useState, memo, useMemo } from 'react';
 import { collection, onSnapshot, doc, setDoc, updateDoc, getDocs, Timestamp } from 'firebase/firestore';
-import { db, collections, storage } from '../services/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, collections } from '../services/firebase';
 import { User, UserRole } from '../types';
 import { Trash2, Plus, Settings, Shield, GraduationCap, X, Loader2, ShieldAlert, AlertTriangle, User as UserIcon, DollarSign, Users, Search, Filter } from 'lucide-react';
 import { superAdminHardDelete } from '../services/adminTools';
@@ -143,21 +142,12 @@ const AdminRegistry: React.FC = () => {
         const password = formData.get('password') as string;
         const role = formData.get('role') as UserRole;
         const id = editingUser ? editingUser.id : (formData.get('id') as string);
-        const qrFile = formData.get('qrCode') as File;
 
         try {
-            let customQrCodeUrl = editingUser?.customQrCodeUrl;
-            if (qrFile && qrFile.size > 0) {
-                const storageRef = ref(storage, `qrcodes/${id}`);
-                await uploadBytes(storageRef, qrFile);
-                customQrCodeUrl = await getDownloadURL(storageRef);
-            }
-
             if (editingUser) {
                 const updates: any = {};
                 if (name !== editingUser.name) updates.name = name;
                 if (role !== editingUser.role) updates.role = role;
-                if (customQrCodeUrl !== editingUser.customQrCodeUrl) updates.customQrCodeUrl = customQrCodeUrl;
                 
                 // Credential Safeguards: Only update if explicitly changed
                 if (email && email !== editingUser.email) {
@@ -180,7 +170,6 @@ const AdminRegistry: React.FC = () => {
                     email,
                     password,
                     role,
-                    customQrCodeUrl,
                     lastSeen: null,
                     createdAt: Timestamp.now(),
                     accountStatus: 'active',
@@ -452,13 +441,9 @@ const AdminRegistry: React.FC = () => {
                                     </select>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-institutional-500">Custom QR Code</label>
-                                    <input name="qrCode" type="file" accept="image/*" className="w-full bg-institutional-100 dark:bg-institutional-800 p-3 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none" />
+                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.systemId')}</label>
+                                    <input name="id" defaultValue={editingUser?.id} placeholder="ID_000" className={`w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold outline-none ${editingUser ? 'opacity-50' : ''}`} readOnly={!!editingUser} required />
                                 </div>
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.systemId')}</label>
-                                <input name="id" defaultValue={editingUser?.id} placeholder="ID_000" className={`w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold outline-none ${editingUser ? 'opacity-50' : ''}`} readOnly={!!editingUser} required />
                             </div>
                             <button type="submit" className="w-full bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 p-4 rounded-xl font-black uppercase tracking-widest shadow-xl mt-4">{t('admin.confirmChanges')}</button>
                         </form>
