@@ -68,24 +68,25 @@ const MessageItem = React.memo(({ message, isMe, isMobile, onDelete, onEdit, onP
                                 </div>
                             )}
                             {message.attachment && (
-                                <div className={`mt-2 flex flex-col gap-2 ${isMe ? 'items-end' : 'items-start'}`}>
-                                    {message.attachment.data.startsWith('data:image/') && (
+                                <div className="mt-2">
+                                    {message.attachment.data.startsWith('data:image/') ? (
                                         <img 
                                             src={message.attachment.data} 
-                                            alt={message.attachment.name} 
-                                            className="max-w-full max-h-64 rounded-lg object-contain"
+                                            alt={message.attachment.name}
+                                            className="max-w-full rounded-lg shadow-sm"
                                             referrerPolicy="no-referrer"
                                         />
+                                    ) : (
+                                        <a 
+                                            href={message.attachment.data} 
+                                            download={message.attachment.name}
+                                            className={`flex items-center gap-2 p-2 rounded-xl border ${isMe ? 'bg-white/10 border-white/20 hover:bg-white/20 text-white' : 'bg-institutional-100 dark:bg-institutional-800 border-institutional-200 dark:border-institutional-700 hover:bg-institutional-200 dark:hover:bg-institutional-700 text-institutional-900 dark:text-white'} transition-colors`}
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <Paperclip size={16} />
+                                            <span className="text-sm font-medium truncate max-w-[150px]">{message.attachment.name}</span>
+                                        </a>
                                     )}
-                                    <a 
-                                        href={message.attachment.data} 
-                                        download={message.attachment.name}
-                                        className={`flex items-center gap-2 p-2 rounded-xl border ${isMe ? 'bg-white/10 border-white/20 hover:bg-white/20 text-white' : 'bg-institutional-100 dark:bg-institutional-800 border-institutional-200 dark:border-institutional-700 hover:bg-institutional-200 dark:hover:bg-institutional-700 text-institutional-900 dark:text-white'} transition-colors`}
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <Paperclip size={16} />
-                                        <span className="text-sm font-medium truncate max-w-[150px]">{message.attachment.name}</span>
-                                    </a>
                                 </div>
                             )}
                         </div>
@@ -331,7 +332,10 @@ const Inbox: React.FC = () => {
     const startRecording = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream);
+            const mediaRecorder = new MediaRecorder(stream, { 
+                mimeType: 'audio/webm;codecs=opus',
+                audioBitsPerSecond: 128000 
+            });
             mediaRecorderRef.current = mediaRecorder;
             audioChunksRef.current = [];
             startTimeRef.current = Date.now();

@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, UserRole } from '../types';
-import { auth, db, collections, signIn } from '../services/firebase';
-import { setDoc, doc, Timestamp, getDoc, updateDoc, query, collection, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { User } from '../types';
+import { db, collections } from '../services/firebase';
+import { doc, getDoc, onSnapshot, updateDoc, Timestamp } from 'firebase/firestore';
+import { supabase } from '../services/supabase';
 
 interface AuthContextType {
   user: User | null;
@@ -12,48 +13,28 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Default Admin Credentials for Seeding
-const DEFAULT_ADMIN: User = { 
-    name: 'System Administrator', 
-    email: 'admin@edu.alg', 
-    password: 'admin123', 
-    role: 'admin', 
-    id: 'sys_admin_v2' 
-};
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const init = async () => {
-        try {
-            await signIn();
-            
-            // Check if Admin exists, if not, SEED IT
-            // We wrap this in a try-catch because it might fail if auth is not fully working
-            try {
-                const adminRef = doc(db, collections.users, DEFAULT_ADMIN.id);
-                const adminSnap = await getDoc(adminRef);
-                
-                if (!adminSnap.exists()) {
-                    await setDoc(adminRef, { 
-                        ...DEFAULT_ADMIN, 
-                        lastSeen: Timestamp.now(), 
-                        createdAt: Timestamp.now(),
-                        accountStatus: 'active'
-                    });
-                }
-            } catch (firestoreError) {
-                console.warn("[Auth] Firestore seeding skipped or failed (likely due to restricted auth)", firestoreError);
-            }
-        } catch (e) {
-            console.error("[Auth] Initialization failure", e);
-        } finally {
-            setLoading(false);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        // Fetch user profile from Firestore
+        const userRef = doc(db, collections.users, session.user.id);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setUser({ id: session.user.id, ...userSnap.data() } as User);
+        } else {
+          setUser(null);
         }
-    };
-    init();
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Real-time user sync
@@ -95,26 +76,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, pass: string) => {
     setLoading(true);
     try {
-        const q = query(collection(db, collections.users), where('email', '==', email));
-        const querySnapshot = await getDocs(q);
-        
-        const userDoc = querySnapshot.docs.find(d => d.data().email === email);
-
-        if (!userDoc) {
-            throw new Error("Email not found.");
-        }
-
-        const userData = userDoc.data() as User;
-        console.log("[Auth] User data found:", userData.email, "Password in DB:", userData.password, "Password provided:", pass);
-
-        if (!userData.password || userData.password !== pass) {
-             throw new Error("Incorrect password.");
-        }
-
-        await updateDoc(userDoc.ref, { lastSeen: Timestamp.now() });
-        const loggedInUser = { id: userDoc.id, ...userData };
-        setUser(loggedInUser);
-
+        const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+        if (error) throw error;
     } catch (e: any) {
         console.error("Login failed", e);
         throw e;
@@ -123,7 +86,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
   };
 
