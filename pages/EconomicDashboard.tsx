@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, memo } from 'react';
 import { collection, onSnapshot, doc, updateDoc, setDoc, query, where, addDoc, Timestamp, orderBy, limit } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
-import { User, StudentSubscription, TeacherPayment, FinancialAuditLog, FinancialSummary, StudentPaymentRecord } from '../types';
+import { User, StudentSubscription, TeacherPayment, FinancialAuditLog, FinancialSummary, StudentPaymentRecord, ClassSession, DAYS_OF_WEEK, HOURS_OF_DAY } from '../types';
 import { 
     Search, 
     Filter, 
@@ -64,9 +64,9 @@ const EconomicDashboard: React.FC = () => {
     const [auditLogs, setAuditLogs] = useState<FinancialAuditLog[]>([]);
     const [paymentRecords, setPaymentRecords] = useState<StudentPaymentRecord[]>([]);
     
-    const [editingSession, setEditingSession] = useState<RecurringSession | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'teachers' | 'audit'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'teachers' | 'audit' | 'sessions' | 'timetable'>('overview');
+    const [sessions, setSessions] = useState<ClassSession[]>([]);
     const [filterStatus, setFilterStatus] = useState<string>('all');
     const [editingNote, setEditingNote] = useState<string | null>(null);
     const [noteValue, setNoteValue] = useState('');
@@ -123,8 +123,12 @@ const EconomicDashboard: React.FC = () => {
             setPaymentRecords(snap.docs.map(d => ({ id: d.id, ...d.data() } as StudentPaymentRecord)));
         });
 
+        const unsubSessions = onSnapshot(collection(db, collections.classes), (snap) => {
+            setSessions(snap.docs.map(d => ({ id: d.id, ...d.data() } as ClassSession)));
+        });
+
         return () => {
-            unsubStudents(); unsubTeachers(); unsubSubs(); unsubPayments(); unsubAudit(); unsubPaymentRecords();
+            unsubStudents(); unsubTeachers(); unsubSubs(); unsubPayments(); unsubAudit(); unsubPaymentRecords(); unsubSessions();
         };
     }, []);
 
@@ -650,26 +654,26 @@ const EconomicDashboard: React.FC = () => {
                     
                     {/* Desktop Tabs */}
                     <div className="hidden md:flex bg-institutional-100 dark:bg-institutional-800 p-1 rounded-2xl">
-                        {(['overview', 'students', 'teachers', 'audit'] as const).map(tab => (
+                        {(['overview', 'students', 'teachers', 'audit', 'sessions', 'timetable'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-500 hover:text-institutional-700'}`}>
-                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : 'Audit'}
+                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : tab === 'audit' ? 'Audit' : tab === 'sessions' ? 'Sessions' : 'Timetable'}
                             </button>
                         ))}
                     </div>
                 </div>
 
                 {/* Mobile Tabs - Centered & Polished */}
-                <div className="md:hidden flex justify-center mb-6">
-                    <div className="inline-flex bg-institutional-100 dark:bg-institutional-800 p-1.5 rounded-2xl shadow-inner overflow-x-auto scrollbar-hide max-w-[95vw]">
-                        {(['overview', 'students', 'teachers', 'audit'] as const).map(tab => (
+                <div className="md:hidden fixed bottom-4 left-0 right-0 z-50 flex justify-center">
+                    <div className="inline-flex bg-surface dark:bg-institutional-800 p-1.5 rounded-2xl shadow-xl border border-institutional-200 dark:border-institutional-700 overflow-x-auto scrollbar-hide max-w-[95vw]">
+                        {(['overview', 'students', 'teachers', 'audit', 'sessions', 'timetable'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-md scale-105' : 'text-institutional-500'}`}>
-                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs').split(' ')[0] : tab === 'teachers' ? t('economic.teacherPayments').split(' ')[0] : 'Audit'}
+                                className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-institutional-100 dark:bg-institutional-700 text-primary shadow-md scale-105' : 'text-institutional-500'}`}>
+                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs').split(' ')[0] : tab === 'teachers' ? t('economic.teacherPayments').split(' ')[0] : tab === 'audit' ? 'Audit' : tab === 'sessions' ? 'Sessions' : 'Timetable'}
                             </button>
                         ))}
                     </div>
@@ -765,7 +769,6 @@ const EconomicDashboard: React.FC = () => {
                     </div>
                 </div>
             )}
-
 
             {(activeTab === 'students' || activeTab === 'teachers') && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -984,6 +987,53 @@ const EconomicDashboard: React.FC = () => {
                             </div>
                         )
                     )}
+                </div>
+            )}
+
+            {activeTab === 'sessions' && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl p-8">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-6">Scheduled Sessions</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {sessions.map(s => (
+                                <div key={s.id} className="p-6 bg-institutional-50 dark:bg-institutional-800 rounded-2xl border border-institutional-200 dark:border-institutional-700">
+                                    <h4 className="font-black text-lg text-institutional-900 dark:text-white mb-2">{s.name}</h4>
+                                    <p className="text-xs text-institutional-500 font-bold uppercase tracking-widest mb-4">{s.date} • {s.time} - {s.endTime}</p>
+                                    <span className="px-3 py-1 rounded-full text-[9px] font-black uppercase bg-primary/10 text-primary">{s.type}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'timetable' && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl p-8">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-6">Fixed Timetable</h3>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-start border-collapse">
+                                <thead>
+                                    <tr className="bg-institutional-50 dark:bg-institutional-950 border-b border-institutional-200 dark:border-institutional-800">
+                                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Time</th>
+                                        {DAYS_OF_WEEK.map(day => (
+                                            <th key={day} className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-center">{day}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-institutional-100 dark:divide-institutional-800">
+                                    {HOURS_OF_DAY.map(hour => (
+                                        <tr key={hour}>
+                                            <td className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{hour}</td>
+                                            {DAYS_OF_WEEK.map(day => (
+                                                <td key={`${day}-${hour}`} className="px-4 py-3 border border-institutional-100 dark:border-institutional-800"></td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             )}
 

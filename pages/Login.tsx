@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { ShieldCheck, Mail, Lock, Loader2, AlertCircle, ChevronDown, ChevronUp, GraduationCap, Globe } from 'lucide-react';
-import { collection, getDocs, query, where, doc, updateDoc } from 'firebase/firestore';
-import { db, collections } from '../services/firebase';
+import { ShieldCheck, Mail, Lock, Loader2, AlertCircle, ChevronDown, GraduationCap, Globe, UserPlus, LogIn } from 'lucide-react';
+import { collection, getDocs, query, where, doc, updateDoc, setDoc, Timestamp } from 'firebase/firestore';
+import { db, collections, auth } from '../services/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { User, AppLanguage } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import Logo from '../components/Logo';
@@ -13,8 +14,11 @@ const Login: React.FC = () => {
     const { t, language, setLanguage, isRTL } = useLanguage();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [role, setRole] = useState<'student' | 'teacher' | 'economic' | 'admin'>('student');
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSignUp, setIsSignUp] = useState(false);
     const [availableUsers, setAvailableUsers] = useState<User[]>([]);
     const [showCredentials, setShowCredentials] = useState(false);
     const [pendingUser, setPendingUser] = useState<User | null>(null);
@@ -36,18 +40,29 @@ const Login: React.FC = () => {
         e.preventDefault();
         setError(null);
         setIsSubmitting(true);
-        try { 
-            const q = query(collection(db, collections.users), where('email', '==', email));
-            const snap = await getDocs(q);
-            if (snap.empty) throw new Error("Invalid email or password.");
-            
-            const u = { id: snap.docs[0].id, ...snap.docs[0].data() } as User;
-
-            if (u.mustChangePassword) {
-                setPendingUser(u);
-                setIsSubmitting(false);
+        try {
+            if (isSignUp) {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await setDoc(doc(db, collections.users, userCredential.user.uid), {
+                    email,
+                    name,
+                    role,
+                    createdAt: Timestamp.now()
+                });
+                await login(email, password);
             } else {
-                await login(email, password); 
+                const q = query(collection(db, collections.users), where('email', '==', email));
+                const snap = await getDocs(q);
+                if (snap.empty) throw new Error("Invalid email or password.");
+                
+                const u = { id: snap.docs[0].id, ...snap.docs[0].data() } as User;
+
+                if (u.mustChangePassword) {
+                    setPendingUser(u);
+                    setIsSubmitting(false);
+                } else {
+                    await login(email, password); 
+                }
             }
         } catch (err: any) {
             setError(err.message || "Authentication failed.");
@@ -252,33 +267,68 @@ const Login: React.FC = () => {
                                 onSubmit={handleSubmit} 
                                 className="space-y-6"
                             >
-                                <div>
-                                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 block px-1">{t('login.email')}</label>
-                                    <div className="relative group">
-                                        <Mail className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors`} size={20} />
-                                        <input 
-                                            type="email" 
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            placeholder="name@institution.edu.dz" 
-                                            className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
-                                            required 
-                                        />
+                                <div className="space-y-6">
+                                    {isSignUp && (
+                                        <>
+                                            <div>
+                                                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 block px-1">Name</label>
+                                                <div className="relative group">
+                                                    <UserPlus className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors`} size={20} />
+                                                    <input 
+                                                        type="text" 
+                                                        value={name}
+                                                        onChange={(e) => setName(e.target.value)}
+                                                        placeholder="Full Name" 
+                                                        className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                        required 
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 block px-1">Role</label>
+                                                <div className="relative group">
+                                                    <select 
+                                                        value={role}
+                                                        onChange={(e) => setRole(e.target.value as 'student' | 'teacher' | 'economic' | 'admin')}
+                                                        className={`w-full bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                    >
+                                                        <option value="student">Student</option>
+                                                        <option value="teacher">Teacher</option>
+                                                        <option value="economic">Economic</option>
+                                                        <option value="admin">System Administrator</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                    <div>
+                                        <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 block px-1">{t('login.email')}</label>
+                                        <div className="relative group">
+                                            <Mail className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors`} size={20} />
+                                            <input 
+                                                type="email" 
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                placeholder="name@institution.edu.dz" 
+                                                className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                required 
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                                
-                                <div>
-                                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 block px-1">{t('login.password')}</label>
-                                    <div className="relative group">
-                                        <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors`} size={20} />
-                                        <input 
-                                            type="password" 
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            placeholder="••••••••" 
-                                            className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
-                                            required 
-                                        />
+                                    
+                                    <div>
+                                        <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 block px-1">{t('login.password')}</label>
+                                        <div className="relative group">
+                                            <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors`} size={20} />
+                                            <input 
+                                                type="password" 
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                placeholder="••••••••" 
+                                                className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                required 
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -287,9 +337,18 @@ const Login: React.FC = () => {
                                     disabled={isSubmitting}
                                     className="w-full bg-primary text-white p-4 rounded-xl font-semibold shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70 mt-2"
                                 >
-                                    {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : null}
-                                    <span>{isSubmitting ? t('login.verifying') : t('login.authenticate')}</span>
+                                    {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : (isSignUp ? <UserPlus size={18} /> : <LogIn size={18} />)}
+                                    <span>{isSubmitting ? t('login.verifying') : (isSignUp ? 'Sign Up' : t('login.authenticate'))}</span>
                                 </button>
+                                <div className="mt-4 text-center">
+                                    <button 
+                                        type="button"
+                                        onClick={() => setIsSignUp(!isSignUp)}
+                                        className="text-xs font-medium text-slate-500 hover:text-primary transition-all"
+                                    >
+                                        {isSignUp ? 'Already have an account? Login' : 'Need an account? Sign Up'}
+                                    </button>
+                                </div>
                             </motion.form>
                         )}
                     </AnimatePresence>

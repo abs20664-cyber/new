@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { PlatformProvider } from './contexts/PlatformContext';
 import { Layout } from './components/Layout';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Lazy load heavy page components
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -55,20 +56,22 @@ const AppContent: React.FC = () => {
   return (
     <PlatformProvider>
         <Layout currentPath={location.pathname} onNavigate={(path) => navigate(path)}>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Dashboard onNavigate={(path) => navigate(path)} />} />
-                <Route path="/schedule" element={<Schedule />} />
-                <Route path="/assignments" element={<Assignments />} />
-                <Route path="/materials" element={<Materials />} />
-                <Route path="/inbox" element={<Inbox />} />
-                <Route path="/scanner" element={<Scanner classId={null} onBack={() => navigate('/')} />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/profile/:id" element={<Profile />} />
-                <Route path="/economic" element={<EconomicDashboard />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
+            <ErrorBoundary>
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    <Route path="/" element={<Dashboard onNavigate={(path) => navigate(path)} />} />
+                    <Route path="/schedule" element={<Schedule />} />
+                    <Route path="/assignments" element={<Assignments />} />
+                    <Route path="/materials" element={<Materials />} />
+                    <Route path="/inbox" element={<Inbox />} />
+                    <Route path="/scanner" element={<Scanner classId={null} onBack={() => navigate('/')} />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/profile/:id" element={<Profile />} />
+                    <Route path="/economic" element={<EconomicDashboard />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </Suspense>
+            </ErrorBoundary>
         </Layout>
     </PlatformProvider>
   );

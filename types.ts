@@ -13,7 +13,7 @@ export interface User {
   age?: number;
   bio?: string;
   fieldOfStudy?: string;
-  subjectsTaughtIds?: string[];
+  subjectsTaught?:string;
   createdAt?: any;
   accountStatus?: 'active' | 'disabled' | 'suspended' | 'pending';
   paymentStatus?: 'paid' | 'unpaid' | 'pending';
@@ -21,11 +21,6 @@ export interface User {
   subscriptionDuration?: number; // in months
   subscriptionStartDate?: any;
   nextPaymentDate?: any;
-}
-
-export interface Subject {
-  id: string;
-  name: string;
 }
 
 export interface StudentSubscription {
@@ -184,5 +179,5 @@ export interface Notification {
 }
 
 export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-export const HOURS_OF_DAY = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+export const HOURS_OF_DAY = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
 export const EMOJI_SET = ['👍', '❤️', '😂', '😮', '😢', '🔥', '✅', '🙏'];

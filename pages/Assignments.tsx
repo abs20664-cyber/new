@@ -27,6 +27,114 @@ import {
     Hash
 } from 'lucide-react';
 
+const AssignmentItem = React.memo(({ hw, user, t, isRTL, isTeacher, studentCount, submissions, handleDeleteAssignment, setIsSubmitModalOpen, downloadFile, navigate }: {
+    hw: Assignment;
+    user: any;
+    t: any;
+    isRTL: boolean;
+    isTeacher: boolean;
+    studentCount: number;
+    submissions: Submission[];
+    handleDeleteAssignment: (id: string) => void;
+    setIsSubmitModalOpen: (id: string | null) => void;
+    downloadFile: (data: string, name: string) => void;
+    navigate: any;
+}) => {
+    const deadline = new Date(`${hw.deadlineDate}T${hw.deadlineTime}`);
+    const isExpired = new Date() > deadline;
+    const mySubmission = submissions.find(s => s.assignmentId === hw.id && s.studentId === user?.id);
+    const submissionCount = submissions.filter(s => s.assignmentId === hw.id).length;
+    const isCreator = user?.id === hw.creatorId;
+
+    return (
+        <div key={hw.id} className="group relative flex flex-col bg-sidebar rounded-[2.5rem] border border-border shadow-sm hover:shadow-2xl transition-all overflow-hidden p-8">
+            {isCreator && (
+                <button onClick={() => handleDeleteAssignment(hw.id)} className={`absolute top-8 ${isRTL ? 'left-8' : 'right-8'} p-3 bg-background rounded-2xl text-text-secondary hover:text-danger transition-all border border-border`}>
+                    <Trash2 size={20} />
+                </button>
+            )}
+            
+            <div className="flex-1 text-start">
+                <div className="flex items-center gap-3 mb-6">
+                    <span className={`inline-flex px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isExpired ? 'bg-background text-text-secondary/50 border border-border' : 'bg-primary/10 text-primary border border-primary/10'}`}>
+                        {hw.deadlineDate} @ {hw.deadlineTime}
+                    </span>
+                    {isTeacher && (
+                        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black bg-success/10 text-success border border-success/10 uppercase tracking-widest">
+                            <Hash size={12} />
+                            {submissionCount} / {studentCount}
+                        </span>
+                    )}
+                </div>
+                
+                <h3 className="text-2xl font-black text-text uppercase tracking-tight mb-4 leading-tight group-hover:text-primary transition-colors">{hw.title}</h3>
+                <p className="text-sm text-text-secondary line-clamp-3 mb-8 leading-relaxed font-medium">{hw.description}</p>
+                
+                <div className="flex flex-wrap items-center gap-6 mb-8">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary/50">
+                        <Clock size={16} />
+                        <span>{isExpired ? t('dropbox.closed') : t('dropbox.deadline')}</span>
+                    </div>
+                    {hw.fileData && (
+                        <button onClick={() => downloadFile(hw.fileData!, hw.fileName!)} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:underline">
+                            <Paperclip size={16} />
+                            {t('dropbox.resource')}
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Student Work Visibility */}
+            {!isTeacher && mySubmission && (
+                <div className="mb-8 rounded-[2rem] border border-success/20 bg-success/5 p-8 text-start shadow-inner">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center text-success">
+                                <Award size={20} />
+                            </div>
+                            <span className="text-[11px] font-black uppercase tracking-widest text-text">{t('dropbox.score')}</span>
+                        </div>
+                        <span className="text-3xl font-black text-success tracking-tighter">{mySubmission.grade ?? '--'} <span className="text-xs text-text-secondary/50 font-black uppercase tracking-widest ml-1">/ 20</span></span>
+                    </div>
+                    {mySubmission.review && (
+                        <div className="pt-6 border-t border-success/10">
+                            <p className="text-[9px] font-black text-text-secondary/50 uppercase tracking-[0.3em] mb-3">{t('dropbox.review')}</p>
+                            <p className="text-sm text-text-secondary italic bg-background p-5 rounded-2xl border border-border shadow-inner leading-relaxed font-medium">"{mySubmission.review}"</p>
+                            <div className="mt-4 flex items-center gap-3 text-[10px] text-text-secondary/50 font-black uppercase tracking-widest">
+                                <UserIcon size={14} />
+                                <span>{mySubmission.gradedByName}</span>
+                                {mySubmission.gradedAt && (
+                                    <>
+                                        <div className="w-1 h-1 rounded-full bg-text-secondary/20"></div>
+                                        <span>{new Date(mySubmission.gradedAt.seconds * 1000).toLocaleDateString()}</span>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+            
+            <div className="mt-auto pt-6 border-t border-border">
+                {isTeacher ? (
+                    <button onClick={() => {}} className="w-full inline-flex items-center justify-center gap-3 py-4 text-[11px] font-black uppercase tracking-[0.2em] text-text-secondary bg-background hover:bg-sidebar rounded-2xl transition-all border border-border hover:border-primary/20">
+                        {t('dropbox.auditLedger')} <ChevronRight size={18} />
+                    </button>
+                ) : (
+                    <button 
+                        onClick={() => !isExpired && !mySubmission && setIsSubmitModalOpen(hw.id)} 
+                        disabled={isExpired || !!mySubmission} 
+                        className={`w-full inline-flex items-center justify-center gap-3 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all ${isExpired || mySubmission ? 'bg-background text-text-secondary/30 cursor-not-allowed border border-border' : 'bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/20 hover:scale-[1.02]'}`}
+                    >
+                        {mySubmission ? <CheckCircle size={20} /> : isExpired ? <AlertCircle size={20} /> : <UploadCloud size={20} />}
+                        {mySubmission ? t('common.success') : isExpired ? t('dropbox.closed') : t('dropbox.submit')}
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+});
+
 const Assignments: React.FC = () => {
     const { user } = useAuth();
     const { t, isRTL, language } = useLanguage();

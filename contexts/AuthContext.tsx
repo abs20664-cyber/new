@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
-import { db, collections } from '../services/firebase';
+import { db, collections, auth } from '../services/firebase';
 import { doc, getDoc, onSnapshot, updateDoc, Timestamp } from 'firebase/firestore';
-import { supabase } from '../services/supabase';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -18,13 +18,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
         // Fetch user profile from Firestore
-        const userRef = doc(db, collections.users, session.user.id);
+        const userRef = doc(db, collections.users, firebaseUser.uid);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
-          setUser({ id: session.user.id, ...userSnap.data() } as User);
+          setUser({ id: firebaseUser.uid, ...userSnap.data() } as User);
         } else {
           setUser(null);
         }
@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   // Real-time user sync
@@ -76,8 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, pass: string) => {
     setLoading(true);
     try {
-        const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
-        if (error) throw error;
+        await signInWithEmailAndPassword(auth, email, pass);
     } catch (e: any) {
         console.error("Login failed", e);
         throw e;
@@ -87,7 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    await signOut(auth);
     setUser(null);
   };
 

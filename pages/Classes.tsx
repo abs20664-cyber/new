@@ -28,6 +28,74 @@ interface ClassesProps {
     onNavigate: (path: string, classId?: string) => void;
 }
 
+const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, t, isRTL, openModal, handleDelete, navigate }: {
+    cl: ClassSession;
+    isLive: boolean;
+    hasEnded: boolean;
+    t: any;
+    isRTL: boolean;
+    openModal: (cl: ClassSession) => void;
+    handleDelete: (id: string) => void;
+    navigate: any;
+}) => {
+    return (
+        <div key={cl.id} className={`p-8 bg-sidebar relative group rounded-[2.5rem] border border-border shadow-sm transition-all hover:shadow-xl hover:border-primary/20 ${isLive ? 'ring-2 ring-success ring-offset-4 ring-offset-background' : ''} ${hasEnded ? 'opacity-60 bg-sidebar/50' : ''}`}>
+            <div className={`absolute top-8 ${isRTL ? 'left-8' : 'right-8'} flex gap-3 z-10 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0`}>
+                <button 
+                    onClick={() => openModal(cl)} 
+                    className="w-11 h-11 flex items-center justify-center text-text-secondary hover:text-primary transition-all bg-background rounded-2xl shadow-xl border border-border"
+                >
+                    <SlidersHorizontal size={18} />
+                </button>
+                <button 
+                    onClick={() => handleDelete(cl.id)} 
+                    className="w-11 h-11 flex items-center justify-center text-text-secondary hover:text-danger transition-all bg-background rounded-2xl shadow-xl border border-border"
+                >
+                    <Trash2 size={18} />
+                </button>
+            </div>
+
+            <div className="mb-10 text-start">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isLive ? 'bg-success text-white' : hasEnded ? 'bg-background text-text-secondary' : 'bg-primary/10 text-primary'}`}>
+                        {isLive ? t('hub.liveNow') : hasEnded ? t('hub.ended') : cl.type}
+                    </div>
+                    <div className="text-[10px] font-black text-text-secondary/50 uppercase tracking-widest">{cl.date}</div>
+                </div>
+                
+                <h3 className="font-black text-2xl tracking-tight uppercase text-text leading-tight mb-8 min-h-[3.5rem] line-clamp-2">{cl.name}</h3>
+                
+                <div className="space-y-4">
+                    <div className="flex items-center gap-4 p-4 bg-background rounded-2xl border border-border">
+                        <div className="p-2.5 bg-sidebar rounded-xl shadow-sm border border-border"><MapPin size={18} className="text-primary" /></div>
+                        <div className="text-start">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50 leading-none mb-1">Assigned Hall</p>
+                            <p className="text-sm font-black text-text uppercase leading-none">{cl.room || 'TBA'}</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-4 p-4 bg-background rounded-2xl border border-border">
+                        <div className="p-2.5 bg-sidebar rounded-xl shadow-sm border border-border"><Clock size={18} className="text-primary" /></div>
+                        <div className="text-start">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50 leading-none mb-1">Temporal Block</p>
+                            <p className="text-sm font-black text-text uppercase leading-none">{cl.time} — {cl.endTime}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button 
+                onClick={() => !hasEnded && navigate('/scanner', { state: { classId: cl.id } })}
+                disabled={hasEnded}
+                className={`w-full py-5 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-xl flex items-center justify-center gap-3 transition-all ${hasEnded ? 'bg-background text-text-secondary/30 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-primary/20 hover:scale-[1.02] active:scale-95'}`}
+            >
+                {hasEnded ? <CalendarOff size={20} /> : <Scan size={20} />}
+                {hasEnded ? t('hub.ended') : t('hub.marks')}
+                {!hasEnded && <ChevronRight size={16} className={`opacity-50 ${isRTL ? 'rotate-180' : ''}`} />}
+            </button>
+        </div>
+    );
+});
+
 const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
     const { user } = useAuth();
     const { t, isRTL } = useLanguage();
@@ -126,60 +194,17 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                     const hasEnded = checkHasEnded(cl.date, cl.endTime);
                     
                     return (
-                        <div key={cl.id} className={`p-8 bg-sidebar relative group rounded-[2.5rem] border border-border shadow-sm transition-all hover:shadow-xl hover:border-primary/20 ${isLive ? 'ring-2 ring-success ring-offset-4 ring-offset-background' : ''} ${hasEnded ? 'opacity-60 bg-sidebar/50' : ''}`}>
-                            <div className={`absolute top-8 ${isRTL ? 'left-8' : 'right-8'} flex gap-3 z-10 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0`}>
-                                <button 
-                                    onClick={() => openModal(cl)} 
-                                    className="w-11 h-11 flex items-center justify-center text-text-secondary hover:text-primary transition-all bg-background rounded-2xl shadow-xl border border-border"
-                                >
-                                    <SlidersHorizontal size={18} />
-                                </button>
-                                <button 
-                                    onClick={() => handleDelete(cl.id)} 
-                                    className="w-11 h-11 flex items-center justify-center text-text-secondary hover:text-danger transition-all bg-background rounded-2xl shadow-xl border border-border"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </div>
-
-                            <div className="mb-10 text-start">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isLive ? 'bg-success text-white' : hasEnded ? 'bg-background text-text-secondary' : 'bg-primary/10 text-primary'}`}>
-                                        {isLive ? t('hub.liveNow') : hasEnded ? t('hub.ended') : cl.type}
-                                    </div>
-                                    <div className="text-[10px] font-black text-text-secondary/50 uppercase tracking-widest">{cl.date}</div>
-                                </div>
-                                
-                                <h3 className="font-black text-2xl tracking-tight uppercase text-text leading-tight mb-8 min-h-[3.5rem] line-clamp-2">{cl.name}</h3>
-                                
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-4 p-4 bg-background rounded-2xl border border-border">
-                                        <div className="p-2.5 bg-sidebar rounded-xl shadow-sm border border-border"><MapPin size={18} className="text-primary" /></div>
-                                        <div className="text-start">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50 leading-none mb-1">Assigned Hall</p>
-                                            <p className="text-sm font-black text-text uppercase leading-none">{cl.room || 'TBA'}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4 p-4 bg-background rounded-2xl border border-border">
-                                        <div className="p-2.5 bg-sidebar rounded-xl shadow-sm border border-border"><Clock size={18} className="text-primary" /></div>
-                                        <div className="text-start">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50 leading-none mb-1">Temporal Block</p>
-                                            <p className="text-sm font-black text-text uppercase leading-none">{cl.time} — {cl.endTime}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button 
-                                onClick={() => !hasEnded && navigate('/scanner', { state: { classId: cl.id } })}
-                                disabled={hasEnded}
-                                className={`w-full py-5 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-xl flex items-center justify-center gap-3 transition-all ${hasEnded ? 'bg-background text-text-secondary/30 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-primary/20 hover:scale-[1.02] active:scale-95'}`}
-                            >
-                                {hasEnded ? <CalendarOff size={20} /> : <Scan size={20} />}
-                                {hasEnded ? t('hub.ended') : t('hub.marks')}
-                                {!hasEnded && <ChevronRight size={16} className={`opacity-50 ${isRTL ? 'rotate-180' : ''}`} />}
-                            </button>
-                        </div>
+                        <ClassSessionItem 
+                            key={cl.id}
+                            cl={cl}
+                            isLive={isLive}
+                            hasEnded={hasEnded}
+                            t={t}
+                            isRTL={isRTL}
+                            openModal={openModal}
+                            handleDelete={handleDelete}
+                            navigate={navigate}
+                        />
                     );
                 })}
             </div>
