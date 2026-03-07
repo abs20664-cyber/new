@@ -64,6 +64,7 @@ const EconomicDashboard: React.FC = () => {
     const [auditLogs, setAuditLogs] = useState<FinancialAuditLog[]>([]);
     const [paymentRecords, setPaymentRecords] = useState<StudentPaymentRecord[]>([]);
     
+    const [editingSession, setEditingSession] = useState<RecurringSession | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'teachers' | 'audit'>('overview');
     const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -764,6 +765,7 @@ const EconomicDashboard: React.FC = () => {
                     </div>
                 </div>
             )}
+
 
             {(activeTab === 'students' || activeTab === 'teachers') && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">

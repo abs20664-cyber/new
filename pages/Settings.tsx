@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db, collections } from '../services/firebase';
+import { auth, db, collections } from '../services/firebase';
+import { updatePassword, updateEmail } from 'firebase/auth';
 import { AppLanguage } from '../types';
 import { Save, Lock, Mail, User as UserIcon, CheckCircle, AlertCircle, Languages } from 'lucide-react';
 
@@ -23,23 +24,35 @@ const Settings: React.FC = () => {
             const updates: any = {};
             if (name !== user.name) updates.name = name;
             
-            if (email && email !== user.email) {
-                updates.email = email;
-            }
-            if (password.trim()) {
-                updates.password = password;
+            // 1. Update Firebase Auth Credentials if changed
+            if (auth.currentUser) {
+                if (email && email !== user.email) {
+                    await updateEmail(auth.currentUser, email);
+                    updates.email = email;
+                }
+                if (password.trim()) {
+                    await updatePassword(auth.currentUser, password);
+                }
             }
 
+            // 2. Update Firestore Metadata
             if (Object.keys(updates).length > 0) {
                 await updateDoc(doc(db, collections.users, user.id), updates);
                 setStatus({ type: 'success', msg: t('settings.updated') });
-            } else {
+            } else if (password.trim()) {
                 setStatus({ type: 'success', msg: t('settings.updated') });
             }
             
             setPassword('');
         } catch (error: any) {
-            setStatus({ type: 'error', msg: t('common.error') + ': ' + error.message });
+            console.error("Update failed", error);
+            let msg = t('common.error');
+            if (error.code === 'auth/requires-recent-login') {
+                msg = "For security, please log out and log back in before changing your email or password.";
+            } else {
+                msg += ': ' + error.message;
+            }
+            setStatus({ type: 'error', msg });
         }
     };
 

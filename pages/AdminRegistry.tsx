@@ -1,7 +1,7 @@
 import React, { useEffect, useState, memo, useMemo } from 'react';
 import { collection, onSnapshot, doc, setDoc, updateDoc, getDocs, Timestamp } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
-import { User, UserRole } from '../types';
+import { User, UserRole, Subject } from '../types';
 import { Trash2, Plus, Settings, Shield, GraduationCap, X, Loader2, ShieldAlert, AlertTriangle, User as UserIcon, DollarSign, Users, Search, Filter } from 'lucide-react';
 import { superAdminHardDelete } from '../services/adminTools';
 import { useAuth } from '../contexts/AuthContext';
@@ -94,6 +94,17 @@ const AdminRegistry: React.FC = () => {
     
     const [searchQuery, setSearchQuery] = useState('');
     const [roleFilter, setRoleFilter] = useState<UserRole | 'all'>('all');
+    const [subjects, setSubjects] = useState<Subject[]>([]);
+    const [newSubject, setNewSubject] = useState('');
+    const [editData, setEditData] = useState<Partial<User>>({});
+
+    useEffect(() => {
+        if (editingUser) {
+            setEditData({ ...editingUser });
+        } else {
+            setEditData({});
+        }
+    }, [editingUser]);
 
     useEffect(() => {
         const unsub = onSnapshot(collection(db, collections.users), (snap) => {
@@ -104,8 +115,24 @@ const AdminRegistry: React.FC = () => {
             setUsers(fetchedUsers);
             setLoading(false);
         });
-        return () => unsub();
+        const unsubSubjects = onSnapshot(collection(db, collections.subjects), (snap) => {
+            const fetchedSubjects = snap.docs
+                .map(d => ({ id: d.id, ...d.data() } as Subject));
+            setSubjects(fetchedSubjects);
+        });
+        return () => { unsub(); unsubSubjects(); };
     }, []);
+
+    const addSubject = async () => {
+        if (!newSubject.trim()) return;
+        const subjectRef = doc(collection(db, collections.subjects));
+        await setDoc(subjectRef, { name: newSubject });
+        setNewSubject('');
+    };
+
+    const deleteSubject = async (id: string) => {
+        await updateDoc(doc(db, collections.subjects, id), { status: 'deleted' });
+    };
 
     const performHardDelete = async (targetUserId: string) => {
         setProcessingId(targetUserId);
@@ -141,6 +168,7 @@ const AdminRegistry: React.FC = () => {
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
         const role = formData.get('role') as UserRole;
+        const subjectsTaughtIds = editData.subjectsTaughtIds || [];
         const id = editingUser ? editingUser.id : (formData.get('id') as string);
 
         try {
@@ -148,6 +176,7 @@ const AdminRegistry: React.FC = () => {
                 const updates: any = {};
                 if (name !== editingUser.name) updates.name = name;
                 if (role !== editingUser.role) updates.role = role;
+                if (JSON.stringify(subjectsTaughtIds) !== JSON.stringify(editingUser.subjectsTaughtIds || [])) updates.subjectsTaughtIds = subjectsTaughtIds;
                 
                 // Credential Safeguards: Only update if explicitly changed
                 if (email && email !== editingUser.email) {
@@ -170,6 +199,7 @@ const AdminRegistry: React.FC = () => {
                     email,
                     password,
                     role,
+                    subjectsTaughtIds,
                     lastSeen: null,
                     createdAt: Timestamp.now(),
                     accountStatus: 'active',
@@ -336,6 +366,29 @@ const AdminRegistry: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Subject Management */}
+                <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-institutional-500 mb-4">{t('admin.manageSubjects')}</h3>
+                    <div className="flex gap-2 mb-4">
+                        <input 
+                            type="text" 
+                            value={newSubject}
+                            onChange={(e) => setNewSubject(e.target.value)}
+                            placeholder="New subject name..."
+                            className="flex-1 bg-institutional-50 dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 rounded-xl py-3 px-4 text-sm font-bold text-institutional-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
+                        />
+                        <button onClick={addSubject} className="bg-primary text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest"><Plus size={16} /></button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {subjects.map(s => (
+                            <div key={s.id} className="flex items-center gap-2 bg-institutional-100 dark:bg-institutional-800 px-3 py-1 rounded-full text-xs font-bold">
+                                {s.name}
+                                <button onClick={() => deleteSubject(s.id)} className="text-danger"><X size={14} /></button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Registry List */}
                 {isMobile ? (
                     <List
@@ -397,7 +450,7 @@ const AdminRegistry: React.FC = () => {
 
             {isModalOpen && (
                 <div className={`fixed inset-0 z-[100] bg-black/70 backdrop-blur-md flex items-center justify-center ${isMobile ? 'p-0 items-end' : 'p-4'}`}>
-                    <div className={`bg-surface dark:bg-institutional-900 shadow-2xl relative border border-institutional-200 dark:border-institutional-800 ${isMobile ? 'w-full rounded-t-[2.5rem] p-8 pb-12' : 'max-w-lg w-full p-10 rounded-[2rem] card-edu'}`}>
+                    <div className={`bg-surface dark:bg-institutional-900 shadow-2xl relative border border-institutional-200 dark:border-institutional-800 max-h-[90vh] overflow-y-auto ${isMobile ? 'w-full rounded-t-[2.5rem] p-6 pb-10' : 'max-w-lg w-full p-10 rounded-[2rem] card-edu'}`}>
                         <button onClick={() => setIsModalOpen(false)} className={`absolute top-6 ${isRTL ? 'left-6' : 'right-6'} text-institutional-500`}><X size={24} /></button>
                         <h3 className="text-xl font-black mb-8 uppercase tracking-tight text-institutional-950 dark:text-white">
                             {editingUser ? t('admin.updateProfile') : t('admin.newAccount')}
@@ -441,9 +494,25 @@ const AdminRegistry: React.FC = () => {
                                     </select>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.systemId')}</label>
-                                    <input name="id" defaultValue={editingUser?.id} placeholder="ID_000" className={`w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold outline-none ${editingUser ? 'opacity-50' : ''}`} readOnly={!!editingUser} required />
+                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.subjects')}</label>
+                                    <div className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none max-h-40 overflow-y-auto">
+                                        {subjects.map(s => (
+                                            <label key={s.id} className="flex items-center gap-2">
+                                                <input type="checkbox" name="subjects" value={s.id} checked={editData.subjectsTaughtIds?.includes(s.id) || false} onChange={(e) => {
+                                                    const newSubjects = e.target.checked 
+                                                        ? [...(editData.subjectsTaughtIds || []), s.id]
+                                                        : (editData.subjectsTaughtIds || []).filter(id => id !== s.id);
+                                                    setEditData({ ...editData, subjectsTaughtIds: newSubjects });
+                                                }} />
+                                                {s.name}
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.systemId')}</label>
+                                <input name="id" defaultValue={editingUser?.id} placeholder="ID_000" className={`w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold outline-none ${editingUser ? 'opacity-50' : ''}`} readOnly={!!editingUser} required />
                             </div>
                             <button type="submit" className="w-full bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 p-4 rounded-xl font-black uppercase tracking-widest shadow-xl mt-4">{t('admin.confirmChanges')}</button>
                         </form>

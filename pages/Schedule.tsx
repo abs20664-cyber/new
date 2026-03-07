@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
-import { ClassSession } from '../types';
+import { ClassSession, RecurringSession } from '../types';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, CheckCircle2, XCircle, CalendarDays } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
@@ -14,6 +14,7 @@ const Schedule: React.FC = () => {
     const navigate = useNavigate();
 
     const [classes, setClasses] = useState<ClassSession[]>([]);
+    const [recurringSessions, setRecurringSessions] = useState<RecurringSession[]>([]);
     const [attendance, setAttendance] = useState<any[]>([]);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [expandedSession, setExpandedSession] = useState<string | null>(null);
@@ -21,6 +22,10 @@ const Schedule: React.FC = () => {
     useEffect(() => {
         const unsubClasses = onSnapshot(collection(db, collections.classes), (snap) => {
             setClasses(snap.docs.map(d => ({ id: d.id, ...d.data() } as ClassSession)));
+        });
+        
+        const unsubRecurring = onSnapshot(collection(db, 'recurring_sessions'), (snap) => {
+            setRecurringSessions(snap.docs.map(d => ({ id: d.id, ...d.data() } as RecurringSession)));
         });
         
         const qAttendance = user?.role === 'student' 
@@ -31,7 +36,7 @@ const Schedule: React.FC = () => {
             setAttendance(snap.docs.map(d => ({ id: d.id, ...d.data() })));
         });
         
-        return () => { unsubClasses(); unsubAttendance(); };
+        return () => { unsubClasses(); unsubAttendance(); unsubRecurring(); };
     }, [user?.role, user?.id]);
 
     const checkIsLive = useCallback((date: string, start: string, end: string) => {
@@ -68,10 +73,20 @@ const Schedule: React.FC = () => {
         return d.toISOString().split('T')[0];
     }, [currentDate]);
 
-    const todaysClasses = useMemo(() => 
-        classes.filter(c => c.date === formattedToday).sort((a,b) => a.time.localeCompare(b.time)),
-        [classes, formattedToday]
-    );
+    const todaysClasses = useMemo(() => {
+        const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
+        const recurring = recurringSessions
+            .filter(s => s.dayOfWeek === dayName)
+            .map(s => ({
+                ...s,
+                date: formattedToday,
+                time: s.startTime,
+                endTime: s.endTime
+            } as ClassSession));
+        
+        return [...classes.filter(c => c.date === formattedToday), ...recurring]
+            .sort((a,b) => a.time.localeCompare(b.time));
+    }, [classes, recurringSessions, formattedToday, currentDate]);
 
     const navigateMonth = (direction: number) => {
         const newDate = new Date(currentDate);

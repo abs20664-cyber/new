@@ -202,6 +202,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
         ? [
             { path: '/', label: t('nav.economic'), icon: DollarSign },
             { path: '/schedule', label: t('nav.schedule'), icon: CalendarDays },
+            { path: '/timetable', label: 'Timetable', icon: CalendarCheck },
             { path: `/profile/${user?.id}`, label: t('nav.myProfile'), icon: UserCircle },
             { path: '/settings', label: t('nav.settings'), icon: Settings }
         ]

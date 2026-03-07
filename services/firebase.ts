@@ -27,7 +27,8 @@ export const collections = {
     submissions: `artifacts/${APP_ID}/public/data/submissions`,
     notifications: `artifacts/${APP_ID}/public/data/notifications`,
     typing: `artifacts/${APP_ID}/public/data/typing`,
-    groups: `artifacts/${APP_ID}/public/data/groups`
+    groups: `artifacts/${APP_ID}/public/data/groups`,
+    subjects: `artifacts/${APP_ID}/public/data/subjects`
 };
 
 export const signIn = async () => {

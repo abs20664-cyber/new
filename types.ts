@@ -13,7 +13,7 @@ export interface User {
   age?: number;
   bio?: string;
   fieldOfStudy?: string;
-  subjectsTaught?:string;
+  subjectsTaughtIds?: string[];
   createdAt?: any;
   accountStatus?: 'active' | 'disabled' | 'suspended' | 'pending';
   paymentStatus?: 'paid' | 'unpaid' | 'pending';
@@ -21,6 +21,11 @@ export interface User {
   subscriptionDuration?: number; // in months
   subscriptionStartDate?: any;
   nextPaymentDate?: any;
+}
+
+export interface Subject {
+  id: string;
+  name: string;
 }
 
 export interface StudentSubscription {

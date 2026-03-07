@@ -100,7 +100,8 @@ export const translations = {
       legalName: "Legal Name", email: "Email Address", passcode: "Password",
       systemId: "System ID", confirmChanges: "Confirm Changes",
       idWarning: "WARNING: DELETING YOUR OWN ADMIN ACCOUNT. Confirm?",
-      deleteUser: "Delete user permanently?", registryEmpty: "Registry Empty"
+      deleteUser: "Delete user permanently?", registryEmpty: "Registry Empty",
+      subjects: "Subjects", manageSubjects: "Manage Subjects"
     },
     profile: {
       title: "User Profile",
@@ -115,6 +116,7 @@ export const translations = {
       bio: "Bio",
       fieldOfStudy: "Field of Study",
       subjectsTaught: "Subjects Taught",
+      subjects: "Subjects",
       memberSince: "Member Since",
       timeOnPlatform: "Time on Platform",
       saveChanges: "Save Changes",
@@ -268,7 +270,8 @@ export const translations = {
       legalName: "Nom Légal", email: "Adresse Email", passcode: "Mot de passe",
       systemId: "ID Système", confirmChanges: "Confirmer Changements",
       idWarning: "Attention : suppression de votre propre compte.",
-      deleteUser: "Supprimer définitivement ?", registryEmpty: "Registre Vide"
+      deleteUser: "Supprimer définitivement ?", registryEmpty: "Registre Vide",
+      subjects: "Sujets", manageSubjects: "Gérer les Sujets"
     },
     profile: {
       title: "Profil Utilisateur",
@@ -283,6 +286,7 @@ export const translations = {
       bio: "Bio",
       fieldOfStudy: "Domaine d'Étude",
       subjectsTaught: "Sujets Enseignés",
+      subjects: "Sujets",
       memberSince: "Membre Depuis",
       timeOnPlatform: "Temps sur la Plateforme",
       saveChanges: "Enregistrer les Modifications",
@@ -436,7 +440,8 @@ export const translations = {
       legalName: "الاسم القانوني", email: "البريد الإلكتروني", passcode: "كلمة المرور",
       systemId: "معرف النظام", confirmChanges: "تأكيد التغييرات",
       idWarning: "تحذير: حذف حسابك الخاص.",
-      deleteUser: "حذف نهائياً؟", registryEmpty: "السجل فارغ"
+      deleteUser: "حذف نهائياً؟", registryEmpty: "السجل فارغ",
+      subjects: "المواد", manageSubjects: "إدارة المواد"
     },
     profile: {
       title: "ملف المستخدم",
@@ -451,6 +456,7 @@ export const translations = {
       bio: "نبذة",
       fieldOfStudy: "مجال الدراسة",
       subjectsTaught: "المواد التي يدرسها",
+      subjects: "المواد",
       memberSince: "عضو منذ",
       timeOnPlatform: "الوقت على المنصة",
       saveChanges: "حفظ التغييرات",

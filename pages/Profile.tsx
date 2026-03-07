@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
+import { User, Subject } from '../types';
 import { db, collections } from '../services/firebase';
-import { User } from '../types';
+import { collection, onSnapshot, doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { 
@@ -29,6 +29,7 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   
   const [profileUser, setProfileUser] = useState<User | null>(null);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<Partial<User>>({});
@@ -58,7 +59,14 @@ const Profile: React.FC = () => {
       }
     };
 
+    const unsubSubjects = onSnapshot(collection(db, collections.subjects), (snap) => {
+        const fetchedSubjects = snap.docs
+            .map(d => ({ id: d.id, ...d.data() } as Subject));
+        setSubjects(fetchedSubjects);
+    });
+
     fetchProfile();
+    return () => unsubSubjects();
   }, [id]);
 
   const handleSave = async () => {
@@ -71,7 +79,7 @@ const Profile: React.FC = () => {
       const profileUpdates = {
         avatar: editData.avatar,
         fieldOfStudy: editData.fieldOfStudy,
-        subjectsTaught: editData.subjectsTaught,
+        subjectsTaughtIds: editData.subjectsTaughtIds,
         age: editData.age,
         bio: editData.bio
       };
@@ -278,19 +286,25 @@ const Profile: React.FC = () => {
               {profileUser.role === 'teacher' && !isEconomic && (
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-institutional-400 mb-2">
-                    {t('profile.subjectsTaught')}
+                    {t('profile.subjects')}
                   </label>
                   {isEditing ? (
-                    <input 
-                      type="text"
-                      value={editData.subjectsTaught || ''}
-                      onChange={(e) => setEditData({ ...editData, subjectsTaught: e.target.value })}
-                      placeholder={t('profile.subjectsPlaceholder')}
-                      className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none transition-all"
-                    />
+                    <div className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none max-h-40 overflow-y-auto">
+                        {subjects.map(s => (
+                            <label key={s.id} className="flex items-center gap-2">
+                                <input type="checkbox" checked={editData.subjectsTaughtIds?.includes(s.id)} onChange={(e) => {
+                                    const newSubjects = e.target.checked 
+                                        ? [...(editData.subjectsTaughtIds || []), s.id]
+                                        : (editData.subjectsTaughtIds || []).filter(id => id !== s.id);
+                                    setEditData({ ...editData, subjectsTaughtIds: newSubjects });
+                                }} />
+                                {s.name}
+                            </label>
+                        ))}
+                    </div>
                   ) : (
                     <p className="text-institutional-700 dark:text-institutional-300 font-bold text-lg">
-                      {profileUser.subjectsTaught || '---'}
+                      {profileUser.subjectsTaughtIds?.map(id => subjects.find(s => s.id === id)?.name).filter(Boolean).join(', ') || '---'}
                     </p>
                   )}
                 </div>
