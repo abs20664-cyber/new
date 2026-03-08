@@ -77,11 +77,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
         await signInWithEmailAndPassword(auth, email, pass);
+        // Do not set loading to false here on success.
+        // onAuthStateChanged will handle setting loading to false after fetching the user profile.
     } catch (e: any) {
         console.error("Login failed", e);
-        throw e;
-    } finally {
         setLoading(false);
+        throw e;
     }
   };
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, memo } from 'react';
 import { collection, onSnapshot, doc, updateDoc, setDoc, query, where, addDoc, Timestamp, orderBy, limit } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
-import { User, StudentSubscription, TeacherPayment, FinancialAuditLog, FinancialSummary, StudentPaymentRecord, ClassSession, DAYS_OF_WEEK, HOURS_OF_DAY } from '../types';
+import { User, StudentSubscription, TeacherPayment, FinancialAuditLog, FinancialSummary, StudentPaymentRecord } from '../types';
 import { 
     Search, 
     Filter, 
@@ -64,9 +64,9 @@ const EconomicDashboard: React.FC = () => {
     const [auditLogs, setAuditLogs] = useState<FinancialAuditLog[]>([]);
     const [paymentRecords, setPaymentRecords] = useState<StudentPaymentRecord[]>([]);
     
+    const [editingSession, setEditingSession] = useState<RecurringSession | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'teachers' | 'audit' | 'sessions' | 'timetable'>('overview');
-    const [sessions, setSessions] = useState<ClassSession[]>([]);
+    const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'teachers' | 'audit'>('overview');
     const [filterStatus, setFilterStatus] = useState<string>('all');
     const [editingNote, setEditingNote] = useState<string | null>(null);
     const [noteValue, setNoteValue] = useState('');
@@ -123,12 +123,8 @@ const EconomicDashboard: React.FC = () => {
             setPaymentRecords(snap.docs.map(d => ({ id: d.id, ...d.data() } as StudentPaymentRecord)));
         });
 
-        const unsubSessions = onSnapshot(collection(db, collections.classes), (snap) => {
-            setSessions(snap.docs.map(d => ({ id: d.id, ...d.data() } as ClassSession)));
-        });
-
         return () => {
-            unsubStudents(); unsubTeachers(); unsubSubs(); unsubPayments(); unsubAudit(); unsubPaymentRecords(); unsubSessions();
+            unsubStudents(); unsubTeachers(); unsubSubs(); unsubPayments(); unsubAudit(); unsubPaymentRecords();
         };
     }, []);
 
@@ -654,26 +650,26 @@ const EconomicDashboard: React.FC = () => {
                     
                     {/* Desktop Tabs */}
                     <div className="hidden md:flex bg-institutional-100 dark:bg-institutional-800 p-1 rounded-2xl">
-                        {(['overview', 'students', 'teachers', 'audit', 'sessions', 'timetable'] as const).map(tab => (
+                        {(['overview', 'students', 'teachers', 'audit'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-500 hover:text-institutional-700'}`}>
-                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : tab === 'audit' ? 'Audit' : tab === 'sessions' ? 'Sessions' : 'Timetable'}
+                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : 'Audit'}
                             </button>
                         ))}
                     </div>
                 </div>
 
                 {/* Mobile Tabs - Centered & Polished */}
-                <div className="md:hidden fixed bottom-4 left-0 right-0 z-50 flex justify-center">
-                    <div className="inline-flex bg-surface dark:bg-institutional-800 p-1.5 rounded-2xl shadow-xl border border-institutional-200 dark:border-institutional-700 overflow-x-auto scrollbar-hide max-w-[95vw]">
-                        {(['overview', 'students', 'teachers', 'audit', 'sessions', 'timetable'] as const).map(tab => (
+                <div className="md:hidden flex justify-center mb-6">
+                    <div className="inline-flex bg-institutional-100 dark:bg-institutional-800 p-1.5 rounded-2xl shadow-inner overflow-x-auto scrollbar-hide max-w-[95vw]">
+                        {(['overview', 'students', 'teachers', 'audit'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-institutional-100 dark:bg-institutional-700 text-primary shadow-md scale-105' : 'text-institutional-500'}`}>
-                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs').split(' ')[0] : tab === 'teachers' ? t('economic.teacherPayments').split(' ')[0] : tab === 'audit' ? 'Audit' : tab === 'sessions' ? 'Sessions' : 'Timetable'}
+                                className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-md scale-105' : 'text-institutional-500'}`}>
+                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs').split(' ')[0] : tab === 'teachers' ? t('economic.teacherPayments').split(' ')[0] : 'Audit'}
                             </button>
                         ))}
                     </div>
@@ -770,6 +766,7 @@ const EconomicDashboard: React.FC = () => {
                 </div>
             )}
 
+
             {(activeTab === 'students' || activeTab === 'teachers') && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     {/* Filters & Search */}
@@ -811,229 +808,7 @@ const EconomicDashboard: React.FC = () => {
                     </div>
 
                     {activeTab === 'students' && <StudentList />}
-                    {activeTab === 'teachers' && (
-                        isMobile ? (
-                            <div className="space-y-4">
-                                {filteredTeachers.map(t_user => {
-                                    const pay = payments[t_user.id];
-                                    return (
-                                        <div key={t_user.id} className="bg-white dark:bg-slate-900 border-l-4 border-primary rounded-2xl p-6 text-start shadow-sm">
-                                            <div className="flex items-center justify-between mb-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
-                                                        {t_user.name.charAt(0)}
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-black text-sm text-slate-900 dark:text-white">{t_user.name}</p>
-                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">ID: {t_user.id}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="relative">
-                                                    <select 
-                                                        value={pay?.status || 'Pending'}
-                                                        onChange={(e) => handleUpdateTeacherPayment(t_user.id, e.target.value as 'Paid' | 'Unpaid' | 'Pending')}
-                                                        className={`w-full appearance-none text-xs font-bold p-2 rounded-lg border-2 bg-transparent transition-all ${pay?.status === 'Paid' ? 'border-emerald-200 text-emerald-700' : pay?.status === 'Unpaid' ? 'border-rose-200 text-rose-700' : 'border-amber-200 text-amber-700'}`}>
-                                                        <option value="Paid">Paid</option>
-                                                        <option value="Unpaid">Unpaid</option>
-                                                        <option value="Pending">Pending</option>
-                                                    </select>
-                                                    <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 dark:border-slate-800">
-                                                <div>
-                                                    <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">{t('economic.amountOwed')}</p>
-                                                    <p className="text-sm font-black text-slate-900 dark:text-white">{formatCurrencyDZD(pay?.amountOwed || 0)}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">{t('economic.amountPaid')}</p>
-                                                    <p className="text-sm font-black text-emerald-600 dark:text-emerald-400">{formatCurrencyDZD(pay?.amountPaid || 0)}</p>
-                                                </div>
-                                            </div>
-                                            <div className="pt-4">
-                                                <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-2">{t('economic.notes')}</p>
-                                                {editingNote === t_user.id ? (
-                                                    <div className="flex gap-2">
-                                                        <input 
-                                                            value={noteValue}
-                                                            onChange={e => setNoteValue(e.target.value)}
-                                                            className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-bold outline-none"
-                                                        />
-                                                        <button onClick={() => handleSaveNote(t_user.id)} className="p-3 bg-primary text-white rounded-xl shadow-lg shadow-primary/20"><Save size={16} /></button>
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex items-center justify-between gap-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-                                                        <p className="text-xs font-medium text-slate-500 italic truncate">{pay?.notes || 'No notes added...'}</p>
-                                                        <button onClick={() => { setEditingNote(t_user.id); setNoteValue(pay?.notes || ''); }} className="text-primary"><FileText size={16} /></button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        ) : (
-                            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-xl">
-                                <table className="w-full text-start border-collapse">
-                                    <thead>
-                                        <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('admin.legalName')}</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.status')}</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.amountOwed')}</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.amountPaid')}</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">Next Payment Date</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">Monthly Salary</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.notes')}</th>
-                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-end">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                        {filteredTeachers.map(t_user => {
-                                            const pay = payments[t_user.id];
-                                            return (
-                                                <tr key={t_user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                                    <td className="px-8 py-6">
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
-                                                                {t_user.name.charAt(0)}
-                                                            </div>
-                                                            <div>
-                                                                <p className="font-bold text-sm text-slate-900 dark:text-white">{t_user.name}</p>
-                                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ID: {t_user.id}</p>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-8 py-6">
-                                                        <div className="relative w-36">
-                                                            <select 
-                                                                value={pay?.status || 'Pending'}
-                                                                onChange={(e) => handleUpdateTeacherPayment(t_user.id, e.target.value as 'Paid' | 'Unpaid' | 'Pending')}
-                                                                className={`w-full appearance-none text-xs font-bold p-2 rounded-lg border-2 bg-transparent transition-all ${pay?.status === 'Paid' ? 'border-emerald-200 text-emerald-700' : pay?.status === 'Unpaid' ? 'border-rose-200 text-rose-700' : 'border-amber-200 text-amber-700'}`}>
-                                                                <option value="Paid">Paid</option>
-                                                                <option value="Unpaid">Unpaid</option>
-                                                                <option value="Pending">Pending</option>
-                                                            </select>
-                                                            <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-8 py-6">
-                                                        <p className="text-sm font-black text-rose-600 dark:text-rose-400">{formatCurrencyDZD(pay?.amountOwed || 0)}</p>
-                                                    </td>
-                                                    <td className="px-8 py-6">
-                                                        <p className="text-sm font-black text-emerald-600 dark:text-emerald-400">{formatCurrencyDZD(pay?.amountPaid || 0)}</p>
-                                                    </td>
-                                                    <td className="px-8 py-6">
-                                                        {editingDate === t_user.id ? (
-                                                            <div className="flex items-center gap-2">
-                                                                <input type="date" value={dateValue} onChange={(e) => setDateValue(e.target.value)} className="w-36 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg border-2 border-primary" />
-                                                                <button onClick={() => handleUpdateNextPaymentDate(t_user.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={16} /></button>
-                                                            </div>
-                                                        ) : (
-                                                            <div onClick={() => { setEditingDate(t_user.id); setDateValue(pay?.nextPaymentDate || ''); }} className="cursor-pointer">
-                                                                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{pay?.nextPaymentDate || 'Not set'}</p>
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-8 py-6">
-                                                        {editingAmount === t_user.id ? (
-                                                            <div className="flex items-center gap-2">
-                                                                <input type="number" value={amountValue} onChange={(e) => setAmountValue(Number(e.target.value))} className="w-24 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg border-2 border-primary" />
-                                                                <button onClick={() => handleUpdateTeacherSalary(t_user.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={16} /></button>
-                                                            </div>
-                                                        ) : (
-                                                            <div onClick={() => { setEditingAmount(t_user.id); setAmountValue(pay?.monthlySalary || 0); }} className="cursor-pointer">
-                                                                <p className="text-sm font-black text-slate-900 dark:text-white">{formatCurrencyDZD(pay?.monthlySalary || 0)}</p>
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-8 py-6 max-w-xs">
-                                                        {editingNote === t_user.id ? (
-                                                            <div className="flex gap-2">
-                                                                <input 
-                                                                    value={noteValue}
-                                                                    onChange={e => setNoteValue(e.target.value)}
-                                                                    className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-bold outline-none"
-                                                                />
-                                                                <button onClick={() => handleSaveNote(t_user.id)} className="p-3 bg-primary text-white rounded-xl shadow-lg shadow-primary/20"><Save size={16} /></button>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex items-center justify-between gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 group">
-                                                                <p className="text-xs font-medium text-slate-500 italic truncate">{pay?.notes || 'No notes added...'}</p>
-                                                                <button onClick={() => { setEditingNote(t_user.id); setNoteValue(pay?.notes || ''); }} className="text-primary opacity-0 group-hover:opacity-100 transition-all"><FileText size={16} /></button>
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-8 py-6 text-end">
-                                                        <div className="flex justify-end gap-3">
-                                                            <button 
-                                                                onClick={() => handleUpdateTeacherPayment(t_user.id, 'Paid')}
-                                                                className={`p-3 rounded-2xl transition-all ${pay?.status === 'Paid' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-500'}`}
-                                                                title={t('economic.markPaid')}>
-                                                                <CheckCircle size={20} />
-                                                            </button>
-                                                            <button 
-                                                                onClick={() => handleUpdateTeacherPayment(t_user.id, 'Unpaid')}
-                                                                className={`p-3 rounded-2xl transition-all ${pay?.status === 'Unpaid' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-500'}`}
-                                                                title={t('economic.markUnpaid')}>
-                                                                <XCircle size={20} />
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )
-                    )}
-                </div>
-            )}
-
-            {activeTab === 'sessions' && (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl p-8">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-6">Scheduled Sessions</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {sessions.map(s => (
-                                <div key={s.id} className="p-6 bg-institutional-50 dark:bg-institutional-800 rounded-2xl border border-institutional-200 dark:border-institutional-700">
-                                    <h4 className="font-black text-lg text-institutional-900 dark:text-white mb-2">{s.name}</h4>
-                                    <p className="text-xs text-institutional-500 font-bold uppercase tracking-widest mb-4">{s.date} • {s.time} - {s.endTime}</p>
-                                    <span className="px-3 py-1 rounded-full text-[9px] font-black uppercase bg-primary/10 text-primary">{s.type}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'timetable' && (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl p-8">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-6">Fixed Timetable</h3>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-start border-collapse">
-                                <thead>
-                                    <tr className="bg-institutional-50 dark:bg-institutional-950 border-b border-institutional-200 dark:border-institutional-800">
-                                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Time</th>
-                                        {DAYS_OF_WEEK.map(day => (
-                                            <th key={day} className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-center">{day}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-institutional-100 dark:divide-institutional-800">
-                                    {HOURS_OF_DAY.map(hour => (
-                                        <tr key={hour}>
-                                            <td className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{hour}</td>
-                                            {DAYS_OF_WEEK.map(day => (
-                                                <td key={`${day}-${hour}`} className="px-4 py-3 border border-institutional-100 dark:border-institutional-800"></td>
-                                            ))}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    {activeTab === 'teachers' && <TeacherList />}
                 </div>
             )}
 
