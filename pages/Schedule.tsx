@@ -2,7 +2,8 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { ClassSession, RecurringSession } from '../types';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, CheckCircle2, XCircle, CalendarDays } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, CheckCircle2, XCircle, CalendarDays, Plus } from 'lucide-react';
+import RecurringSessionModal from '../components/RecurringSessionModal';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -18,6 +19,8 @@ const Schedule: React.FC = () => {
     const [attendance, setAttendance] = useState<any[]>([]);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [expandedSession, setExpandedSession] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [teachers, setTeachers] = useState<any[]>([]);
 
     useEffect(() => {
         const unsubClasses = onSnapshot(collection(db, collections.classes), (snap) => {
@@ -28,6 +31,10 @@ const Schedule: React.FC = () => {
             setRecurringSessions(snap.docs.map(d => ({ id: d.id, ...d.data() } as RecurringSession)));
         });
         
+        const unsubTeachers = onSnapshot(query(collection(db, collections.users), where('role', '==', 'teacher')), (snap) => {
+            setTeachers(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        });
+        
         const qAttendance = user?.role === 'student' 
             ? query(collection(db, collections.attendance), where('studentId', '==', user.id)) 
             : collection(db, collections.attendance);
@@ -36,7 +43,7 @@ const Schedule: React.FC = () => {
             setAttendance(snap.docs.map(d => ({ id: d.id, ...d.data() })));
         });
         
-        return () => { unsubClasses(); unsubAttendance(); unsubRecurring(); };
+        return () => { unsubClasses(); unsubAttendance(); unsubRecurring(); unsubTeachers(); };
     }, [user?.role, user?.id]);
 
     const checkIsLive = useCallback((date: string, start: string, end: string) => {
@@ -78,15 +85,18 @@ const Schedule: React.FC = () => {
         const recurring = recurringSessions
             .filter(s => s.dayOfWeek === dayName)
             .map(s => ({
-                ...s,
-                date: formattedToday,
+                id: s.id,
+                name: s.name,
+                date: currentDate.toISOString().split('T')[0],
                 time: s.startTime,
-                endTime: s.endTime
+                endTime: s.endTime,
+                room: s.room,
+                type: s.type
             } as ClassSession));
         
-        return [...classes.filter(c => c.date === formattedToday), ...recurring]
+        return [...classes.filter(c => c.date === currentDate.toISOString().split('T')[0]), ...recurring]
             .sort((a,b) => a.time.localeCompare(b.time));
-    }, [classes, recurringSessions, formattedToday, currentDate]);
+    }, [classes, recurringSessions, currentDate]);
 
     const navigateMonth = (direction: number) => {
         const newDate = new Date(currentDate);
@@ -189,10 +199,16 @@ const Schedule: React.FC = () => {
                             <CalendarDays size={18} className="text-primary" />
                             {currentDate.toLocaleDateString(language, { weekday: 'long', month: 'long', day: 'numeric' })}
                         </h3>
+                        {user?.role === 'economic' && (
+                            <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-bold">
+                                <Plus size={16} /> Add Recurring Session
+                            </button>
+                        )}
                         <span className="text-xs font-medium px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full">
                             {todaysClasses.length} {todaysClasses.length === 1 ? 'Session' : 'Sessions'}
                         </span>
                     </div>
+                    <RecurringSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} teachers={teachers} />
 
                     <div className="space-y-4">
                         <AnimatePresence mode="wait">

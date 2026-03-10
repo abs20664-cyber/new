@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { usePlatform } from '../contexts/PlatformContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { CheckCircle, X, ShieldCheck, AlertTriangle, FileUp, Clock } from 'lucide-react';
-import { ClassSession, StudentSubscription } from '../types';
+import { ClassSession, StudentSubscription, RecurringSession } from '../types';
 import { useLocation } from 'react-router-dom';
 
 interface ScannerProps {
@@ -37,6 +37,14 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
     const isProcessing = useRef(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [sessionData, setSessionData] = useState<ClassSession | null>(null);
+    const [recurringSessions, setRecurringSessions] = useState<RecurringSession[]>([]);
+
+    useEffect(() => {
+        const unsubRecurring = onSnapshot(collection(db, 'recurring_sessions'), (snap) => {
+            setRecurringSessions(snap.docs.map(d => ({ id: d.id, ...d.data() } as RecurringSession)));
+        });
+        return () => { unsubRecurring(); };
+    }, []);
 
     const stopScanning = useCallback(async () => {
         if (scannerRef.current && scannerRef.current.isScanning) {
@@ -60,17 +68,43 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
 
         const fetchSession = async () => {
             try {
+                let data: ClassSession | null = null;
+                
+                // Try finding in classes
                 const snap = await getDoc(doc(db, collections.classes, classId));
                 if (snap.exists()) {
-                    const data = { id: snap.id, ...snap.data() } as ClassSession;
-                    
+                    data = { id: snap.id, ...snap.data() } as ClassSession;
+                } else {
+                    // Try finding in recurring sessions
+                    const recurring = recurringSessions.find(s => classId === s.id || classId.startsWith(s.id + '-'));
+                    if (recurring) {
+                        data = {
+                            id: recurring.id,
+                            name: recurring.name,
+                            date: today,
+                            time: recurring.startTime,
+                            endTime: recurring.endTime,
+                            room: recurring.room,
+                            type: recurring.type
+                        } as ClassSession;
+                    }
+                }
+
+                if (data) {
                     const nowStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
                     
                     const hasEnded = data.date < today || (data.date === today && nowStr >= data.endTime);
+                    
+                    const startTimeParts = data.time.split(':');
+                    const startMinutes = parseInt(startTimeParts[0]) * 60 + parseInt(startTimeParts[1]);
+                    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+                    const isTooEarly = data.date === today && (startMinutes - nowMinutes > 15);
                     const notStarted = data.date > today || (data.date === today && nowStr < data.time);
 
                     if (hasEnded) {
                         setErrorMsg(t('scanner.expired'));
+                    } else if (isTooEarly) {
+                        setErrorMsg(`${t('scanner.tooEarly')} ${data.time}.`);
                     } else if (notStarted) {
                         setErrorMsg(`${t('scanner.scheduled')} ${data.time}.`);
                     } else {

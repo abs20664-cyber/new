@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, memo } from 'react';
 import { collection, onSnapshot, doc, updateDoc, setDoc, query, where, addDoc, Timestamp, orderBy, limit } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
-import { User, StudentSubscription, TeacherPayment, FinancialAuditLog, FinancialSummary, StudentPaymentRecord } from '../types';
+import { User, StudentSubscription, TeacherPayment, FinancialAuditLog, FinancialSummary, StudentPaymentRecord, RecurringSession } from '../types';
 import { 
     Search, 
     Filter, 

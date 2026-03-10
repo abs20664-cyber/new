@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { collection, onSnapshot, deleteDoc, doc, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
-import { ClassSession, Attachment } from '../types';
+import { ClassSession, Attachment, RecurringSession } from '../types';
 import { Trash2, SlidersHorizontal, MapPin, Clock, Plus, Scan, X, CalendarOff, Paperclip, FileText, ChevronRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -24,14 +24,27 @@ const checkHasEnded = (classDate: string, endTime: string) => {
     return nowStr >= endTime;
 };
 
+const checkIsTooEarly = (classDate: string, startTime: string) => {
+    const now = new Date();
+    const today = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+    if (classDate > today) return true;
+    if (classDate < today) return false;
+    
+    const startTimeParts = startTime.split(':');
+    const startMinutes = parseInt(startTimeParts[0]) * 60 + parseInt(startTimeParts[1]);
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    return startMinutes - nowMinutes > 15;
+};
+
 interface ClassesProps {
     onNavigate: (path: string, classId?: string) => void;
 }
 
-const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, t, isRTL, openModal, handleDelete, navigate }: {
+const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, isTooEarly, t, isRTL, openModal, handleDelete, navigate }: {
     cl: ClassSession;
     isLive: boolean;
     hasEnded: boolean;
+    isTooEarly: boolean;
     t: any;
     isRTL: boolean;
     openModal: (cl: ClassSession) => void;
@@ -84,13 +97,13 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, t, isRTL, openModal
             </div>
             
             <button 
-                onClick={() => !hasEnded && navigate('/scanner', { state: { classId: cl.id } })}
-                disabled={hasEnded}
-                className={`w-full py-5 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-xl flex items-center justify-center gap-3 transition-all ${hasEnded ? 'bg-background text-text-secondary/30 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-primary/20 hover:scale-[1.02] active:scale-95'}`}
+                onClick={() => !(hasEnded || isTooEarly) && navigate('/scanner', { state: { classId: cl.id } })}
+                disabled={hasEnded || isTooEarly}
+                className={`w-full py-5 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-xl flex items-center justify-center gap-3 transition-all ${(hasEnded || isTooEarly) ? 'bg-background text-text-secondary/30 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-primary/20 hover:scale-[1.02] active:scale-95'}`}
             >
-                {hasEnded ? <CalendarOff size={20} /> : <Scan size={20} />}
-                {hasEnded ? t('hub.ended') : t('hub.marks')}
-                {!hasEnded && <ChevronRight size={16} className={`opacity-50 ${isRTL ? 'rotate-180' : ''}`} />}
+                {hasEnded ? <CalendarOff size={20} /> : isTooEarly ? <Clock size={20} /> : <Scan size={20} />}
+                {hasEnded ? t('hub.ended') : isTooEarly ? 'Upcoming' : t('hub.marks')}
+                {!(hasEnded || isTooEarly) && <ChevronRight size={16} className={`opacity-50 ${isRTL ? 'rotate-180' : ''}`} />}
             </button>
         </div>
     );
@@ -101,16 +114,67 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
     const { t, isRTL } = useLanguage();
     const navigate = useNavigate();
     const [classes, setClasses] = useState<ClassSession[]>([]);
+    const [recurringSessions, setRecurringSessions] = useState<RecurringSession[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingClass, setEditingClass] = useState<ClassSession | null>(null);
     const [attachments, setAttachments] = useState<{name: string, data: string}[]>([]);
     const [isSaving, setIsSaving] = useState(false);
 
+    const allSessions = useMemo(() => {
+        const upcomingRecurring: ClassSession[] = [];
+        const today = new Date();
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+            const dateStr = date.toISOString().split('T')[0];
+            
+            recurringSessions.filter(s => s.dayOfWeek === dayName).forEach(s => {
+                upcomingRecurring.push({
+                    id: s.id,
+                    name: s.name,
+                    date: dateStr,
+                    time: s.startTime,
+                    endTime: s.endTime,
+                    room: s.room,
+                    type: s.type
+                });
+            });
+        }
+        
+        const now = new Date();
+        const todayStr = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        const nowStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+
+        return [...classes, ...upcomingRecurring].sort((a, b) => {
+            const aIsPast = a.date < todayStr || (a.date === todayStr && a.endTime <= nowStr);
+            const bIsPast = b.date < todayStr || (b.date === todayStr && b.endTime <= nowStr);
+
+            if (aIsPast && !bIsPast) return 1;
+            if (!aIsPast && bIsPast) return -1;
+
+            if (!aIsPast && !bIsPast) {
+                // Both upcoming/live: earliest first
+                const dateCompare = a.date.localeCompare(b.date);
+                if (dateCompare !== 0) return dateCompare;
+                return a.time.localeCompare(b.time);
+            } else {
+                // Both past: most recent first
+                const dateCompare = b.date.localeCompare(a.date);
+                if (dateCompare !== 0) return dateCompare;
+                return b.time.localeCompare(a.time);
+            }
+        });
+    }, [classes, recurringSessions]);
+
     useEffect(() => {
-        const unsub = onSnapshot(collection(db, collections.classes), (snap) => {
+        const unsubClasses = onSnapshot(collection(db, collections.classes), (snap) => {
             setClasses(snap.docs.map(d => ({ id: d.id, ...d.data() } as ClassSession)));
         });
-        return () => unsub();
+        const unsubRecurring = onSnapshot(collection(db, 'recurring_sessions'), (snap) => {
+            setRecurringSessions(snap.docs.map(d => ({ id: d.id, ...d.data() } as RecurringSession)));
+        });
+        return () => { unsubClasses(); unsubRecurring(); };
     }, []);
 
     const handleDelete = async (id: string) => {
@@ -189,9 +253,10 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
-                {classes.map(cl => {
+                {allSessions.map(cl => {
                     const isLive = checkIsLive(cl.date, cl.time, cl.endTime);
                     const hasEnded = checkHasEnded(cl.date, cl.endTime);
+                    const isTooEarly = checkIsTooEarly(cl.date, cl.time);
                     
                     return (
                         <ClassSessionItem 
@@ -199,6 +264,7 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                             cl={cl}
                             isLive={isLive}
                             hasEnded={hasEnded}
+                            isTooEarly={isTooEarly}
                             t={t}
                             isRTL={isRTL}
                             openModal={openModal}

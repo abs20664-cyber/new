@@ -7,16 +7,16 @@ import { Layout } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Lazy load heavy page components
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Schedule = lazy(() => import('./pages/Schedule'));
-const Assignments = lazy(() => import('./pages/Assignments'));
-const Materials = lazy(() => import('./pages/Materials'));
-const Inbox = lazy(() => import('./pages/Inbox'));
-const Scanner = lazy(() => import('./pages/Scanner'));
-const Settings = lazy(() => import('./pages/Settings'));
-const Profile = lazy(() => import('./pages/Profile'));
-const Login = lazy(() => import('./pages/Login'));
-const EconomicDashboard = lazy(() => import('./pages/EconomicDashboard'));
+const Dashboard = lazy(() => import('/pages/Dashboard'));
+const Schedule = lazy(() => import('/pages/Schedule'));
+const Assignments = lazy(() => import('/pages/Assignments'));
+const Materials = lazy(() => import('/pages/Materials'));
+const Inbox = lazy(() => import('/pages/Inbox'));
+const Scanner = lazy(() => import('/pages/Scanner'));
+const Settings = lazy(() => import('/pages/Settings'));
+const Profile = lazy(() => import('/pages/Profile'));
+const Login = lazy(() => import('/pages/Login'));
+const EconomicDashboard = lazy(() => import('/pages/EconomicDashboard'));
 
 const PageLoader = () => (
   <div className="flex-1 flex items-center justify-center min-h-[400px]">

@@ -180,4 +180,15 @@ export interface Notification {
 
 export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const HOURS_OF_DAY = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
+export interface RecurringSession {
+  id: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  teacherId: string;
+  name: string;
+  room: string;
+  type: 'Cours' | 'TD' | 'Exam';
+}
+
 export const EMOJI_SET = ['👍', '❤️', '😂', '😮', '😢', '🔥', '✅', '🙏'];
