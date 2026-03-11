@@ -8,13 +8,15 @@ interface RecurringSessionModalProps {
   isOpen: boolean;
   onClose: () => void;
   teachers: any[];
+  subjects: any[];
 }
 
-const RecurringSessionModal: React.FC<RecurringSessionModalProps> = ({ isOpen, onClose, teachers }) => {
+const RecurringSessionModal: React.FC<RecurringSessionModalProps> = ({ isOpen, onClose, teachers, subjects }) => {
   const [dayOfWeek, setDayOfWeek] = useState(DAYS_OF_WEEK[0]);
   const [startTime, setStartTime] = useState(HOURS_OF_DAY[0]);
   const [endTime, setEndTime] = useState(HOURS_OF_DAY[1]);
   const [teacherId, setTeacherId] = useState(teachers[0]?.id || '');
+  const [subjectId, setSubjectId] = useState('');
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
   const [type, setType] = useState<'Cours' | 'TD' | 'Exam'>('Cours');
@@ -26,6 +28,7 @@ const RecurringSessionModal: React.FC<RecurringSessionModalProps> = ({ isOpen, o
       startTime,
       endTime,
       teacherId,
+      subjectId,
       name,
       room,
       type
@@ -57,6 +60,10 @@ const RecurringSessionModal: React.FC<RecurringSessionModalProps> = ({ isOpen, o
           </div>
           <select value={teacherId} onChange={e => setTeacherId(e.target.value)} className="w-full p-2 border rounded" required>
             {teachers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </select>
+          <select value={subjectId} onChange={e => setSubjectId(e.target.value)} className="w-full p-2 border rounded" required>
+            <option value="" disabled>Select Subject</option>
+            {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
           <input type="text" placeholder="Room" value={room} onChange={e => setRoom(e.target.value)} className="w-full p-2 border rounded" required />
           <select value={type} onChange={e => setType(e.target.value as any)} className="w-full p-2 border rounded">

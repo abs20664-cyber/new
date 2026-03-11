@@ -1,11 +1,33 @@
 import React from 'react';
 import { User, TeacherPayment } from '../types';
-import { ChevronDown, Save, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Save, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
 
 interface TeacherRowProps {
     index: number;
     style: React.CSSProperties;
-    data: any;
+    data: {
+        teachers: User[];
+        payments: Record<string, TeacherPayment>;
+        isMobile: boolean;
+        t: any;
+        handleUpdateTeacherPayment: (id: string, status: 'Paid' | 'Unpaid' | 'Pending') => void;
+        editingNote: string | null;
+        setEditingNote: (id: string | null) => void;
+        noteValue: string;
+        setNoteValue: (val: string) => void;
+        handleSaveNote: (id: string) => void;
+        formatCurrencyDZD: (amount: number) => string;
+        editingAmount: string | null;
+        setEditingAmount: (id: string | null) => void;
+        amountValue: number;
+        setAmountValue: (val: number) => void;
+        handleUpdateTeacherSalary: (id: string) => void;
+        editingDate: string | null;
+        setEditingDate: (id: string | null) => void;
+        dateValue: string;
+        setDateValue: (val: string) => void;
+        handleUpdateNextPaymentDate: (id: string) => void;
+    };
 }
 
 const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
@@ -124,10 +146,10 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
     }
 
     return (
-        <tr style={style} className="hover:bg-institutional-50 dark:hover:bg-institutional-900/50 transition-colors border-b border-institutional-200 dark:border-institutional-800">
+        <tr style={style} className="hover:bg-institutional-50/50 dark:hover:bg-institutional-900/30 transition-colors border-b border-institutional-200 dark:border-institutional-800">
             <td className="px-8 py-6">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shadow-sm border border-primary/10">
                         {t_user.name.charAt(0)}
                     </div>
                     <div>

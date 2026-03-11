@@ -328,7 +328,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
             )}
 
             {/* DESKTOP SIDEBAR */}
-            <aside className={`hidden lg:flex fixed inset-y-0 ${isRTL ? 'end-0 border-s' : 'start-0 border-e'} w-[300px] bg-surface dark:bg-institutional-950 border-institutional-200 dark:border-institutional-800 z-50 flex-col transition-all duration-300`}>
+            <aside className={`hidden lg:flex fixed inset-y-0 ${isRTL ? 'end-0 border-s' : 'start-0 border-e'} w-[300px] glass dark:glass-dark border-institutional-200 dark:border-institutional-800 z-50 flex-col transition-all duration-300`}>
                 <div className="p-10 flex items-center gap-4">
                     <Logo size="md" />
                     <div>
@@ -424,7 +424,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
 
             {/* MAIN CONTENT AREA */}
             <main className={`flex-1 flex flex-col h-full relative overflow-hidden ${!isMobile ? (isRTL ? 'lg:mr-[300px]' : 'lg:ml-[300px]') : ''} bg-body transition-all duration-500`}>
-                <header className={`shrink-0 z-40 sticky top-0 transition-all duration-500 ${isMobile ? 'h-0' : 'h-24 bg-surface/80 dark:bg-institutional-950/80 backdrop-blur-xl border-b border-institutional-200 dark:border-institutional-800 flex items-center justify-between px-16'}`}>
+                <header className={`shrink-0 z-40 sticky top-0 transition-all duration-500 ${isMobile ? 'h-0' : 'h-24 glass dark:glass-dark border-b border-institutional-200 dark:border-institutional-800 flex items-center justify-between px-16'}`}>
                     {!isMobile && (
                         <>
                             <div className="flex items-center gap-4">

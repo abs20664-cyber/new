@@ -25,7 +25,7 @@ const Login: React.FC = () => {
         const fetchUsers = async () => {
             try {
                 const snap = await getDocs(collection(db, collections.users));
-                const users = snap.docs.map(d => d.data() as User);
+                const users = snap.docs.map(d => ({ id: d.id, ...d.data() } as User));
                 setAvailableUsers(users);
             } catch (e) { console.error("Failed to load users", e); }
         };

@@ -73,6 +73,7 @@
 
   --shadow-soft: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-strong: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 20px rgba(0, 102, 51, 0.15);
 
   /* Institutional Palette */
   --color-institutional-50: var(--inst-50);
@@ -122,6 +123,14 @@
 
   .glass {
     @apply bg-surface/80 backdrop-blur-xl border border-white/10 dark:border-white/5;
+  }
+
+  .glass-dark {
+    @apply bg-institutional-950/40 backdrop-blur-2xl border border-white/5;
+  }
+
+  .neo-blur {
+    @apply backdrop-blur-md bg-white/5 border border-white/10;
   }
 
   .live-now-glow {

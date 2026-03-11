@@ -115,6 +115,7 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
     const navigate = useNavigate();
     const [classes, setClasses] = useState<ClassSession[]>([]);
     const [recurringSessions, setRecurringSessions] = useState<RecurringSession[]>([]);
+    const [subjects, setSubjects] = useState<any[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingClass, setEditingClass] = useState<ClassSession | null>(null);
     const [attachments, setAttachments] = useState<{name: string, data: string}[]>([]);
@@ -174,7 +175,10 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
         const unsubRecurring = onSnapshot(collection(db, 'recurring_sessions'), (snap) => {
             setRecurringSessions(snap.docs.map(d => ({ id: d.id, ...d.data() } as RecurringSession)));
         });
-        return () => { unsubClasses(); unsubRecurring(); };
+        const unsubSubjects = onSnapshot(collection(db, 'subjects'), (snap) => {
+            setSubjects(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        });
+        return () => { unsubClasses(); unsubRecurring(); unsubSubjects(); };
     }, []);
 
     const handleDelete = async (id: string) => {
@@ -214,8 +218,10 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                 endTime: formData.get('endTime') as string,
                 room: formData.get('room') as string,
                 type: formData.get('type') as string,
+                subjectId: formData.get('subjectId') as string,
                 timestamp: Timestamp.now(),
-                attachments: finalAttachments
+                attachments: finalAttachments,
+                teacherId: user?.id || ''
             };
             if (editingClass) await updateDoc(doc(db, collections.classes, editingClass.id), data);
             else await addDoc(collection(db, collections.classes), data);
@@ -289,6 +295,16 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.name')}</label>
                                 <input name="name" defaultValue={editingClass?.name} placeholder="Academic Session Title" className="w-full bg-background p-5 rounded-3xl border border-border font-bold focus:border-primary outline-none shadow-inner transition-all text-text" required />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">Subject</label>
+                                <select name="subjectId" defaultValue={editingClass?.subjectId || ''} className="w-full bg-background p-5 rounded-3xl border border-border font-bold outline-none shadow-inner cursor-pointer appearance-none text-text" required>
+                                    <option value="" disabled>Select Subject</option>
+                                    {subjects.filter(s => user?.subjectsTaughtIds?.includes(s.id)).map(s => (
+                                        <option key={s.id} value={s.id}>{s.name}</option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

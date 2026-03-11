@@ -1,6 +1,11 @@
 export type UserRole = 'teacher' | 'student' | 'admin' | 'economic';
 export type AppLanguage = 'en' | 'fr' | 'ar';
 
+export interface Subject {
+  id: string;
+  name: string;
+}
+
 export interface User {
   id: string;
   name: string;
@@ -14,6 +19,8 @@ export interface User {
   bio?: string;
   fieldOfStudy?: string;
   subjectsTaught?:string;
+  subjectsTaughtIds?: string[];
+  subjectsStudied?: string[];
   createdAt?: any;
   accountStatus?: 'active' | 'disabled' | 'suspended' | 'pending';
   paymentStatus?: 'paid' | 'unpaid' | 'pending';
@@ -96,6 +103,8 @@ export interface ClassSession {
   room: string;
   type: 'Cours' | 'TD' | 'Exam';
   attachments?: Attachment[];
+  teacherId?: string;
+  subjectId?: string;
 }
 
 export interface Material {
@@ -189,6 +198,7 @@ export interface RecurringSession {
   name: string;
   room: string;
   type: 'Cours' | 'TD' | 'Exam';
+  subjectId?: string;
 }
 
 export const EMOJI_SET = ['👍', '❤️', '😂', '😮', '😢', '🔥', '✅', '🙏'];

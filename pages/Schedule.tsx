@@ -21,6 +21,7 @@ const Schedule: React.FC = () => {
     const [expandedSession, setExpandedSession] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [teachers, setTeachers] = useState<any[]>([]);
+    const [subjects, setSubjects] = useState<any[]>([]);
 
     useEffect(() => {
         const unsubClasses = onSnapshot(collection(db, collections.classes), (snap) => {
@@ -34,6 +35,10 @@ const Schedule: React.FC = () => {
         const unsubTeachers = onSnapshot(query(collection(db, collections.users), where('role', '==', 'teacher')), (snap) => {
             setTeachers(snap.docs.map(d => ({ id: d.id, ...d.data() })));
         });
+
+        const unsubSubjects = onSnapshot(collection(db, 'subjects'), (snap) => {
+            setSubjects(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        });
         
         const qAttendance = user?.role === 'student' 
             ? query(collection(db, collections.attendance), where('studentId', '==', user.id)) 
@@ -43,7 +48,7 @@ const Schedule: React.FC = () => {
             setAttendance(snap.docs.map(d => ({ id: d.id, ...d.data() })));
         });
         
-        return () => { unsubClasses(); unsubAttendance(); unsubRecurring(); unsubTeachers(); };
+        return () => { unsubClasses(); unsubAttendance(); unsubRecurring(); unsubTeachers(); unsubSubjects(); };
     }, [user?.role, user?.id]);
 
     const checkIsLive = useCallback((date: string, start: string, end: string) => {
@@ -80,9 +85,25 @@ const Schedule: React.FC = () => {
         return d.toISOString().split('T')[0];
     }, [currentDate]);
 
+    const filteredClasses = useMemo(() => {
+        if (user?.role === 'student') {
+            if (!user.subjectsStudied || user.subjectsStudied.length === 0) return [];
+            return classes.filter(c => c.subjectId && user.subjectsStudied?.includes(c.subjectId));
+        }
+        return classes;
+    }, [classes, user]);
+
+    const filteredRecurringSessions = useMemo(() => {
+        if (user?.role === 'student') {
+            if (!user.subjectsStudied || user.subjectsStudied.length === 0) return [];
+            return recurringSessions.filter(s => s.subjectId && user.subjectsStudied?.includes(s.subjectId));
+        }
+        return recurringSessions;
+    }, [recurringSessions, user]);
+
     const todaysClasses = useMemo(() => {
         const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
-        const recurring = recurringSessions
+        const recurring = filteredRecurringSessions
             .filter(s => s.dayOfWeek === dayName)
             .map(s => ({
                 id: s.id,
@@ -91,12 +112,13 @@ const Schedule: React.FC = () => {
                 time: s.startTime,
                 endTime: s.endTime,
                 room: s.room,
-                type: s.type
+                type: s.type,
+                subjectId: s.subjectId
             } as ClassSession));
         
-        return [...classes.filter(c => c.date === currentDate.toISOString().split('T')[0]), ...recurring]
+        return [...filteredClasses.filter(c => c.date === currentDate.toISOString().split('T')[0]), ...recurring]
             .sort((a,b) => a.time.localeCompare(b.time));
-    }, [classes, recurringSessions, currentDate]);
+    }, [filteredClasses, filteredRecurringSessions, currentDate]);
 
     const navigateMonth = (direction: number) => {
         const newDate = new Date(currentDate);
@@ -147,7 +169,8 @@ const Schedule: React.FC = () => {
                         const today = new Date();
                         const isToday = localDateString === new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
                         
-                        const hasClass = classes.some(c => c.date === localDateString);
+                        const hasClass = filteredClasses.some(c => c.date === localDateString) || 
+                                         filteredRecurringSessions.some(s => s.dayOfWeek === d.toLocaleDateString('en-US', { weekday: 'long' }));
                         
                         return (
                             <button 
@@ -208,7 +231,7 @@ const Schedule: React.FC = () => {
                             {todaysClasses.length} {todaysClasses.length === 1 ? 'Session' : 'Sessions'}
                         </span>
                     </div>
-                    <RecurringSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} teachers={teachers} />
+                    <RecurringSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} teachers={teachers} subjects={subjects} />
 
                     <div className="space-y-4">
                         <AnimatePresence mode="wait">
