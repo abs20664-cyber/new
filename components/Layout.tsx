@@ -15,7 +15,6 @@ import {
     QrCode, 
     Moon, 
     Sun, 
-    LogOut,
     Users,
     Settings,
     X,
@@ -28,13 +27,11 @@ import {
     Briefcase,
     ClipboardCheck,
     CalendarCheck,
-    CheckCircle2,
     Languages,
     ChevronRight,
     Search,
     UserCircle,
-    DollarSign,
-    CreditCard
+    DollarSign
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -279,7 +276,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     <aside className={`fixed top-0 bottom-0 w-full sm:w-[450px] bg-surface dark:bg-institutional-950 z-[120] border-institutional-300 dark:border-institutional-800 shadow-strong animate-in slide-in-from-right duration-500 flex flex-col ${isRTL ? 'start-0 border-e' : 'end-0 border-s'}`}>
                         <div className="p-8 flex justify-between items-center border-b border-institutional-200 dark:border-institutional-800">
                             <div>
-                                <h3 className="text-2xl font-black tracking-tight text-institutional-900 dark:text-white uppercase">Activity Ledger</h3>
+                                <h3 className="text-2xl font-bold tracking-tight text-institutional-900 dark:text-white uppercase">Activity Ledger</h3>
                                 <p className="text-xs font-bold text-institutional-400 uppercase tracking-widest mt-1">Institutional Records</p>
                             </div>
                             <button onClick={() => setIsNotifOpen(false)} className="p-3 bg-institutional-100 dark:bg-institutional-800 rounded-2xl text-institutional-500 hover:text-danger transition-all"><X size={20} /></button>
@@ -289,25 +286,25 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             {notifications.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center opacity-20 py-20 text-center">
                                     <Bell size={64} className="mb-6 text-institutional-300" />
-                                    <p className="font-black text-xs uppercase tracking-[0.4em]">Vault is Empty</p>
+                                    <p className="font-bold text-xs uppercase tracking-[0.4em]">Vault is Empty</p>
                                 </div>
                             ) : notifications.map(n => (
                                 <div 
                                     key={n.id} 
                                     onClick={() => handleNotificationClick(n)}
-                                    className={`p-6 rounded-3xl border transition-all cursor-pointer relative group ${n.read ? 'bg-transparent border-transparent opacity-60' : 'bg-surface dark:bg-institutional-900 border-institutional-200 dark:border-institutional-800 shadow-soft hover:shadow-strong hover:-translate-y-1'}`}
+                                    className={`p-6 rounded-3xl border transition-all cursor-pointer relative group ${n.read ? 'bg-transparent border-transparent opacity-60' : 'bg-surface dark:bg-institutional-900 border-institutional-200 dark:border-institutional-800 shadow-soft hover:shadow-modern hover:-translate-y-1'}`}
                                 >
                                     {!n.read && <div className={`absolute top-6 ${isRTL ? 'start-6' : 'end-6'} w-2.5 h-2.5 bg-primary rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]`} />}
                                     <div className="flex items-center gap-4 mb-4">
                                         <div className={`p-3 rounded-2xl ${getColorForType(n.type)} shadow-sm`}>
                                             {getIconForType(n.type)}
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-[10px] font-black uppercase text-institutional-400 tracking-[0.1em]">{n.title}</p>
-                                            <p className="text-[9px] font-bold text-institutional-500 mt-0.5">
-                                                {n.timestamp ? new Date(n.timestamp.seconds * 1000).toLocaleString([], { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }) : '...'}
-                                            </p>
-                                        </div>
+                        <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] font-bold uppercase text-institutional-400 tracking-[0.1em]">{n.title}</p>
+                                    <p className="text-[9px] font-bold text-institutional-500 mt-0.5">
+                                        {n.timestamp ? new Date(n.timestamp.seconds * 1000).toLocaleString([], { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }) : '...'}
+                                    </p>
+                                </div>
                                     </div>
                                     <p className="text-sm text-institutional-800 dark:text-white font-semibold leading-relaxed">{n.message}</p>
                                 </div>
@@ -318,7 +315,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             <button 
                                 onClick={markAllRead} 
                                 disabled={unreadCount === 0}
-                                className="w-full bg-primary text-white p-5 rounded-3xl font-black text-xs uppercase tracking-[0.2em] hover:bg-primary-hover disabled:opacity-30 disabled:hover:bg-primary shadow-lg shadow-primary/20 transition-all"
+                                className="academic-button academic-button-primary w-full p-5"
                             >
                                 Acknowledge All Entries
                             </button>
@@ -332,8 +329,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                 <div className="p-10 flex items-center gap-4">
                     <Logo size="md" />
                     <div>
-                        <h1 className="text-2xl font-black tracking-tighter text-institutional-950 dark:text-white uppercase">{t('appName')}</h1>
-                        <p className="text-[9px] font-black tracking-[0.3em] text-primary uppercase">{t('appSubName')}</p>
+                        <h1 className="text-2xl font-bold tracking-tighter text-institutional-950 dark:text-white uppercase">{t('appName')}</h1>
+                        <p className="text-[9px] font-bold tracking-[0.3em] text-primary uppercase">{t('appSubName')}</p>
                     </div>
                 </div>
 
@@ -343,13 +340,13 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                         <input 
                             type="text" 
                             placeholder="Global Search..." 
-                            className={`w-full bg-institutional-50 dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12' : 'pl-12'} py-3.5 text-xs font-bold outline-none focus:border-primary transition-all`} 
+                            className="academic-input py-3.5 pl-12 pr-4" 
                         />
                     </div>
                 </div>
 
                 <nav className="flex-1 py-4 space-y-2 overflow-y-auto px-6 scroll-hide">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-institutional-400 mb-4 px-2">Navigation</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-institutional-400 mb-4 px-2">Navigation</p>
                     {routes.map((route) => {
                         const Icon = route.icon;
                         const isActive = currentPath === route.path;
@@ -357,11 +354,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             <button 
                                 key={route.path}
                                 onClick={() => { enableAudio(); onNavigate(route.path); }}
-                                className={`group w-full flex items-center justify-between px-5 py-4 rounded-[1.25rem] font-bold transition-all duration-300 ${isActive ? 'bg-primary text-white shadow-strong shadow-primary/20' : 'text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-900 dark:text-institutional-400 hover:text-primary'}`}
+                                className={`group w-full flex items-center justify-between px-5 py-4 rounded-[1.25rem] font-bold transition-all duration-300 ${isActive ? 'bg-primary text-white shadow-modern shadow-primary/20' : 'text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-900 dark:text-institutional-400 hover:text-primary'}`}
                             >
                                 <div className="flex items-center gap-4">
                                     <Icon size={20} className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
-                                    <span className="uppercase tracking-widest text-[11px] font-black">{route.label}</span>
+                                    <span className="uppercase tracking-widest text-[11px] font-bold">{route.label}</span>
                                 </div>
                                 {isActive && <ChevronRight size={14} className={`${isRTL ? 'rotate-180' : ''}`} />}
                             </button>
@@ -397,7 +394,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     >
                         <div className="flex items-center gap-4">
                             <Languages size={18} className="text-primary" />
-                            <span className="text-xs font-black uppercase tracking-widest">{languages.find(l => l.code === language)?.label}</span>
+                            <span className="text-xs font-bold uppercase tracking-widest">{languages.find(l => l.code === language)?.label}</span>
                         </div>
                         {isLangOpen && (
                             <div className={`absolute bottom-full mb-3 inset-x-0 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-50 p-2`}>
@@ -405,7 +402,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                     <button 
                                         key={l.code} 
                                         onClick={(e) => { e.stopPropagation(); setLanguage(l.code); setIsLangOpen(false); }}
-                                        className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all text-xs font-black uppercase ${language === l.code ? 'text-primary bg-primary/5' : 'text-institutional-500'}`}
+                                        className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all text-xs font-bold uppercase ${language === l.code ? 'text-primary bg-primary/5' : 'text-institutional-500'}`}
                                     >
                                         <span className="text-xl">{l.flag}</span>
                                         <span>{l.label}</span>
@@ -417,7 +414,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
 
                     <button onClick={logout} className="flex items-center gap-4 w-full px-5 py-4 rounded-2xl bg-danger/5 text-danger hover:bg-danger/10 transition-all group">
                         <Power size={18} className={`transition-transform duration-300 ${isRTL ? 'rotate-180 group-hover:translate-x-1' : 'group-hover:-translate-x-1'}`} />
-                        <span className="text-xs font-black uppercase tracking-widest">{t('common.disconnect')}</span>
+                        <span className="text-xs font-bold uppercase tracking-widest">{t('common.disconnect')}</span>
                     </button>
                 </div>
             </aside>
@@ -428,7 +425,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     {!isMobile && (
                         <>
                             <div className="flex items-center gap-4">
-                                <h2 className="text-2xl font-black tracking-tight text-institutional-950 dark:text-white uppercase leading-none">{getPageTitle()}</h2>
+                                <h2 className="text-2xl font-bold tracking-tight text-institutional-950 dark:text-white uppercase leading-none">{getPageTitle()}</h2>
                             </div>
 
                             <div className="flex items-center gap-6">
@@ -459,11 +456,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                     onClick={() => onNavigate(`/profile/${user?.id}`)}
                                     className="flex items-center gap-3 bg-institutional-100 dark:bg-institutional-900 p-2 pr-4 rounded-2xl border border-institutional-200 dark:border-institutional-800 cursor-pointer hover:bg-institutional-200 dark:hover:bg-institutional-800 transition-colors"
                                 >
-                                    <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white font-black text-[11px] uppercase shadow-lg shadow-primary/20">
+                                    <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-[11px] uppercase shadow-lg shadow-primary/20">
                                         {user?.name.charAt(0)}
                                     </div>
                                     <div className="text-start">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-institutional-900 dark:text-white">{user?.name.split(' ')[0]}</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-institutional-900 dark:text-white">{user?.name.split(' ')[0]}</p>
                                         <p className="text-[8px] font-bold uppercase tracking-widest text-institutional-400 leading-none mt-0.5">{user?.role}</p>
                                     </div>
                                 </div>

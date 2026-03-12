@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { addDoc, collection, Timestamp, getDoc, doc, query, where, getDocs, setDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, Timestamp, getDoc, doc, query, where, getDocs, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { usePlatform } from '../contexts/PlatformContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { CheckCircle, X, ShieldCheck, AlertTriangle, FileUp, Clock } from 'lucide-react';
+import { CheckCircle, X, ShieldCheck, AlertTriangle, FileUp } from 'lucide-react';
 import { ClassSession, StudentSubscription, RecurringSession } from '../types';
 import { useLocation } from 'react-router-dom';
 

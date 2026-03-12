@@ -31,24 +31,24 @@ const UserRow = memo(({ index, style, data }: { index: number, style: React.CSSP
     if (isMobile) {
         return (
             <div style={style} className="px-1 py-2">
-                <div className="p-5 academic-card rounded-2xl text-start">
+                <div className="p-5 academic-card text-start">
                     <div className="flex items-center gap-4 mb-4">
                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white shadow-sm ${u.role === 'admin' ? 'bg-danger' : 'bg-primary'}`}>
                             {u.name.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="font-black text-sm text-institutional-950 dark:text-white truncate">{u.name}</p>
+                            <p className="font-bold text-sm text-institutional-950 dark:text-white truncate">{u.name}</p>
                             <p className="text-[10px] font-bold text-institutional-500 truncate">{u.email}</p>
                         </div>
                         <div className="flex items-center gap-1 bg-institutional-100 dark:bg-institutional-800 p-1 px-2 rounded-lg shrink-0">
                             {getRoleIcon(u.role)}
-                            <span className="text-[9px] font-black uppercase text-institutional-600 dark:text-institutional-400">{u.role}</span>
+                            <span className="text-[9px] font-bold uppercase text-institutional-600 dark:text-institutional-400">{u.role}</span>
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-3 pt-4 border-t border-institutional-200 dark:border-institutional-800">
-                        <button onClick={() => { setEditingUser(u); setIsModalOpen(true); }} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-institutional-100 dark:bg-institutional-800 text-institutional-600 font-black text-[10px] uppercase"><Settings size={14} /> {t('admin.manage')}</button>
-                        <button onClick={() => navigate(`/profile/${u.id}`)} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/10 text-primary font-black text-[10px] uppercase"><UserIcon size={14} /> {t('admin.profile')}</button>
-                        <button onClick={() => handleDeleteClick(u.id)} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-danger/10 text-danger font-black text-[10px] uppercase">
+                        <button onClick={() => { setEditingUser(u); setIsModalOpen(true); }} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-institutional-100 dark:bg-institutional-800 text-institutional-600 font-bold text-[10px] uppercase"><Settings size={14} /> {t('admin.manage')}</button>
+                        <button onClick={() => navigate(`/profile/${u.id}`)} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/10 text-primary font-bold text-[10px] uppercase"><UserIcon size={14} /> {t('admin.profile')}</button>
+                        <button onClick={() => handleDeleteClick(u.id)} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-danger/10 text-danger font-bold text-[10px] uppercase">
                             {processingId === u.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />} {t('common.delete')}
                         </button>
                     </div>
@@ -450,12 +450,12 @@ const AdminRegistry: React.FC = () => {
         <div className="fade-in max-w-7xl mx-auto">
             <div className={`mb-8 flex ${isMobile ? 'flex-col gap-4' : 'justify-between items-center'}`}>
                 <div className="text-start">
-                    <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-institutional-950 dark:text-white">{t('nav.registry')} Dashboard</h2>
+                    <h2 className="text-2xl md:text-4xl font-bold uppercase tracking-tight text-institutional-950 dark:text-white">{t('nav.registry')} Dashboard</h2>
                     <p className="text-[10px] font-bold text-danger uppercase tracking-widest mt-1">{t('admin.systemManagement')}</p>
                 </div>
                 <button 
                     onClick={() => { setEditingUser(null); setIsModalOpen(true); }}
-                    className={`bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 rounded-xl font-black text-xs uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 ${isMobile ? 'w-full py-4' : 'px-6 py-3 hover:scale-105 transition-transform'}`}
+                    className={`academic-button academic-button-primary shadow-xl ${isMobile ? 'w-full py-4' : 'px-6 py-3 hover:scale-105 transition-transform'}`}
                 >
                     <Plus size={16} /> {t('admin.addUser')}
                 </button>
@@ -467,17 +467,17 @@ const AdminRegistry: React.FC = () => {
                 <div className={`fixed inset-0 z-[100] bg-black/70 backdrop-blur-md flex items-center justify-center ${isMobile ? 'p-0 items-end' : 'p-4'}`}>
                     <div className={`bg-surface dark:bg-institutional-900 shadow-2xl relative border border-institutional-200 dark:border-institutional-800 max-h-[90vh] overflow-y-auto ${isMobile ? 'w-full rounded-t-[2.5rem] p-6 pb-10' : 'max-w-lg w-full p-10 rounded-[2rem] card-edu'}`}>
                         <button onClick={() => setIsModalOpen(false)} className={`absolute top-6 ${isRTL ? 'left-6' : 'right-6'} text-institutional-500`}><X size={24} /></button>
-                        <h3 className="text-xl font-black mb-8 uppercase tracking-tight text-institutional-950 dark:text-white">
+                        <h3 className="text-xl font-bold mb-8 uppercase tracking-tight text-institutional-950 dark:text-white">
                             {editingUser ? t('admin.updateProfile') : t('admin.newAccount')}
                         </h3>
                         {tempPassword ? (
                             <div className="bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 p-6 rounded-2xl mb-8 text-center animate-in zoom-in-95 duration-300">
-                                <p className="text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 tracking-widest mb-2">{t('economic.tempPassword')}</p>
-                                <p className="text-2xl font-black text-amber-700 dark:text-amber-300 font-mono tracking-wider">{tempPassword}</p>
+                                <p className="text-[10px] font-bold uppercase text-amber-600 dark:text-amber-400 tracking-widest mb-2">{t('economic.tempPassword')}</p>
+                                <p className="text-2xl font-bold text-amber-700 dark:text-amber-300 font-mono tracking-wider">{tempPassword}</p>
                                 <p className="text-[9px] font-bold text-amber-500 mt-4 uppercase">Copy this password now. It will not be shown again.</p>
                                 <button 
                                     onClick={() => { setTempPassword(null); setIsModalOpen(false); }}
-                                    className="mt-6 w-full bg-amber-600 text-white py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-amber-700 transition-colors"
+                                    className="mt-6 w-full bg-amber-600 text-white py-3 rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-amber-700 transition-colors"
                                 >
                                     {t('common.confirm')}
                                 </button>
@@ -485,23 +485,23 @@ const AdminRegistry: React.FC = () => {
                         ) : (
                             <form onSubmit={handleSave} className="space-y-4 text-start">
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.legalName')}</label>
-                                <input name="name" defaultValue={editingUser?.name} placeholder="..." className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none" required />
+                                <label className="text-[10px] font-bold uppercase text-institutional-500">{t('admin.legalName')}</label>
+                                <input name="name" defaultValue={editingUser?.name} placeholder="..." className="academic-input p-4" required />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.email')}</label>
-                                    <input name="email" type="email" defaultValue={editingUser?.email} placeholder="name@edu.alg" className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none" required />
+                                    <label className="text-[10px] font-bold uppercase text-institutional-500">{t('admin.email')}</label>
+                                    <input name="email" type="email" defaultValue={editingUser?.email} placeholder="name@edu.alg" className="academic-input p-4" required />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.passcode')}</label>
-                                    <input name="password" type="password" placeholder={editingUser ? "---" : "***"} className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none" required={!editingUser} />
+                                    <label className="text-[10px] font-bold uppercase text-institutional-500">{t('admin.passcode')}</label>
+                                    <input name="password" type="password" placeholder={editingUser ? "---" : "***"} className="academic-input p-4" required={!editingUser} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.permissions')}</label>
-                                    <select name="role" defaultValue={editingUser?.role || 'student'} className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none">
+                                    <label className="text-[10px] font-bold uppercase text-institutional-500">{t('admin.permissions')}</label>
+                                    <select name="role" defaultValue={editingUser?.role || 'student'} className="academic-input p-4">
                                         <option value="student">{t('roles.student')}</option>
                                         <option value="teacher">{t('roles.teacher')}</option>
                                         <option value="admin">{t('roles.admin')}</option>
@@ -509,8 +509,8 @@ const AdminRegistry: React.FC = () => {
                                     </select>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.subjects')}</label>
-                                    <div className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none max-h-40 overflow-y-auto">
+                                    <label className="text-[10px] font-bold uppercase text-institutional-500">{t('admin.subjects')}</label>
+                                    <div className="academic-input p-4 max-h-40 overflow-y-auto">
                                         {subjects.map(s => (
                                             <label key={s.id} className="flex items-center gap-2">
                                                 <input type="checkbox" name="subjects" value={s.id} checked={editData.subjectsTaughtIds?.includes(s.id) || false} onChange={(e) => {
@@ -527,11 +527,11 @@ const AdminRegistry: React.FC = () => {
                             </div>
                             {editingUser && (
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.systemId')}</label>
-                                    <input name="id" defaultValue={editingUser.id} className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold outline-none opacity-50" readOnly />
+                                    <label className="text-[10px] font-bold uppercase text-institutional-500">{t('admin.systemId')}</label>
+                                    <input name="id" defaultValue={editingUser.id} className="academic-input p-4 opacity-50" readOnly />
                                 </div>
                             )}
-                            <button type="submit" className="w-full bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 p-4 rounded-xl font-black uppercase tracking-widest shadow-xl mt-4">{t('admin.confirmChanges')}</button>
+                            <button type="submit" className="academic-button academic-button-primary w-full p-4 mt-4">{t('admin.confirmChanges')}</button>
                         </form>
                         )}
                     </div>

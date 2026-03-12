@@ -52,7 +52,7 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, isTooEarly, t, isRT
     navigate: any;
 }) => {
     return (
-        <div key={cl.id} className={`p-8 bg-sidebar relative group rounded-[2.5rem] border border-border shadow-sm transition-all hover:shadow-xl hover:border-primary/20 ${isLive ? 'ring-2 ring-success ring-offset-4 ring-offset-background' : ''} ${hasEnded ? 'opacity-60 bg-sidebar/50' : ''}`}>
+        <div key={cl.id} className={`p-8 academic-card relative group transition-all hover:border-primary/20 ${isLive ? 'ring-2 ring-success ring-offset-4 ring-offset-background' : ''} ${hasEnded ? 'opacity-60 bg-sidebar/50' : ''}`}>
             <div className={`absolute top-8 ${isRTL ? 'left-8' : 'right-8'} flex gap-3 z-10 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0`}>
                 <button 
                     onClick={() => openModal(cl)} 
@@ -70,7 +70,7 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, isTooEarly, t, isRT
 
             <div className="mb-10 text-start">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isLive ? 'bg-success text-white' : hasEnded ? 'bg-background text-text-secondary' : 'bg-primary/10 text-primary'}`}>
+                    <div className={`academic-badge ${isLive ? 'academic-badge-success' : hasEnded ? '' : 'academic-badge-primary'}`}>
                         {isLive ? t('hub.liveNow') : hasEnded ? t('hub.ended') : cl.type}
                     </div>
                     <div className="text-[10px] font-black text-text-secondary/50 uppercase tracking-widest">{cl.date}</div>
@@ -79,14 +79,14 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, isTooEarly, t, isRT
                 <h3 className="font-black text-2xl tracking-tight uppercase text-text leading-tight mb-8 min-h-[3.5rem] line-clamp-2">{cl.name}</h3>
                 
                 <div className="space-y-4">
-                    <div className="flex items-center gap-4 p-4 bg-background rounded-2xl border border-border">
+                    <div className="flex items-center gap-4 p-4 bg-background/50 rounded-2xl border border-border">
                         <div className="p-2.5 bg-sidebar rounded-xl shadow-sm border border-border"><MapPin size={18} className="text-primary" /></div>
                         <div className="text-start">
                             <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50 leading-none mb-1">Assigned Hall</p>
                             <p className="text-sm font-black text-text uppercase leading-none">{cl.room || 'TBA'}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-4 p-4 bg-background rounded-2xl border border-border">
+                    <div className="flex items-center gap-4 p-4 bg-background/50 rounded-2xl border border-border">
                         <div className="p-2.5 bg-sidebar rounded-xl shadow-sm border border-border"><Clock size={18} className="text-primary" /></div>
                         <div className="text-start">
                             <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50 leading-none mb-1">Temporal Block</p>
@@ -99,7 +99,7 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, isTooEarly, t, isRT
             <button 
                 onClick={() => !(hasEnded || isTooEarly) && navigate('/scanner', { state: { classId: cl.id } })}
                 disabled={hasEnded || isTooEarly}
-                className={`w-full py-5 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-xl flex items-center justify-center gap-3 transition-all ${(hasEnded || isTooEarly) ? 'bg-background text-text-secondary/30 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-primary/20 hover:scale-[1.02] active:scale-95'}`}
+                className={`w-full py-5 academic-button ${(hasEnded || isTooEarly) ? 'opacity-50 cursor-not-allowed' : 'academic-button-primary'}`}
             >
                 {hasEnded ? <CalendarOff size={20} /> : isTooEarly ? <Clock size={20} /> : <Scan size={20} />}
                 {hasEnded ? t('hub.ended') : isTooEarly ? 'Upcoming' : t('hub.marks')}
@@ -252,7 +252,7 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                 </div>
                 <button 
                     onClick={() => openModal()}
-                    className="group bg-primary text-white px-8 py-5 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 hover:bg-primary/90 hover:scale-[1.03] transition-all"
+                    className="academic-button academic-button-primary px-8 py-5 flex items-center justify-center gap-3 group"
                 >
                     <Plus size={20} className="transition-transform group-hover:rotate-90" /> {t('hub.newSession')}
                 </button>
@@ -294,12 +294,12 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                         <form onSubmit={handleSave} className="space-y-8 text-start">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.name')}</label>
-                                <input name="name" defaultValue={editingClass?.name} placeholder="Academic Session Title" className="w-full bg-background p-5 rounded-3xl border border-border font-bold focus:border-primary outline-none shadow-inner transition-all text-text" required />
+                                <input name="name" defaultValue={editingClass?.name} placeholder="Academic Session Title" className="academic-input" required />
                             </div>
 
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">Subject</label>
-                                <select name="subjectId" defaultValue={editingClass?.subjectId || ''} className="w-full bg-background p-5 rounded-3xl border border-border font-bold outline-none shadow-inner cursor-pointer appearance-none text-text" required>
+                                <select name="subjectId" defaultValue={editingClass?.subjectId || ''} className="academic-input cursor-pointer appearance-none" required>
                                     <option value="" disabled>Select Subject</option>
                                     {subjects.filter(s => user?.subjectsTaughtIds?.includes(s.id)).map(s => (
                                         <option key={s.id} value={s.id}>{s.name}</option>
@@ -310,24 +310,24 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.date')}</label>
-                                    <input type="date" name="date" defaultValue={editingClass?.date} className="w-full bg-background p-5 rounded-3xl border border-border font-bold outline-none shadow-inner text-text" required />
+                                    <input type="date" name="date" defaultValue={editingClass?.date} className="academic-input" required />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.room')}</label>
-                                    <input name="room" defaultValue={editingClass?.room} placeholder="Hall Identifier" className="w-full bg-background p-5 rounded-3xl border border-border font-bold outline-none shadow-inner text-text" required />
+                                    <input name="room" defaultValue={editingClass?.room} placeholder="Hall Identifier" className="academic-input" required />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.start')}</label>
-                                    <select name="time" defaultValue={editingClass?.time || '08:00'} className="w-full bg-background p-5 rounded-3xl border border-border font-bold outline-none shadow-inner cursor-pointer appearance-none text-text">
+                                    <select name="time" defaultValue={editingClass?.time || '08:00'} className="academic-input cursor-pointer appearance-none">
                                         {['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00'].map(t => <option key={t} value={t}>{t}</option>)}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.end')}</label>
-                                    <select name="endTime" defaultValue={editingClass?.endTime || '09:00'} className="w-full bg-background p-5 rounded-3xl border border-border font-bold outline-none shadow-inner cursor-pointer appearance-none text-text">
+                                    <select name="endTime" defaultValue={editingClass?.endTime || '09:00'} className="academic-input cursor-pointer appearance-none">
                                         {['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'].map(t => <option key={t} value={t}>{t}</option>)}
                                     </select>
                                 </div>
@@ -374,7 +374,7 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                                 </div>
                             </div>
 
-                            <button type="submit" disabled={isSaving} className="w-full bg-primary text-white py-6 rounded-3xl font-black text-xs uppercase tracking-[0.3em] shadow-[0_20px_40px_rgba(99,102,241,0.3)] hover:bg-primary/90 hover:scale-[1.02] active:scale-95 transition-all mt-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3">
+                            <button type="submit" disabled={isSaving} className="academic-button academic-button-primary w-full py-6 flex items-center justify-center gap-3 mt-6 disabled:opacity-70 disabled:cursor-not-allowed">
                                 {isSaving && <Loader2 size={18} className="animate-spin" />}
                                 {isSaving ? 'SYNCING...' : t('hub.sync')}
                             </button>

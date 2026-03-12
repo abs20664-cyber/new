@@ -516,18 +516,18 @@ const EconomicDashboard: React.FC = () => {
         }
 
         return (
-            <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl">
+            <div className="academic-table-container shadow-xl">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-start border-collapse">
+                    <table className="academic-table">
                         <thead>
-                            <tr className="bg-institutional-50 dark:bg-institutional-950 border-b border-institutional-200 dark:border-institutional-800">
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('admin.legalName')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Account Status</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('economic.start')} / {t('economic.end')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Monthly Amount</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Duration</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-end">Timeline</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-end">Actions</th>
+                            <tr>
+                                <th>{t('admin.legalName')}</th>
+                                <th>Account Status</th>
+                                <th>{t('economic.start')} / {t('economic.end')}</th>
+                                <th>Monthly Amount</th>
+                                <th>Duration</th>
+                                <th className="text-end">Timeline</th>
+                                <th className="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-institutional-100 dark:divide-institutional-800">
@@ -608,19 +608,19 @@ const EconomicDashboard: React.FC = () => {
         }
 
         return (
-            <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl">
+            <div className="academic-table-container shadow-xl">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-start border-collapse">
+                    <table className="academic-table">
                         <thead>
-                            <tr className="bg-institutional-50 dark:bg-institutional-950 border-b border-institutional-200 dark:border-institutional-800">
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('admin.legalName')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('economic.status')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('economic.amountOwed')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('economic.amountPaid')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Next Payment Date</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Monthly Salary</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('economic.notes')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-end">Actions</th>
+                            <tr>
+                                <th>{t('admin.legalName')}</th>
+                                <th>{t('economic.status')}</th>
+                                <th>{t('economic.amountOwed')}</th>
+                                <th>{t('economic.amountPaid')}</th>
+                                <th>Next Payment Date</th>
+                                <th>Monthly Salary</th>
+                                <th>{t('economic.notes')}</th>
+                                <th className="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-institutional-100 dark:divide-institutional-800">
@@ -687,7 +687,7 @@ const EconomicDashboard: React.FC = () => {
                             { label: t('economic.outstanding'), value: formatCurrencyDZD(financialSummary.outstandingPayments), icon: TrendingDown, color: 'text-rose-500', bg: 'bg-rose-500/5' },
                             { label: t('economic.payroll'), value: formatCurrencyDZD(financialSummary.teacherPayrollTotal), icon: CreditCard, color: 'text-amber-500', bg: 'bg-amber-500/5' },
                         ].map((kpi, i) => (
-                            <div key={i} className="academic-card p-6 rounded-[2rem] group">
+                            <div key={i} className="academic-stat-card group">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className={`p-3 rounded-2xl ${kpi.bg} ${kpi.color} group-hover:scale-110 transition-transform`}>
                                         <kpi.icon size={20} />
@@ -758,7 +758,7 @@ const EconomicDashboard: React.FC = () => {
                                 ))}
                             </div>
                             <div className="mt-8 pt-8 border-t border-institutional-100 dark:border-institutional-800">
-                                <button className="w-full py-4 bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
+                                <button className="academic-button academic-button-primary w-full py-4 text-[10px]">
                                     Generate Monthly Report
                                 </button>
                             </div>
@@ -778,7 +778,7 @@ const EconomicDashboard: React.FC = () => {
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
                                 placeholder={t('inbox.searchPlaceholder')}
-                                className={`w-full bg-surface/50 dark:bg-institutional-900/50 backdrop-blur-sm border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12' : 'pl-12'} py-4 text-sm font-bold outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-soft`}
+                                className="academic-input py-4 pl-12 pr-4"
                             />
                         </div>
                         <div className="flex gap-4">
@@ -787,7 +787,7 @@ const EconomicDashboard: React.FC = () => {
                                 <select 
                                     value={filterStatus}
                                     onChange={e => setFilterStatus(e.target.value)}
-                                    className={`bg-surface/50 dark:bg-institutional-900/50 backdrop-blur-sm border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12 pl-8' : 'pl-12 pr-8'} py-4 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all appearance-none cursor-pointer shadow-soft`}>
+                                    className="academic-input py-4 pl-12 pr-8 text-[10px] font-black uppercase tracking-widest appearance-none cursor-pointer">
                                     <option value="all">All Status</option>
                                     <option value="active">{t('economic.active')}</option>
                                     <option value="expired">{t('economic.expired')}</option>

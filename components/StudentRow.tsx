@@ -56,7 +56,7 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
     if (isMobile) {
         return (
             <div className="px-4 py-3">
-                <div className={`academic-card rounded-[2rem] border-2 ${sub?.paymentStatus === 'paid' ? 'border-emerald-500/20' : sub?.paymentStatus === 'unpaid' ? 'border-rose-500/20' : 'border-institutional-200 dark:border-institutional-800'} p-5 relative overflow-hidden`}>
+                <div className={`academic-stat-card border-2 ${sub?.paymentStatus === 'paid' ? 'border-emerald-500/20' : sub?.paymentStatus === 'unpaid' ? 'border-rose-500/20' : 'border-institutional-200 dark:border-institutional-800'} p-5 relative overflow-hidden`}>
                     {/* Status Indicator Bar */}
                     <div className={`absolute top-0 left-0 w-1.5 h-full ${sub?.paymentStatus === 'paid' ? 'bg-emerald-500' : sub?.paymentStatus === 'unpaid' ? 'bg-rose-500' : 'bg-amber-500'}`} />
                     
@@ -109,13 +109,13 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                         <div className="flex items-center justify-between p-4 bg-institutional-50 dark:bg-institutional-800/50 rounded-2xl border border-institutional-100 dark:border-institutional-800">
                             <div>
                                 <p className="text-[9px] font-black uppercase tracking-widest text-institutional-400 mb-1">Payment Status</p>
-                                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg ${sub?.paymentStatus === 'paid' ? 'bg-emerald-500 text-white' : sub?.paymentStatus === 'unpaid' ? 'bg-rose-500 text-white' : 'bg-amber-500 text-white'}`}>
+                                <span className={`academic-badge ${sub?.paymentStatus === 'paid' ? 'academic-badge-success' : sub?.paymentStatus === 'unpaid' ? 'academic-badge-danger' : 'academic-badge-warning'}`}>
                                     {sub?.paymentStatus || 'pending'}
                                 </span>
                             </div>
                             <button 
                                 onClick={openSettings}
-                                className="px-4 py-2 bg-primary/10 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all"
+                                className="academic-button academic-button-secondary py-2 px-4 text-[10px]"
                             >
                                 Manage
                             </button>
@@ -178,7 +178,7 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                             ? <Clock size={16} className="text-amber-500" />
                             : <ShieldCheck size={16} className="text-emerald-500" />
                         }
-                        <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? getStatusColor('disabled') : s.accountStatus === 'pending' ? getStatusColor('pending') : getStatusColor('active')}`}>
+                        <span className={`academic-badge ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? 'academic-badge-danger' : s.accountStatus === 'pending' ? 'academic-badge-warning' : 'academic-badge-success'}`}>
                             {s.accountStatus || 'active'}
                         </span>
                     </div>

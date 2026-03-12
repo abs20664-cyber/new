@@ -70,8 +70,8 @@ export const superAdminHardDelete = async (identifier: string): Promise<string[]
         }
 
         // 3. Cascading Cleanup (Best Effort)
-        const refsToDelete: DocumentReference[] = [];
-        const safeCollect = async (name: string, q: any) => {
+        const refsToDelete: any[] = [];
+        const safeCollect = async (q: any) => {
             try {
                 const snap = await getDocs(q);
                 snap.forEach(d => refsToDelete.push(d.ref));
@@ -79,10 +79,10 @@ export const superAdminHardDelete = async (identifier: string): Promise<string[]
         };
 
         await Promise.all([
-            safeCollect('Attendance', query(collection(db, collections.attendance), where('studentId', '==', userId))),
-            safeCollect('Attendance_T', query(collection(db, collections.attendance), where('teacherId', '==', userId))),
-            safeCollect('Messages', query(collection(db, collections.messages), where('senderId', '==', userId))),
-            safeCollect('Submissions', query(collection(db, collections.submissions), where('studentId', '==', userId))),
+            safeCollect(query(collection(db, collections.attendance), where('studentId', '==', userId))),
+            safeCollect(query(collection(db, collections.attendance), where('teacherId', '==', userId))),
+            safeCollect(query(collection(db, collections.messages), where('senderId', '==', userId))),
+            safeCollect(query(collection(db, collections.submissions), where('studentId', '==', userId))),
         ]);
 
         if (refsToDelete.length > 0) {

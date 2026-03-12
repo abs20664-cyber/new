@@ -28,6 +28,8 @@ export interface User {
   subscriptionDuration?: number; // in months
   subscriptionStartDate?: any;
   nextPaymentDate?: any;
+  mustChangePassword?: boolean;
+  customQrCodeUrl?: string;
 }
 
 export interface StudentSubscription {
@@ -40,7 +42,9 @@ export interface StudentSubscription {
   nextPaymentDate?: any;
   paymentStatus: 'paid' | 'unpaid' | 'pending';
   monthlyFee?: number;
+  monthlyAmount?: number;
   duration?: number; // in months
+  plan?: string;
   subscriptionType?: 'time' | 'session';
   totalSessions?: number;
   sessionsUsed?: number;

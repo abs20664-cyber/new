@@ -169,7 +169,7 @@ const Login: React.FC = () => {
                                     <button
                                         key={lang.code}
                                         onClick={() => setLanguage(lang.code)}
-                                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${language === lang.code ? 'bg-white dark:bg-institutional-800 text-primary shadow-sm' : 'text-institutional-400 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
+                                        className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${language === lang.code ? 'bg-white dark:bg-institutional-800 text-primary shadow-sm' : 'text-institutional-400 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
                                     >
                                         {lang.code}
                                     </button>
@@ -208,7 +208,7 @@ const Login: React.FC = () => {
                                 className="space-y-6"
                             >
                                 <div>
-                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-2 block px-1">{t('login.newPassword')}</label>
+                                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-[0.2em] mb-2 block px-1">{t('login.newPassword')}</label>
                                     <div className="relative group">
                                         <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors`} size={20} />
                                         <input 
@@ -216,13 +216,13 @@ const Login: React.FC = () => {
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder={t('login.minCharacters')} 
-                                            className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 font-bold focus:border-primary focus:bg-white dark:focus:bg-slate-900 outline-none text-sm transition-all`}
+                                            className="academic-input py-4 pl-12 pr-4"
                                             required 
                                         />
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-2 block px-1">{t('login.confirmPassword')}</label>
+                                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-[0.2em] mb-2 block px-1">{t('login.confirmPassword')}</label>
                                     <div className="relative group">
                                         <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors`} size={20} />
                                         <input 
@@ -230,7 +230,7 @@ const Login: React.FC = () => {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder={t('login.repeatPassword')} 
-                                            className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 font-bold focus:border-primary focus:bg-white dark:focus:bg-slate-900 outline-none text-sm transition-all`}
+                                            className="academic-input py-4 pl-12 pr-4"
                                             required 
                                         />
                                     </div>
@@ -238,7 +238,7 @@ const Login: React.FC = () => {
                                 <button 
                                     type="submit" 
                                     disabled={isSubmitting}
-                                    className="w-full bg-primary text-white p-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-70"
+                                    className="academic-button academic-button-primary w-full p-5 shadow-xl shadow-primary/20"
                                 >
                                     {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <ShieldCheck size={20} />}
                                     <span>{t('login.updateAndLogin')}</span>
@@ -246,7 +246,7 @@ const Login: React.FC = () => {
                                 <button 
                                     type="button"
                                     onClick={() => setPendingUser(null)}
-                                    className="w-full text-[10px] font-black uppercase text-slate-400 tracking-widest hover:text-slate-600 transition-all"
+                                    className="w-full text-[10px] font-bold uppercase text-slate-400 tracking-widest hover:text-slate-600 transition-all"
                                 >
                                     {t('common.cancel')}
                                 </button>
@@ -270,7 +270,7 @@ const Login: React.FC = () => {
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
                                                 placeholder="name@institution.edu.dz" 
-                                                className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                className="academic-input py-4 pl-12 pr-4"
                                                 required 
                                             />
                                         </div>
@@ -285,7 +285,7 @@ const Login: React.FC = () => {
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 placeholder="••••••••" 
-                                                className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                className="academic-input py-4 pl-12 pr-4"
                                                 required 
                                             />
                                         </div>
@@ -295,7 +295,7 @@ const Login: React.FC = () => {
                                 <button 
                                     type="submit" 
                                     disabled={isSubmitting}
-                                    className="w-full bg-primary text-white p-4 rounded-xl font-semibold shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70 mt-2"
+                                    className="academic-button academic-button-primary w-full p-4 shadow-lg shadow-primary/20 mt-2"
                                 >
                                     {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <LogIn size={18} />}
                                     <span>{isSubmitting ? t('login.verifying') : t('login.authenticate')}</span>

@@ -1,14 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  /* Light Theme - Refined Slate/Gray for ultimate clarity */
+  /* Modern Academic Palette - Refined Emerald & Slate */
   --bg-body: #f8fafc;
   --bg-surface: #ffffff;
   --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --border-color: #f1f5f9;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
   --muted: #94a3b8;
 
+  /* Primary Academic Green - Sophisticated & Professional */
+  --primary-50: #ecfdf5;
+  --primary-100: #d1fae5;
+  --primary-200: #a7f3d0;
+  --primary-300: #6ee7b7;
+  --primary-400: #34d399;
+  --primary-500: #10b981;
+  --primary-600: #059669;
+  --primary-700: #047857;
+  --primary-800: #065f46;
+  --primary-900: #064e3b;
+  --primary-950: #022c22;
+
+  /* Institutional Grays */
   --inst-50: #f8fafc;
   --inst-100: #f1f5f9;
   --inst-200: #e2e8f0;
@@ -23,7 +37,7 @@
 }
 
 .dark {
-  /* Dark Theme - Deep Zinc/Neutral for professional depth */
+  /* Dark Theme - Deep Zinc & Emerald Accents */
   --bg-body: #09090b;
   --bg-surface: #121215;
   --text-primary: #f8fafc;
@@ -46,22 +60,21 @@
 
 @theme {
   --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", sans-serif;
   --font-arabic: "IBM Plex Sans Arabic", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  --color-primary: #006633;
-  --color-primary-hover: #00552b;
-  --color-primary-light: rgba(0, 102, 51, 0.1);
+  --color-primary: var(--primary-800);
+  --color-primary-hover: var(--primary-900);
+  --color-primary-light: var(--primary-100);
   --color-primary-foreground: #ffffff;
-
-  --color-algeria-green: #006633;
-  --color-algeria-red: #D21034;
-  --color-algeria-white: #FFFFFF;
 
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-danger: #f43f5e;
+  --color-info: #0ea5e9;
 
-  /* Semantic Colors mapped to variables */
+  /* Semantic Colors */
   --color-surface: var(--bg-surface);
   --color-body: var(--bg-body);
   --color-background: var(--bg-body);
@@ -71,9 +84,9 @@
   --color-border: var(--border-color);
   --color-muted: var(--muted);
 
-  --shadow-soft: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-strong: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-glow: 0 0 20px rgba(0, 102, 51, 0.15);
+  --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-modern: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 0 20px rgba(6, 78, 59, 0.1);
 
   /* Institutional Palette */
   --color-institutional-50: var(--inst-50);
@@ -92,33 +105,100 @@
 @layer base {
   body {
     @apply bg-body text-text font-sans antialiased;
-    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight font-bold;
+    @apply font-display tracking-tight text-text;
   }
 
   code, pre {
     @apply font-mono;
   }
 
-  /* RTL TYPOGRAPHY */
+  /* RTL Support */
   [dir="rtl"] { 
     font-family: "IBM Plex Sans Arabic", "Plus Jakarta Sans", sans-serif !important; 
   }
-  [dir="rtl"] * { 
-    letter-spacing: normal !important; 
-  }
 
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-thumb { @apply bg-institutional-300 rounded-full; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-institutional-200 rounded-full; }
   .dark ::-webkit-scrollbar-thumb { @apply bg-institutional-800; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-institutional-300; }
 }
 
 @layer components {
+  /* ACADEMIC DESIGN SYSTEM - REFACTORED */
+  
   .academic-card {
-    @apply bg-surface border border-border rounded-2xl shadow-soft transition-all duration-300 hover:shadow-strong hover:-translate-y-0.5;
+    @apply bg-surface border border-border rounded-xl shadow-soft transition-all duration-300;
+  }
+
+  .academic-card-hover {
+    @apply hover:shadow-modern hover:border-primary/20 hover:-translate-y-0.5;
+  }
+
+  .academic-stat-card {
+    @apply bg-surface border border-border rounded-xl shadow-soft transition-all duration-300 p-6 flex flex-col gap-1 relative overflow-hidden;
+  }
+
+  .academic-stat-card::before {
+    content: '';
+    @apply absolute top-0 left-0 w-1 h-full bg-primary opacity-0 transition-opacity duration-300;
+  }
+
+  .academic-stat-card:hover::before {
+    @apply opacity-100;
+  }
+
+  .academic-table-container {
+    @apply bg-surface border border-border rounded-xl shadow-soft transition-all duration-300 overflow-hidden;
+  }
+
+  .academic-table {
+    @apply w-full text-left border-collapse;
+  }
+
+  .academic-table th {
+    @apply px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-text-secondary bg-institutional-50/50 dark:bg-institutional-900/50 border-b border-border;
+  }
+
+  .academic-table td {
+    @apply px-6 py-4 text-sm border-b border-border transition-colors;
+  }
+
+  .academic-table tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .academic-table tr:hover td {
+    @apply bg-institutional-50/30 dark:bg-institutional-900/30;
+  }
+
+  .academic-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider;
+  }
+
+  .academic-badge-success { @apply bg-success/10 text-success border border-success/20; }
+  .academic-badge-warning { @apply bg-warning/10 text-warning border border-warning/20; }
+  .academic-badge-danger { @apply bg-danger/10 text-danger border border-danger/20; }
+  .academic-badge-primary { @apply bg-primary/10 text-primary border border-primary/20; }
+
+  .academic-button {
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg font-bold text-xs uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .academic-button-primary {
+    @apply bg-primary text-white hover:bg-primary-hover shadow-lg shadow-primary/10;
+  }
+
+  .academic-button-secondary {
+    @apply bg-institutional-50 dark:bg-institutional-900 text-text hover:bg-institutional-100 dark:hover:bg-institutional-800 border border-border;
+  }
+
+  .academic-input {
+    @apply w-full bg-surface border border-border rounded-lg px-4 py-2.5 text-sm font-medium outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all placeholder:text-muted;
   }
 
   .glass {
@@ -142,9 +222,9 @@
     pointer-events: none;
   }
 
-  .fade-in { animation: fadeIn 0.4s ease-out; }
+  .fade-in { animation: fadeIn 0.3s ease-out forwards; }
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
