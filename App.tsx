@@ -1,10 +1,13 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { PlatformProvider } from './contexts/PlatformContext';
 import { Layout } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
+
+// ... rest of the imports ...
 
 // Lazy load heavy page components
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -83,6 +86,7 @@ const App: React.FC = () => {
       <AuthProvider>
         <LanguageProvider>
           <AppContent />
+          <Toaster position="top-center" richColors closeButton />
         </LanguageProvider>
       </AuthProvider>
     </BrowserRouter>
