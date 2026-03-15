@@ -782,7 +782,7 @@ const EconomicDashboard: React.FC = () => {
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                         {/* Filters & Search - Modern Floating Bar */}
-                        <div className="mb-12 flex flex-col md:flex-row gap-6 sticky top-24 z-30 bg-body/80 dark:bg-institutional-950/80 backdrop-blur-2xl py-6 px-8 rounded-[2rem] border border-institutional-200/50 dark:border-institutional-800/50 shadow-2xl shadow-black/5">
+                        <div className="mb-12 flex flex-col md:flex-row gap-6 md:sticky md:top-4 z-30 bg-body/80 dark:bg-institutional-950/80 backdrop-blur-2xl py-6 px-8 rounded-[2rem] border border-institutional-200/50 dark:border-institutional-800/50 shadow-2xl shadow-black/5">
                             <div className="relative flex-1 group">
                                 <Search className={`absolute ${isRTL ? 'right-6' : 'left-6'} top-1/2 -translate-y-1/2 text-institutional-400 group-focus-within:text-primary transition-all duration-300`} size={20} />
                                 <input 

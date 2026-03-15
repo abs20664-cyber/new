@@ -253,7 +253,7 @@ const Schedule: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                 {/* Calendar Section */}
-                <div className="lg:col-span-4 sticky top-8">
+                <div className="lg:col-span-4 lg:sticky lg:top-4 z-20">
                     <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                         {renderCalendar()}
                     </div>
