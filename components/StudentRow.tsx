@@ -21,6 +21,7 @@ interface StudentRowProps {
         setSessionsValue: (sessions: number) => void;
         setStudentToEdit: (student: User | null) => void;
         setSelectedSubjects: (subjects: string[]) => void;
+        setSelectedTeacherId: (teacherId: string | null) => void;
     };
 }
 
@@ -39,7 +40,8 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
         setDurationValue,
         setSubscriptionType,
         setSessionsValue,
-        setSelectedSubjects
+        setSelectedSubjects,
+        setSelectedTeacherId
     } = data;
     const s = students[index];
     const sub = subscriptions[s.id];
@@ -51,6 +53,7 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
         setSubscriptionType(sub?.subscriptionType || 'time');
         setSessionsValue(sub?.totalSessions || 4);
         setSelectedSubjects(s.subjectsStudied || []);
+        setSelectedTeacherId(s.teacherId || null);
     };
 
     if (isMobile) {

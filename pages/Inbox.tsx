@@ -937,7 +937,7 @@ const Inbox: React.FC = () => {
                             <div className="space-y-2">
                                 <label className="text-[11px] font-bold uppercase text-institutional-500 tracking-widest px-1">{t('inbox.participants')}</label>
                                 <div className="max-h-[300px] overflow-y-auto p-2 bg-institutional-50/50 dark:bg-institutional-900/50 border border-border rounded-xl space-y-1 scroll-hide">
-                                    {users.map(u => (
+                                    {users.filter(u => u.role === 'student' && (user?.role !== 'teacher' || u.teacherId === user?.id)).map(u => (
                                         <label key={u.id} className="flex items-center gap-3 p-3 hover:bg-surface dark:hover:bg-institutional-800 rounded-xl cursor-pointer transition-all group/p">
                                             <div className="relative flex items-center justify-center">
                                                 <input type="checkbox" name="participants" value={u.id} className="peer w-5 h-5 rounded-md border-institutional-300 text-primary focus:ring-primary/20 transition-all cursor-pointer appearance-none border-2 checked:bg-primary checked:border-primary" />

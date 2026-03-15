@@ -30,6 +30,7 @@ export interface User {
   nextPaymentDate?: any;
   mustChangePassword?: boolean;
   customQrCodeUrl?: string;
+  teacherId?: string; // ID of the teacher this student is assigned to
 }
 
 export interface StudentSubscription {

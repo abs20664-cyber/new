@@ -158,7 +158,12 @@ const Assignments: React.FC = () => {
 
     useEffect(() => {
         const unsub = onSnapshot(collection(db, collections.assignments), (snap) => {
-            setAssignments(snap.docs.map(d => ({ id: d.id, ...d.data() } as Assignment)).sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0)));
+            const allAssignments = snap.docs.map(d => ({ id: d.id, ...d.data() } as Assignment));
+            if (user?.role === 'student') {
+                setAssignments(allAssignments.filter(a => a.creatorId === user.teacherId).sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0)));
+            } else {
+                setAssignments(allAssignments.sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0)));
+            }
         });
         const unsubSub = onSnapshot(collection(db, collections.submissions), (snap) => {
             setSubmissions(snap.docs.map(d => ({ id: d.id, ...d.data() } as Submission)));

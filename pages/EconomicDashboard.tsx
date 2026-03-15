@@ -18,6 +18,7 @@ import {
     TrendingDown,
     AlertCircle,
     History,
+    Users,
     ArrowRight,
     FileSpreadsheet,
     FileJson,
@@ -74,6 +75,7 @@ const EconomicDashboard: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [hasCheckedExpirations, setHasCheckedExpirations] = useState(false);
     const [studentToEdit, setStudentToEdit] = useState<User | null>(null);
+    const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
 
     const formatCurrencyDZD = (amount: number) => {
         return new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD' }).format(amount);
@@ -337,6 +339,14 @@ const EconomicDashboard: React.FC = () => {
         setEditingDate(null);
     };
 
+    const handleUpdateStudentTeacher = async (studentId: string) => {
+        const student = students.find(s => s.id === studentId);
+        if (!student) return;
+
+        await updateDoc(doc(db, collections.users, studentId), { teacherId: selectedTeacherId });
+        await logAction('Student Teacher Update', `Updated assigned teacher to ${selectedTeacherId || 'None'}`, studentId, student.name);
+    };
+
     const handleUpdateStudentSubjects = async (studentId: string) => {
         const student = students.find(s => s.id === studentId);
         if (!student) return;
@@ -492,7 +502,8 @@ const EconomicDashboard: React.FC = () => {
             setSubscriptionType,
             setSessionsValue,
             setStudentToEdit,
-            setSelectedSubjects
+            setSelectedSubjects,
+            setSelectedTeacherId
         };
 
         if (isMobile) {
@@ -950,6 +961,25 @@ const EconomicDashboard: React.FC = () => {
                                 </div>
                             </div>
 
+                            {/* Assigned Teacher */}
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-institutional-500 ml-1">Assigned Teacher</label>
+                                <div className="relative">
+                                    <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-institutional-400" size={18} />
+                                    <select 
+                                        value={selectedTeacherId || ''}
+                                        onChange={(e) => setSelectedTeacherId(e.target.value || null)}
+                                        className="w-full bg-institutional-50 dark:bg-institutional-800 border-2 border-institutional-200 dark:border-institutional-700 pl-12 pr-4 py-4 rounded-2xl text-sm font-bold text-institutional-900 dark:text-white focus:border-primary outline-none transition-all appearance-none"
+                                    >
+                                        <option value="">Select a teacher</option>
+                                        {teachers.map(t => (
+                                            <option key={t.id} value={t.id}>{t.name}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-institutional-400 pointer-events-none" size={18} />
+                                </div>
+                            </div>
+
                             {/* Assigned Subjects */}
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-institutional-500 ml-1">Assigned Subjects</label>
@@ -1038,6 +1068,7 @@ const EconomicDashboard: React.FC = () => {
                                     await handleUpdateStudentAmount(studentToEdit.id);
                                     await handleUpdateSubscriptionDuration(studentToEdit.id);
                                     await handleUpdateStudentSubjects(studentToEdit.id);
+                                    await handleUpdateStudentTeacher(studentToEdit.id);
                                     setStudentToEdit(null);
                                 }}
                                 className="flex-[2] py-4 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"

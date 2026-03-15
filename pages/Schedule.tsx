@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { collection, onSnapshot, query, where, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, updateDoc, deleteDoc, doc, getDocs, writeBatch } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { ClassSession, RecurringSession } from '../types';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, CheckCircle2, XCircle, CalendarDays, Plus, Pause, Play, Trash2, X } from 'lucide-react';
@@ -117,8 +117,17 @@ const Schedule: React.FC = () => {
         e.stopPropagation();
         if (!window.confirm(`Are you sure you want to delete the recurring session "${session.name}"?`)) return;
         try {
+            // Delete recurring session
             await deleteDoc(doc(db, 'recurring_sessions', session.id));
-            toast.success('Recurring session deleted');
+
+            // Delete associated attendance records
+            const q = query(collection(db, collections.attendance), where('classId', '>=', session.id + '-'), where('classId', '<=', session.id + '-\uf8ff'));
+            const attendanceSnap = await getDocs(q);
+            const batch = writeBatch(db);
+            attendanceSnap.docs.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+
+            toast.success('Recurring session and associated attendance deleted');
         } catch (error) {
             console.error('Error deleting recurring session:', error);
             toast.error('Failed to delete session');

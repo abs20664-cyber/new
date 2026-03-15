@@ -41,7 +41,7 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
 
     useEffect(() => {
         const unsubRecurring = onSnapshot(collection(db, 'recurring_sessions'), (snap) => {
-            setRecurringSessions(snap.docs.map(d => ({ id: d.id, ...d.data() } as RecurringSession)));
+            setRecurringSessions(snap.docs.map(d => ({ id: d.id, ...d.data() } as RecurringSession)).filter(s => s.status !== 'paused'));
         });
         return () => { unsubRecurring(); };
     }, []);
@@ -148,6 +148,15 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                             
                             const studentId = String(scanData.id);
                             const studentName = scanData.name || "Unknown Identity";
+
+                            const studentSnap = await getDoc(doc(db, collections.users, studentId));
+                            const studentData = studentSnap.data();
+                            if (!studentData || studentData.teacherId !== user?.id) {
+                                setStatus("Student not assigned to you");
+                                setIsPaused(true);
+                                if (scannerRef.current?.pause) scannerRef.current.pause();
+                                return;
+                            }
 
                             // Prevent duplicates for this session attendance
                             const q = query(
