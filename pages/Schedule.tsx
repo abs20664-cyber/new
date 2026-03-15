@@ -21,7 +21,6 @@ const Schedule: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDayModalOpen, setIsDayModalOpen] = useState(false);
     const [teachers, setTeachers] = useState<any[]>([]);
-    const [subjects, setSubjects] = useState<any[]>([]);
 
     useEffect(() => {
         const unsubClasses = onSnapshot(collection(db, collections.classes), (snap) => {
@@ -36,10 +35,6 @@ const Schedule: React.FC = () => {
             setTeachers(snap.docs.map(d => ({ id: d.id, ...d.data() })));
         });
 
-        const unsubSubjects = onSnapshot(collection(db, 'subjects'), (snap) => {
-            setSubjects(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-        });
-        
         const qAttendance = user?.role === 'student' 
             ? query(collection(db, collections.attendance), where('studentId', '==', user.id)) 
             : collection(db, collections.attendance);
@@ -48,7 +43,7 @@ const Schedule: React.FC = () => {
             setAttendance(snap.docs.map(d => ({ id: d.id, ...d.data() })));
         });
         
-        return () => { unsubClasses(); unsubAttendance(); unsubRecurring(); unsubTeachers(); unsubSubjects(); };
+        return () => { unsubClasses(); unsubAttendance(); unsubRecurring(); unsubTeachers(); };
     }, [user?.role, user?.id]);
 
     const checkIsLive = useCallback((date: string, start: string, end: string) => {
@@ -291,7 +286,7 @@ const Schedule: React.FC = () => {
                         )}
                     </div>
 
-                    <RecurringSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} teachers={teachers} subjects={subjects} />
+                    <RecurringSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} teachers={teachers} />
 
                     {/* Day Sessions Modal for Economic Account */}
                     <AnimatePresence>
