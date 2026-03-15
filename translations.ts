@@ -37,7 +37,7 @@ export const translations = {
     },
     schedule: {
       title: "Institutional Time Allocation", cycleEntries: "No Cycle Entries",
-      present: "Present", absent: "Absent", pending: "Pending", room: "Room",
+      present: "Present", absent: "Absent", pending: "Pending", paused: "Paused", room: "Room",
       week: "Week", day: "Day"
     },
     hub: {
@@ -207,7 +207,7 @@ export const translations = {
     },
     schedule: {
       title: "Allocation du Temps Institutionnel", cycleEntries: "Aucune entrée",
-      present: "Présent", absent: "Absent", pending: "En attente", room: "Salle",
+      present: "Présent", absent: "Absent", pending: "En attente", paused: "En pause", room: "Salle",
       week: "Semaine", day: "Jour"
     },
     hub: {
@@ -377,7 +377,7 @@ export const translations = {
     },
     schedule: {
       title: "توزيع الوقت المؤسسي", cycleEntries: "لا توجد حصص",
-      present: "حاضر", absent: "غائب", pending: "قيد الانتظار", room: "قاعة",
+      present: "حاضر", absent: "غائب", pending: "قيد الانتظار", paused: "متوقف مؤقتاً", room: "قاعة",
       week: "أسبوع", day: "يوم"
     },
     hub: {

@@ -639,23 +639,31 @@ const EconomicDashboard: React.FC = () => {
         );
     };
 
+
     return (
-        <div className="fade-in max-w-7xl mx-auto px-4 lg:px-0 pb-20">
-            {/* Header & Tabs */}
-            <div className="mb-10 flex flex-col gap-8 pb-6 border-b border-institutional-200 dark:border-institutional-800">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="min-h-screen bg-body dark:bg-institutional-950 pb-20">
+            {/* Header Section */}
+            <div className="max-w-7xl mx-auto px-6 pt-12 pb-10">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
                     <div className="text-start">
-                        <h2 className="text-3xl font-black uppercase tracking-tight text-institutional-900 dark:text-white">{t('economic.title')}</h2>
-                        <p className="text-[10px] font-black text-institutional-500 uppercase tracking-[0.3em] mt-1">Institutional President Terminal v3.1</p>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-lg shadow-primary/10">
+                                <TrendingUp size={24} />
+                            </div>
+                            <h1 className="text-4xl font-black text-institutional-900 dark:text-white tracking-tight">
+                                {t('economic.dashboard')}
+                            </h1>
+                        </div>
+                        <p className="text-[11px] font-black text-institutional-500 uppercase tracking-[0.4em] ml-1 opacity-70">Institutional President Terminal v3.1</p>
                     </div>
                     
                     {/* Desktop Tabs */}
-                    <div className="hidden md:flex bg-institutional-100/50 dark:bg-institutional-800/50 backdrop-blur-sm p-1 rounded-2xl border border-institutional-200/50 dark:border-institutional-700/50">
+                    <div className="hidden md:flex bg-institutional-100/50 dark:bg-institutional-800/50 backdrop-blur-sm p-1.5 rounded-[1.5rem] border border-institutional-200/50 dark:border-institutional-700/50 shadow-inner">
                         {(['overview', 'students', 'teachers', 'audit'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-500 hover:text-institutional-700'}`}>
+                                className={`px-8 py-3 rounded-[1.2rem] text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-xl shadow-primary/10 scale-105' : 'text-institutional-500 hover:text-institutional-700 dark:hover:text-institutional-300'}`}>
                                 {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : 'Audit'}
                             </button>
                         ))}
@@ -663,13 +671,13 @@ const EconomicDashboard: React.FC = () => {
                 </div>
 
                 {/* Mobile Tabs - Centered & Polished */}
-                <div className="md:hidden flex justify-center mb-6">
+                <div className="md:hidden flex justify-center mb-10">
                     <div className="inline-flex bg-institutional-100 dark:bg-institutional-800 p-1.5 rounded-2xl shadow-inner overflow-x-auto scrollbar-hide max-w-[95vw]">
                         {(['overview', 'students', 'teachers', 'audit'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-md scale-105' : 'text-institutional-500'}`}>
+                                className={`px-6 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-md scale-105' : 'text-institutional-500'}`}>
                                 {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs').split(' ')[0] : tab === 'teachers' ? t('economic.teacherPayments').split(' ')[0] : 'Audit'}
                             </button>
                         ))}
@@ -678,89 +686,91 @@ const EconomicDashboard: React.FC = () => {
             </div>
 
             {activeTab === 'overview' && (
-                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    {/* KPI Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[
-                            { label: t('economic.expected'), value: formatCurrencyDZD(financialSummary.totalExpectedRevenue), icon: TrendingUp, color: 'text-primary', bg: 'bg-primary/5' },
-                            { label: t('economic.collected'), value: formatCurrencyDZD(financialSummary.totalCollectedRevenue), icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-500/5' },
-                            { label: t('economic.outstanding'), value: formatCurrencyDZD(financialSummary.outstandingPayments), icon: TrendingDown, color: 'text-rose-500', bg: 'bg-rose-500/5' },
-                            { label: t('economic.payroll'), value: formatCurrencyDZD(financialSummary.teacherPayrollTotal), icon: CreditCard, color: 'text-amber-500', bg: 'bg-amber-500/5' },
-                        ].map((kpi, i) => (
-                            <div key={i} className="academic-stat-card group">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className={`p-3 rounded-2xl ${kpi.bg} ${kpi.color} group-hover:scale-110 transition-transform`}>
-                                        <kpi.icon size={20} />
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        {/* KPI Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                            {[
+                                { label: t('economic.expected'), value: formatCurrencyDZD(financialSummary.totalExpectedRevenue), icon: TrendingUp, color: 'text-primary', bg: 'bg-primary/5', border: 'border-primary/10' },
+                                { label: t('economic.collected'), value: formatCurrencyDZD(financialSummary.totalCollectedRevenue), icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-500/5', border: 'border-emerald-500/10' },
+                                { label: t('economic.outstanding'), value: formatCurrencyDZD(financialSummary.outstandingPayments), icon: TrendingDown, color: 'text-rose-500', bg: 'bg-rose-50/50 dark:bg-rose-900/20', border: 'border-rose-500/10' },
+                                { label: t('economic.payroll'), value: formatCurrencyDZD(financialSummary.teacherPayrollTotal), icon: CreditCard, color: 'text-amber-500', bg: 'bg-amber-500/5', border: 'border-amber-500/10' },
+                            ].map((kpi, i) => (
+                                <div key={i} className="bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-xl shadow-institutional-900/5 group hover:scale-[1.02] transition-all duration-500">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div className={`p-4 rounded-2xl ${kpi.bg} ${kpi.color} border ${kpi.border} group-hover:rotate-6 transition-transform duration-500`}>
+                                            <kpi.icon size={24} />
+                                        </div>
+                                        <ArrowRight size={16} className="text-institutional-300 opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0" />
                                     </div>
-                                    <ArrowRight size={14} className="text-institutional-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <p className="text-[11px] font-black uppercase text-institutional-400 tracking-[0.2em] mb-2">{kpi.label}</p>
+                                    <h3 className="text-3xl font-black text-institutional-900 dark:text-white tracking-tight">{kpi.value}</h3>
                                 </div>
-                                <p className="text-[10px] font-black uppercase text-institutional-400 tracking-widest mb-1">{kpi.label}</p>
-                                <h3 className="text-2xl font-black text-institutional-900 dark:text-white">{kpi.value}</h3>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Revenue Chart */}
-                        <div className="lg:col-span-2 academic-card p-8 rounded-[2.5rem]">
-                            <div className="flex items-center justify-between mb-8">
-                                <div className="text-start">
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white">{t('economic.revenue')} Analysis</h3>
-                                    <p className="text-[10px] font-bold text-institutional-400 uppercase mt-1">Monthly Collected vs Expected</p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button onClick={() => exportCSV(financialSummary.revenueHistory, 'revenue_report')} className="p-2 text-institutional-400 hover:text-primary transition-colors"><FileSpreadsheet size={18} /></button>
-                                    <button onClick={() => exportPDF('Revenue Report', ['Month', 'Collected', 'Expected'], financialSummary.revenueHistory.map(h => [h.month, h.collected, h.expected]), 'revenue_report')} className="p-2 text-institutional-400 hover:text-primary transition-colors"><FileJson size={18} /></button>
-                                </div>
-                            </div>
-                            <div className="h-[300px] w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={financialSummary.revenueHistory}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} tickFormatter={(value) => `${value / 1000}k`} />
-                                        <Tooltip 
-                                            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px', fontWeight: 'bold' }}
-                                            cursor={{ fill: '#f8fafc' }}
-                                            formatter={(value: any) => formatCurrencyDZD(Number(value || 0))}
-                                        />
-                                        <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', paddingTop: '20px' }} />
-                                        <Bar dataKey="expected" fill="#e2e8f0" radius={[4, 4, 0, 0]} name={t('economic.expected')} />
-                                        <Bar dataKey="collected" fill="#6366f1" radius={[4, 4, 0, 0]} name={t('economic.collected')} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
+                            ))}
                         </div>
 
-                        {/* Alerts Panel */}
-                        <div className="academic-card p-8 rounded-[2.5rem]">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-8 text-start">{t('economic.alerts')}</h3>
-                            <div className="space-y-4">
-                                {[
-                                    { label: t('economic.expiredSubs'), count: alerts.expired, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50/50 dark:bg-amber-900/20' },
-                                    { label: t('economic.unpaidTeachers'), count: alerts.unpaidT, icon: AlertCircle, color: 'text-rose-500', bg: 'bg-rose-50/50 dark:bg-rose-900/20' },
-                                    { label: t('economic.revenueDrop'), active: alerts.revenueDrop, icon: TrendingDown, color: alerts.revenueDrop ? 'text-rose-500' : 'text-emerald-500', bg: alerts.revenueDrop ? 'bg-rose-50/50 dark:bg-rose-900/20' : 'bg-emerald-50/50 dark:bg-emerald-900/20' },
-                                ].map((alert, i) => (
-                                    <div key={i} className={`p-5 rounded-2xl border border-institutional-100 dark:border-institutional-800 flex items-center justify-between group hover:border-primary/20 transition-all ${alert.bg}`}>
-                                        <div className="flex items-center gap-4">
-                                            <div className={`p-2.5 rounded-xl bg-surface dark:bg-institutional-800 ${alert.color} shadow-sm`}>
-                                                <alert.icon size={18} />
-                                            </div>
-                                            <div className="text-start">
-                                                <p className="text-xs font-bold text-institutional-700 dark:text-institutional-300">{alert.label}</p>
-                                                <p className="text-[9px] font-black uppercase text-institutional-400 tracking-widest mt-0.5">System Flag</p>
-                                            </div>
-                                        </div>
-                                        <span className={`text-sm font-black ${alert.color}`}>
-                                            {alert.count !== undefined ? alert.count : (alert.active ? 'YES' : 'NO')}
-                                        </span>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                            {/* Revenue Chart */}
+                            <div className="lg:col-span-2 bg-surface dark:bg-institutional-900 p-10 rounded-[3rem] border border-institutional-200 dark:border-institutional-800 shadow-2xl shadow-institutional-900/5">
+                                <div className="flex items-center justify-between mb-10">
+                                    <div className="text-start">
+                                        <h3 className="text-base font-black uppercase tracking-[0.2em] text-institutional-900 dark:text-white">{t('economic.revenue')} Analysis</h3>
+                                        <p className="text-[11px] font-bold text-institutional-400 uppercase mt-1 tracking-widest opacity-70">Monthly Collected vs Expected</p>
                                     </div>
-                                ))}
+                                    <div className="flex gap-3">
+                                        <button onClick={() => exportCSV(financialSummary.revenueHistory, 'revenue_report')} className="p-3 bg-institutional-50 dark:bg-institutional-800 text-institutional-400 hover:text-primary rounded-2xl transition-all hover:scale-110"><FileSpreadsheet size={20} /></button>
+                                        <button onClick={() => exportPDF('Revenue Report', ['Month', 'Collected', 'Expected'], financialSummary.revenueHistory.map(h => [h.month, h.collected, h.expected]), 'revenue_report')} className="p-3 bg-institutional-50 dark:bg-institutional-800 text-institutional-400 hover:text-primary rounded-2xl transition-all hover:scale-110"><FileJson size={20} /></button>
+                                    </div>
+                                </div>
+                                <div className="h-[350px] w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={financialSummary.revenueHistory} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fontSize: 11, fontWeight: 800, fill: '#94a3b8'}} dy={15} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{fontSize: 11, fontWeight: 800, fill: '#94a3b8'}} tickFormatter={(value) => `${value / 1000}k`} dx={-10} />
+                                            <Tooltip 
+                                                contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', fontSize: '12px', fontWeight: '900', padding: '16px' }}
+                                                cursor={{ fill: '#f8fafc', radius: 8 }}
+                                                formatter={(value: any) => formatCurrencyDZD(Number(value || 0))}
+                                            />
+                                            <Legend wrapperStyle={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em', paddingTop: '30px' }} />
+                                            <Bar dataKey="expected" fill="#e2e8f0" radius={[8, 8, 0, 0]} name={t('economic.expected')} barSize={40} />
+                                            <Bar dataKey="collected" fill="#6366f1" radius={[8, 8, 0, 0]} name={t('economic.collected')} barSize={40} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
                             </div>
-                            <div className="mt-8 pt-8 border-t border-institutional-100 dark:border-institutional-800">
-                                <button className="academic-button academic-button-primary w-full py-4 text-[10px]">
-                                    Generate Monthly Report
-                                </button>
+
+                            {/* Alerts Panel */}
+                            <div className="bg-surface dark:bg-institutional-900 p-10 rounded-[3rem] border border-institutional-200 dark:border-institutional-800 shadow-2xl shadow-institutional-900/5">
+                                <h3 className="text-base font-black uppercase tracking-[0.2em] text-institutional-900 dark:text-white mb-10 text-start">{t('economic.alerts')}</h3>
+                                <div className="space-y-5">
+                                    {[
+                                        { label: t('economic.expiredSubs'), count: alerts.expired, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50/50 dark:bg-amber-900/20' },
+                                        { label: t('economic.unpaidTeachers'), count: alerts.unpaidT, icon: AlertCircle, color: 'text-rose-500', bg: 'bg-rose-50/50 dark:bg-rose-900/20' },
+                                        { label: t('economic.revenueDrop'), active: alerts.revenueDrop, icon: TrendingDown, color: alerts.revenueDrop ? 'text-rose-500' : 'text-emerald-500', bg: alerts.revenueDrop ? 'bg-rose-50/50 dark:bg-rose-900/20' : 'bg-emerald-50/50 dark:bg-emerald-900/20' },
+                                    ].map((alert, i) => (
+                                        <div key={i} className={`p-6 rounded-[1.5rem] border border-institutional-100 dark:border-institutional-800 flex items-center justify-between group hover:border-primary/30 transition-all duration-300 ${alert.bg}`}>
+                                            <div className="flex items-center gap-5">
+                                                <div className={`p-3.5 rounded-2xl bg-surface dark:bg-institutional-800 ${alert.color} shadow-lg shadow-black/5 group-hover:scale-110 transition-transform`}>
+                                                    <alert.icon size={20} />
+                                                </div>
+                                                <div className="text-start">
+                                                    <p className="text-sm font-black text-institutional-900 dark:text-white tracking-tight">{alert.label}</p>
+                                                    <p className="text-[10px] font-black uppercase text-institutional-400 tracking-[0.2em] mt-1 opacity-60">System Flag</p>
+                                                </div>
+                                            </div>
+                                            <span className={`text-lg font-black ${alert.color}`}>
+                                                {alert.count !== undefined ? alert.count : (alert.active ? 'YES' : 'NO')}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-10 pt-10 border-t border-institutional-100 dark:border-institutional-800">
+                                    <button className="w-full py-5 bg-institutional-900 dark:bg-institutional-800 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] hover:bg-primary transition-all shadow-xl shadow-institutional-900/10 hover:scale-[1.02] active:scale-95">
+                                        Generate Monthly Report
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -769,75 +779,91 @@ const EconomicDashboard: React.FC = () => {
 
 
             {(activeTab === 'students' || activeTab === 'teachers') && (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    {/* Filters & Search */}
-                    <div className="mb-8 flex flex-col md:flex-row gap-4 sticky top-24 z-30 bg-body/60 dark:bg-institutional-950/60 backdrop-blur-xl py-4 border-b border-institutional-200/50 dark:border-institutional-800/50">
-                        <div className="relative flex-1 group">
-                            <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-400 group-focus-within:text-primary transition-colors`} size={18} />
-                            <input 
-                                value={searchTerm}
-                                onChange={e => setSearchTerm(e.target.value)}
-                                placeholder={t('inbox.searchPlaceholder')}
-                                className="academic-input py-4 pl-12 pr-4"
-                            />
-                        </div>
-                        <div className="flex gap-4">
-                            <div className="relative">
-                                <Filter className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-400`} size={16} />
-                                <select 
-                                    value={filterStatus}
-                                    onChange={e => setFilterStatus(e.target.value)}
-                                    className="academic-input py-4 pl-12 pr-8 text-[10px] font-black uppercase tracking-widest appearance-none cursor-pointer">
-                                    <option value="all">All Status</option>
-                                    <option value="active">{t('economic.active')}</option>
-                                    <option value="expired">{t('economic.expired')}</option>
-                                    <option value="pending">{t('economic.pending')}</option>
-                                    <option value="paid">{t('economic.paid')}</option>
-                                    <option value="unpaid">{t('economic.unpaid')}</option>
-                                </select>
-                                <ChevronDown className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 text-institutional-400 pointer-events-none`} size={14} />
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        {/* Filters & Search - Modern Floating Bar */}
+                        <div className="mb-12 flex flex-col md:flex-row gap-6 sticky top-24 z-30 bg-body/80 dark:bg-institutional-950/80 backdrop-blur-2xl py-6 px-8 rounded-[2rem] border border-institutional-200/50 dark:border-institutional-800/50 shadow-2xl shadow-black/5">
+                            <div className="relative flex-1 group">
+                                <Search className={`absolute ${isRTL ? 'right-6' : 'left-6'} top-1/2 -translate-y-1/2 text-institutional-400 group-focus-within:text-primary transition-all duration-300`} size={20} />
+                                <input 
+                                    value={searchTerm}
+                                    onChange={e => setSearchTerm(e.target.value)}
+                                    placeholder={t('inbox.searchPlaceholder')}
+                                    className="w-full bg-institutional-50 dark:bg-institutional-900/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-institutional-900 dark:text-white placeholder:text-institutional-400 focus:ring-2 focus:ring-primary/20 transition-all"
+                                />
                             </div>
-                            <button 
-                                onClick={() => activeTab === 'students' 
-                                    ? exportCSV(filteredStudents.map(s => ({ ...s, ...subscriptions[s.id] })), 'student_subscriptions')
-                                    : exportCSV(filteredTeachers.map(t_user => ({ ...t_user, ...payments[t_user.id] })), 'teacher_payments')
-                                }
-                                className="p-4 bg-surface/50 dark:bg-institutional-900/50 backdrop-blur-sm border border-institutional-200 dark:border-institutional-800 rounded-2xl text-institutional-400 hover:text-primary transition-all shadow-soft">
-                                <Download size={20} />
-                            </button>
+                            <div className="flex gap-4">
+                                <div className="relative min-w-[180px]">
+                                    <Filter className={`absolute ${isRTL ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-institutional-400`} size={18} />
+                                    <select 
+                                        value={filterStatus}
+                                        onChange={e => setFilterStatus(e.target.value)}
+                                        className="w-full bg-institutional-50 dark:bg-institutional-900/50 border-none rounded-2xl py-4 pl-12 pr-10 text-[10px] font-black uppercase tracking-[0.15em] appearance-none cursor-pointer text-institutional-700 dark:text-institutional-300 focus:ring-2 focus:ring-primary/20 transition-all">
+                                        <option value="all">All Status</option>
+                                        <option value="active">{t('economic.active')}</option>
+                                        <option value="expired">{t('economic.expired')}</option>
+                                        <option value="pending">{t('economic.pending')}</option>
+                                        <option value="paid">{t('economic.paid')}</option>
+                                        <option value="unpaid">{t('economic.unpaid')}</option>
+                                    </select>
+                                    <ChevronDown className={`absolute ${isRTL ? 'left-5' : 'right-5'} top-1/2 -translate-y-1/2 text-institutional-400 pointer-events-none`} size={16} />
+                                </div>
+                                <button 
+                                    onClick={() => {
+                                        if (activeTab === 'students') {
+                                            exportCSV(filteredStudents.map(s => ({ ...s, ...subscriptions[s.id] })), 'student_subscriptions');
+                                        } else if (activeTab === 'teachers') {
+                                            exportCSV(filteredTeachers.map(t_user => ({ ...t_user, ...payments[t_user.id] })), 'teacher_payments');
+                                        }
+                                    }}
+                                    className="p-4 bg-primary text-white rounded-2xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 hover:scale-110 active:scale-95">
+                                    <Download size={22} />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="space-y-8">
+                            {activeTab === 'students' && <StudentList />}
+                            {activeTab === 'teachers' && <TeacherList />}
                         </div>
                     </div>
-
-                    {activeTab === 'students' && <StudentList />}
-                    {activeTab === 'teachers' && <TeacherList />}
                 </div>
             )}
 
             {activeTab === 'audit' && (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="academic-card rounded-[2.5rem] overflow-hidden">
-                        <div className="p-8 border-b border-institutional-100 dark:border-institutional-800 flex items-center justify-between bg-institutional-50/50 dark:bg-institutional-950/50 backdrop-blur-sm">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white">{t('economic.auditLog')}</h3>
-                            <button onClick={() => exportCSV(auditLogs, 'financial_audit_log')} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:underline">
-                                <Download size={14} /> {t('economic.export')}
-                            </button>
-                        </div>
-                        <div className="divide-y divide-institutional-50 dark:divide-institutional-800">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        <div className="bg-surface dark:bg-institutional-900 rounded-[3rem] border border-institutional-200 dark:border-institutional-800 shadow-2xl shadow-institutional-900/5 overflow-hidden">
+                            <div className="p-10 border-b border-institutional-100 dark:border-institutional-800 flex items-center justify-between bg-institutional-50/30 dark:bg-institutional-950/30 backdrop-blur-sm">
+                                <div className="text-start">
+                                    <h3 className="text-base font-black uppercase tracking-[0.2em] text-institutional-900 dark:text-white">{t('economic.auditLog')}</h3>
+                                    <p className="text-[11px] font-bold text-institutional-400 uppercase mt-1 tracking-widest opacity-70">System Activity Records</p>
+                                </div>
+                                <button onClick={() => exportCSV(auditLogs, 'financial_audit_log')} className="flex items-center gap-3 px-6 py-3 bg-primary/10 text-primary rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all duration-300">
+                                    <Download size={16} /> {t('economic.export')}
+                                </button>
+                            </div>
+                            <div className="divide-y divide-institutional-100 dark:divide-institutional-800">
                             {auditLogs.map(log => (
-                                <div key={log.id} className="p-6 flex items-center justify-between hover:bg-institutional-50 dark:hover:bg-institutional-800/50 transition-colors">
-                                    <div className="flex items-center gap-6">
-                                        <div className="w-10 h-10 rounded-xl bg-institutional-100 dark:bg-institutional-800 flex items-center justify-center text-institutional-400">
-                                            <History size={18} />
+                                <div key={log.id} className="p-8 flex items-center justify-between hover:bg-institutional-50/50 dark:hover:bg-institutional-800/30 transition-all duration-300 group">
+                                    <div className="flex items-center gap-8">
+                                        <div className="w-14 h-14 rounded-2xl bg-institutional-100 dark:bg-institutional-800 flex items-center justify-center text-institutional-400 group-hover:bg-primary/10 group-hover:text-primary transition-all duration-500">
+                                            <History size={24} />
                                         </div>
                                         <div className="text-start">
-                                            <p className="text-sm font-bold text-institutional-900 dark:text-white">{log.action}</p>
-                                            <p className="text-[10px] font-bold text-institutional-400 uppercase tracking-widest">{log.details}</p>
-                                            {log.targetName && <p className="text-[9px] font-black text-primary uppercase mt-1">Target: {log.targetName}</p>}
+                                            <p className="text-base font-black text-institutional-900 dark:text-white tracking-tight">{log.action}</p>
+                                            <p className="text-[11px] font-bold text-institutional-400 uppercase tracking-[0.15em] mt-1">{log.details}</p>
+                                            {log.targetName && (
+                                                <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/5 rounded-lg mt-3">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                                    <p className="text-[10px] font-black text-primary uppercase tracking-widest">Target: {log.targetName}</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        <p className="text-[10px] font-black text-institutional-900 dark:text-white uppercase tracking-widest">{log.userName}</p>
-                                        <p className="text-[9px] font-bold text-institutional-400 mt-1">
+                                        <p className="text-xs font-black text-institutional-900 dark:text-white uppercase tracking-[0.1em] mb-1">{log.userName}</p>
+                                        <p className="text-[10px] font-bold text-institutional-400 uppercase tracking-widest opacity-60">
                                             {log.timestamp?.seconds ? new Date(log.timestamp.seconds * 1000).toLocaleString() : '---'}
                                         </p>
                                     </div>
@@ -851,7 +877,8 @@ const EconomicDashboard: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
+        )}
             {/* Student Settings Modal */}
             {studentToEdit && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">

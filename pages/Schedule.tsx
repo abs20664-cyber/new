@@ -1,18 +1,17 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { ClassSession, RecurringSession } from '../types';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, CheckCircle2, XCircle, CalendarDays, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, CheckCircle2, XCircle, CalendarDays, Plus, Pause, Play, Trash2, X } from 'lucide-react';
 import RecurringSessionModal from '../components/RecurringSessionModal';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const Schedule: React.FC = () => {
     const { user } = useAuth();
-    const { t, language, isRTL } = useLanguage();
-    const navigate = useNavigate();
+    const { t, language } = useLanguage();
 
     const [classes, setClasses] = useState<ClassSession[]>([]);
     const [recurringSessions, setRecurringSessions] = useState<RecurringSession[]>([]);
@@ -20,6 +19,7 @@ const Schedule: React.FC = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [expandedSession, setExpandedSession] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDayModalOpen, setIsDayModalOpen] = useState(false);
     const [teachers, setTeachers] = useState<any[]>([]);
     const [subjects, setSubjects] = useState<any[]>([]);
 
@@ -96,10 +96,34 @@ const Schedule: React.FC = () => {
     const filteredRecurringSessions = useMemo(() => {
         if (user?.role === 'student') {
             if (!user.subjectsStudied || user.subjectsStudied.length === 0) return [];
-            return recurringSessions.filter(s => s.subjectId && user.subjectsStudied?.includes(s.subjectId));
+            return recurringSessions.filter(s => s.subjectId && user.subjectsStudied?.includes(s.subjectId) && s.status !== 'paused');
         }
         return recurringSessions;
     }, [recurringSessions, user]);
+
+    const handleTogglePause = async (e: React.MouseEvent, session: RecurringSession) => {
+        e.stopPropagation();
+        const newStatus = session.status === 'paused' ? 'active' : 'paused';
+        try {
+            await updateDoc(doc(db, 'recurring_sessions', session.id), { status: newStatus });
+            toast.success(`Session ${newStatus === 'paused' ? 'paused' : 'resumed'} successfully`);
+        } catch (error) {
+            console.error('Error toggling session status:', error);
+            toast.error('Failed to update session status');
+        }
+    };
+
+    const handleDeleteRecurring = async (e: React.MouseEvent, session: RecurringSession) => {
+        e.stopPropagation();
+        if (!window.confirm(`Are you sure you want to delete the recurring session "${session.name}"?`)) return;
+        try {
+            await deleteDoc(doc(db, 'recurring_sessions', session.id));
+            toast.success('Recurring session deleted');
+        } catch (error) {
+            console.error('Error deleting recurring session:', error);
+            toast.error('Failed to delete session');
+        }
+    };
 
     const todaysClasses = useMemo(() => {
         const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
@@ -113,8 +137,11 @@ const Schedule: React.FC = () => {
                 endTime: s.endTime,
                 room: s.room,
                 type: s.type,
-                subjectId: s.subjectId
-            } as ClassSession));
+                subjectId: s.subjectId,
+                isRecurring: true,
+                status: s.status || 'active',
+                originalSession: s
+            } as any));
         
         return [...filteredClasses.filter(c => c.date === currentDate.toISOString().split('T')[0]), ...recurring]
             .sort((a,b) => a.time.localeCompare(b.time));
@@ -143,26 +170,29 @@ const Schedule: React.FC = () => {
         const weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
         return (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm w-full max-w-sm mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <button onClick={() => navigateMonth(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                        <ChevronLeft size={18} className="text-slate-600 dark:text-slate-400" />
-                    </button>
-                    <h3 className="font-semibold text-slate-900 dark:text-white text-base">
+            <div className="p-8">
+                <div className="flex justify-between items-center mb-10">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white capitalize">
                         {currentDate.toLocaleDateString(language, { month: 'long', year: 'numeric' })}
                     </h3>
-                    <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                        <ChevronRight size={18} className="text-slate-600 dark:text-slate-400" />
-                    </button>
+                    <div className="flex gap-2">
+                        <button onClick={() => navigateMonth(-1)} className="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all text-slate-600 dark:text-slate-400 border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                            <ChevronLeft size={20} />
+                        </button>
+                        <button onClick={() => navigateMonth(1)} className="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all text-slate-600 dark:text-slate-400 border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
                 </div>
-                <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-400 mb-3">
+
+                <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">
                     {weekDays.map(d => <div key={d}>{d}</div>)}
                 </div>
-                <div className="grid grid-cols-7 gap-1">
+
+                <div className="grid grid-cols-7 gap-3">
                     {days.map((d, i) => {
-                        if (!d) return <div key={`empty-${i}`} className="h-10" />;
+                        if (!d) return <div key={`empty-${i}`} className="h-12" />;
                         
-                        // Fix timezone offset issue for comparison
                         const localDateString = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
                         const isSelected = localDateString === formattedToday;
                         
@@ -175,25 +205,30 @@ const Schedule: React.FC = () => {
                         return (
                             <button 
                                 key={i} 
-                                onClick={() => setCurrentDate(d)}
-                                className={`h-10 w-10 mx-auto rounded-full flex flex-col items-center justify-center text-sm relative transition-all
-                                    ${isSelected ? 'bg-primary text-white font-semibold shadow-md' : 
-                                      isToday ? 'bg-primary/10 text-primary font-semibold' : 
+                                onClick={() => {
+                                    setCurrentDate(d);
+                                    if (user?.role === 'economic') {
+                                        setIsDayModalOpen(true);
+                                    }
+                                }}
+                                className={`h-12 w-12 mx-auto rounded-2xl flex flex-col items-center justify-center text-sm relative transition-all
+                                    ${isSelected ? 'bg-primary text-white font-bold shadow-xl shadow-primary/30 scale-110 z-10' : 
+                                      isToday ? 'bg-primary/10 text-primary font-bold border border-primary/20' : 
                                       'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}
                                 `}
                             >
                                 <span>{d.getDate()}</span>
                                 {hasClass && (
-                                    <div className={`absolute bottom-1.5 w-1 h-1 rounded-full ${isSelected ? 'bg-white' : 'bg-primary'}`} />
+                                    <div className={`absolute bottom-2 w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-primary'}`} />
                                 )}
                             </button>
                         );
                     })}
                 </div>
-                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-center">
+                <div className="mt-10 pt-8 border-t border-slate-100 dark:border-slate-800 flex justify-center">
                     <button 
                         onClick={() => setCurrentDate(new Date())}
-                        className="text-xs font-medium text-primary hover:text-primary-hover transition-colors"
+                        className="text-[10px] font-black uppercase tracking-[0.2em] text-primary hover:text-primary-hover transition-all hover:scale-105"
                     >
                         Go to Today
                     </button>
@@ -203,98 +238,280 @@ const Schedule: React.FC = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto px-4 py-8 pb-24">
-            <div className="text-center mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">{t('schedule.title')}</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Manage your academic timeline and sessions</p>
-            </div>
+        <div className="max-w-6xl mx-auto px-4 py-12 pb-32">
+            <header className="mb-12">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                        <CalendarIcon size={24} />
+                    </div>
+                    <div>
+                        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">{t('schedule.title')}</h2>
+                        <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">Institutional Academic Timeline & Session Management</p>
+                    </div>
+                </div>
+            </header>
 
-            <div className="flex flex-col md:flex-row gap-8 items-start justify-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                 {/* Calendar Section */}
-                <div className="w-full md:w-auto shrink-0">
-                    {renderCalendar()}
+                <div className="lg:col-span-4 sticky top-8">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        {renderCalendar()}
+                    </div>
                 </div>
 
                 {/* Schedule List Section */}
-                <div className="w-full max-w-lg flex-1">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                            <CalendarDays size={18} className="text-primary" />
-                            {currentDate.toLocaleDateString(language, { weekday: 'long', month: 'long', day: 'numeric' })}
-                        </h3>
+                <div className="lg:col-span-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                        <div>
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                                <CalendarDays size={22} className="text-primary" />
+                                {currentDate.toLocaleDateString(language, { weekday: 'long', month: 'long', day: 'numeric' })}
+                            </h3>
+                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 mt-1">
+                                {todaysClasses.length} {todaysClasses.length === 1 ? 'Scheduled Session' : 'Scheduled Sessions'}
+                            </p>
+                        </div>
+                        
                         {user?.role === 'economic' && (
-                            <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-bold">
-                                <Plus size={16} /> Add Recurring Session
+                            <button 
+                                onClick={() => setIsModalOpen(true)} 
+                                className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                            >
+                                <Plus size={18} /> Add Recurring Session
                             </button>
                         )}
-                        <span className="text-xs font-medium px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full">
-                            {todaysClasses.length} {todaysClasses.length === 1 ? 'Session' : 'Sessions'}
-                        </span>
                     </div>
+
                     <RecurringSessionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} teachers={teachers} subjects={subjects} />
 
-                    <div className="space-y-4">
+                    {/* Day Sessions Modal for Economic Account */}
+                    <AnimatePresence>
+                        {isDayModalOpen && (
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+                                <motion.div 
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    onClick={() => setIsDayModalOpen(false)}
+                                    className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" 
+                                />
+                                <motion.div 
+                                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                    className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden"
+                                >
+                                    <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                                <CalendarDays size={24} />
+                                            </div>
+                                            <div className="text-start">
+                                                <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                                                    {currentDate.toLocaleDateString(language, { weekday: 'long', month: 'long', day: 'numeric' })}
+                                                </h3>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Daily Session Protocol</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => setIsDayModalOpen(false)} className="p-3 hover:bg-rose-500/10 hover:text-rose-500 text-slate-400 rounded-2xl transition-all">
+                                            <X size={24} />
+                                        </button>
+                                    </div>
+
+                                    <div className="p-8 max-h-[60vh] overflow-y-auto space-y-4">
+                                        {todaysClasses.length > 0 ? todaysClasses.map((s) => {
+                                            const isPaused = s.status === 'paused';
+                                            const isRecurring = s.isRecurring;
+                                            
+                                            return (
+                                                <div 
+                                                    key={s.id} 
+                                                    className={`p-6 rounded-3xl border transition-all duration-300 ${
+                                                        isPaused 
+                                                        ? 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 opacity-60' 
+                                                        : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center justify-between gap-4">
+                                                        <div className="flex items-center gap-5">
+                                                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isPaused ? 'bg-slate-200 text-slate-400' : 'bg-primary/10 text-primary'}`}>
+                                                                <Clock size={24} />
+                                                            </div>
+                                                            <div className="text-start">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <h4 className={`text-base font-black tracking-tight ${isPaused ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}`}>
+                                                                        {s.name}
+                                                                    </h4>
+                                                                    {isPaused && (
+                                                                        <span className="px-2 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[8px] font-black uppercase rounded-md tracking-widest">Paused</span>
+                                                                    )}
+                                                                    {isRecurring && (
+                                                                        <span className="px-2 py-0.5 bg-primary/10 text-primary text-[8px] font-black uppercase rounded-md tracking-widest">Recurring</span>
+                                                                    )}
+                                                                </div>
+                                                                <p className="text-xs font-bold text-slate-400 flex items-center gap-2">
+                                                                    <Clock size={12} /> {s.time} - {s.endTime}
+                                                                    <span className="w-1 h-1 rounded-full bg-slate-300" />
+                                                                    <MapPin size={12} /> {s.room}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+
+                                                        {isRecurring && user?.role === 'economic' && (
+                                                            <div className="flex items-center gap-2">
+                                                                <button 
+                                                                    onClick={(e) => handleTogglePause(e, s.originalSession)}
+                                                                    className={`p-3 rounded-xl transition-all ${isPaused ? 'bg-emerald-500 text-white hover:bg-emerald-600' : 'bg-amber-500 text-white hover:bg-amber-600'}`}
+                                                                    title={isPaused ? 'Resume' : 'Pause'}
+                                                                >
+                                                                    {isPaused ? <Play size={18} /> : <Pause size={18} />}
+                                                                </button>
+                                                                <button 
+                                                                    onClick={(e) => handleDeleteRecurring(e, s.originalSession)}
+                                                                    className="p-3 bg-rose-500 text-white rounded-xl hover:bg-rose-600 transition-all"
+                                                                    title="Delete"
+                                                                >
+                                                                    <Trash2 size={18} />
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        }) : (
+                                            <div className="py-20 text-center flex flex-col items-center justify-center">
+                                                <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                                                    <CalendarIcon size={32} />
+                                                </div>
+                                                <h4 className="text-lg font-black text-slate-900 dark:text-white mb-1">No sessions scheduled</h4>
+                                                <p className="text-sm text-slate-500">There are no classes on this date.</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="p-8 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800">
+                                        <button 
+                                            onClick={() => setIsDayModalOpen(false)}
+                                            className="w-full py-4 bg-slate-900 dark:bg-slate-800 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-primary transition-all shadow-xl shadow-slate-900/10"
+                                        >
+                                            Close Protocol
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            </div>
+                        )}
+                    </AnimatePresence>
+
+                    <div className="space-y-6">
                         <AnimatePresence mode="wait">
                             <motion.div 
                                 key={formattedToday}
-                                initial={{ opacity: 0, y: 10 }}
+                                initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.2 }}
-                                className="space-y-4"
+                                exit={{ opacity: 0, y: -15 }}
+                                transition={{ duration: 0.3, ease: "easeOut" }}
+                                className="space-y-6"
                             >
                                 {todaysClasses.length > 0 ? todaysClasses.map((s) => {
-                                    const isLive = checkIsLive(s.date, s.time, s.endTime);
-                                    const status = getAttendanceStatus(s.id, s.date);
-                                    const attendees = user?.role !== 'student' ? attendance.filter(a => a.classId === s.id && a.date === s.date) : [];
+                                    const isPaused = s.status === 'paused';
+                                    const isLive = !isPaused && checkIsLive(s.date, s.time, s.endTime);
+                                    const status = isPaused ? 'paused' : getAttendanceStatus(s.id, s.date);
+                                    const attendees = (user?.role !== 'student' && !isPaused) ? attendance.filter(a => a.classId === s.id && a.date === s.date) : [];
                                     const isExpanded = expandedSession === s.id;
                                     
                                     return (
                                         <div 
                                             key={s.id} 
                                             onClick={() => user?.role !== 'student' && setExpandedSession(isExpanded ? null : s.id)}
-                                            className={`bg-white dark:bg-slate-900 p-5 rounded-2xl border transition-all relative overflow-hidden ${isLive ? 'border-primary shadow-md ring-1 ring-primary/20' : 'border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md'} ${user?.role !== 'student' ? 'cursor-pointer' : ''}`}
+                                            className={`bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2rem] border transition-all relative group overflow-hidden 
+                                                ${isLive ? 'border-primary shadow-xl ring-2 ring-primary/10' : 'border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg'} 
+                                                ${user?.role !== 'student' ? 'cursor-pointer' : ''}
+                                                ${isPaused ? 'opacity-75 grayscale-[0.5]' : ''}
+                                            `}
                                         >
                                             {isLive && (
-                                                <div className="absolute top-0 right-0 p-3">
-                                                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-wide animate-pulse">
-                                                        <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                                                        Live
+                                                <div className="absolute top-0 right-0 p-4">
+                                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">
+                                                        <div className="w-2 h-2 bg-primary rounded-full" />
+                                                        Live Protocol
                                                     </div>
                                                 </div>
                                             )}
+
+                                            {s.isRecurring && (user?.role === 'economic' || user?.role === 'admin') && (
+                                                <div className="absolute bottom-6 right-6 flex items-center gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button 
+                                                        onClick={(e) => handleTogglePause(e, s.originalSession)}
+                                                        className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all shadow-sm border
+                                                            ${s.status === 'paused' ? 
+                                                              'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100' : 
+                                                              'bg-amber-50 text-amber-600 border-amber-100 hover:bg-amber-100'}`}
+                                                        title={s.status === 'paused' ? 'Resume Session' : 'Pause Session'}
+                                                    >
+                                                        {s.status === 'paused' ? <Play size={18} /> : <Pause size={18} />}
+                                                    </button>
+                                                    <button 
+                                                        onClick={(e) => handleDeleteRecurring(e, s.originalSession)}
+                                                        className="w-10 h-10 flex items-center justify-center bg-rose-50 text-rose-600 border border-rose-100 hover:bg-rose-100 rounded-xl transition-all shadow-sm"
+                                                        title="Delete Recurring Session"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
+                                            )}
                                             
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div className="flex-1 pr-4">
-                                                    <span className="inline-block px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
-                                                        {s.type}
-                                                    </span>
-                                                    <h4 className="font-bold text-base text-slate-900 dark:text-white leading-tight">{s.name}</h4>
+                                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-3 mb-3">
+                                                        <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">
+                                                            {s.type}
+                                                        </span>
+                                                        {s.isRecurring && (
+                                                            <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] border
+                                                                ${s.status === 'paused' ? 
+                                                                  'bg-amber-50 text-amber-700 border-amber-100' : 
+                                                                  'bg-primary/5 text-primary border-primary/10'}`}>
+                                                                {s.status === 'paused' ? 'Paused' : 'Recurring'}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <h4 className={`text-xl md:text-2xl font-bold tracking-tight leading-tight transition-all ${s.status === 'paused' ? 'text-slate-400 line-through' : 'text-slate-900 dark:text-white'}`}>
+                                                        {s.name}
+                                                    </h4>
                                                 </div>
                                                 
-                                                <div className="shrink-0 mt-1">
+                                                <div className="shrink-0">
                                                     {typeof status === 'string' ? (
-                                                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${status === 'present' ? 'bg-success/10 text-success' : status === 'absent' ? 'bg-danger/10 text-danger' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
-                                                            {status === 'present' ? <CheckCircle2 size={12} /> : status === 'absent' ? <XCircle size={12} /> : <Clock size={12} />}
+                                                        <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest border
+                                                            ${status === 'present' ? 'bg-success/10 text-success border-success/20' : 
+                                                              status === 'absent' ? 'bg-danger/10 text-danger border-danger/20' : 
+                                                              'bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700'}`}>
+                                                            {status === 'present' ? <CheckCircle2 size={14} /> : status === 'absent' ? <XCircle size={14} /> : <Clock size={14} />}
                                                             {t(`schedule.${status}`)}
                                                         </div>
                                                     ) : (
-                                                        <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-xl flex flex-col items-center group-hover:bg-primary group-hover:text-white transition-colors">
-                                                            <span className="text-[9px] font-bold uppercase tracking-wider">{(user?.role === 'economic' || user?.role === 'admin') ? 'Attendees' : t('schedule.present')}</span>
-                                                            <span className="text-sm font-bold">{status}</span>
+                                                        <div className="bg-primary/5 text-primary border border-primary/10 px-5 py-3 rounded-2xl flex flex-col items-center group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] mb-1 opacity-60">
+                                                                {(user?.role === 'economic' || user?.role === 'admin') ? 'Attendees' : t('schedule.present')}
+                                                            </span>
+                                                            <span className="text-xl font-black">{status}</span>
                                                         </div>
                                                     )}
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-6 pt-4 border-t border-slate-100 dark:border-slate-800">
-                                                <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                                                    <Clock size={14} className="text-primary" />
-                                                    <span className="text-xs font-medium">{s.time} — {s.endTime}</span>
+                                            <div className="flex flex-wrap items-center gap-x-8 gap-y-4 pt-6 border-t border-slate-100 dark:border-slate-800">
+                                                <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
+                                                    <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary">
+                                                        <Clock size={16} />
+                                                    </div>
+                                                    <span className="text-sm font-bold tracking-tight">{s.time} — {s.endTime}</span>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                                                    <MapPin size={14} className="text-primary" />
-                                                    <span className="text-xs font-medium truncate max-w-[120px]">{s.room}</span>
+                                                <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
+                                                    <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary">
+                                                        <MapPin size={16} />
+                                                    </div>
+                                                    <span className="text-sm font-bold tracking-tight truncate max-w-[200px]">{s.room}</span>
                                                 </div>
                                             </div>
 

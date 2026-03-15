@@ -203,6 +203,7 @@ export interface RecurringSession {
   room: string;
   type: 'Cours' | 'TD' | 'Exam';
   subjectId?: string;
+  status?: 'active' | 'paused';
 }
 
 export const EMOJI_SET = ['👍', '❤️', '😂', '😮', '😢', '🔥', '✅', '🙏'];
