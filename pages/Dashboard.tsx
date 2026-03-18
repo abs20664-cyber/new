@@ -59,28 +59,28 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                     </p>
                 </header>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                     {[
                         { label: 'Active Sessions', value: '12', icon: Clock, color: 'text-primary' },
                         { label: 'Total Students', value: '142', icon: Users, color: 'text-success' },
                         { label: 'Course Materials', value: '28', icon: BookOpen, color: 'text-warning' }
                     ].map((stat, i) => (
-                        <div key={i} className="academic-stat-card p-8 flex items-center justify-between group cursor-default">
+                        <div key={i} className="academic-stat-card p-6 md:p-8 flex items-center justify-between group cursor-default">
                             <div>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary/50 mb-2">{stat.label}</p>
-                                <h3 className="text-3xl font-bold text-text">{stat.value}</h3>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary/50 mb-1 md:mb-2">{stat.label}</p>
+                                <h3 className="text-2xl md:text-3xl font-bold text-text">{stat.value}</h3>
                             </div>
-                            <div className={`p-4 rounded-2xl bg-institutional-50 dark:bg-institutional-900 ${stat.color} group-hover:scale-110 transition-transform`}>
-                                <stat.icon size={24} />
+                            <div className={`p-3 md:p-4 rounded-2xl bg-institutional-50 dark:bg-institutional-900 ${stat.color} group-hover:scale-110 transition-transform`}>
+                                <stat.icon size={20} md:size={24} />
                             </div>
                         </div>
                     ))}
                 </div>
 
-                <div className="space-y-8">
-                    <div className="flex items-center justify-between border-b border-border pb-6">
-                        <h2 className="text-2xl font-bold uppercase tracking-tight text-text">Session Management</h2>
-                        <button onClick={() => onNavigate('/schedule')} className="text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all">
+                <div className="space-y-6 md:space-y-8">
+                    <div className="flex items-center justify-between border-b border-border pb-4 md:pb-6">
+                        <h2 className="text-xl md:text-2xl font-bold uppercase tracking-tight text-text">Session Management</h2>
+                        <button onClick={() => onNavigate('/schedule')} className="text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-1 md:gap-2 hover:gap-3 transition-all">
                             View Full Schedule <ArrowUpRight size={14} />
                         </button>
                     </div>
