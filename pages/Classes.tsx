@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { collection, onSnapshot, deleteDoc, doc, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { ClassSession, Attachment, RecurringSession } from '../types';
-import { Trash2, SlidersHorizontal, MapPin, Clock, Plus, Scan, X, CalendarOff, Paperclip, FileText, ChevronRight, Loader2 } from 'lucide-react';
+import { Trash2, SlidersHorizontal, MapPin, Clock, Plus, Scan, X, CalendarOff, FileText, ChevronRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
@@ -52,17 +52,17 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, isTooEarly, t, isRT
     navigate: any;
 }) => {
     return (
-        <div key={cl.id} className={`p-8 academic-card relative group transition-all hover:border-primary/20 ${isLive ? 'ring-2 ring-success ring-offset-4 ring-offset-background' : ''} ${hasEnded ? 'opacity-60 bg-sidebar/50' : ''}`}>
+        <div key={cl.id} className={`p-8 academic-card relative group transition-all hover:border-primary/20 ${isLive ? 'ring-4 ring-success ring-offset-4 ring-offset-background' : ''} ${hasEnded ? 'opacity-60 bg-muted' : ''}`}>
             <div className={`absolute top-8 ${isRTL ? 'left-8' : 'right-8'} flex gap-3 z-10 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0`}>
                 <button 
                     onClick={() => openModal(cl)} 
-                    className="w-11 h-11 flex items-center justify-center text-text-secondary hover:text-primary transition-all bg-background rounded-2xl shadow-xl border border-border"
+                    className="w-11 h-11 flex items-center justify-center text-text-secondary hover:text-primary transition-all bg-surface rounded-2xl shadow-pop-sm border-2 border-border-dark"
                 >
                     <SlidersHorizontal size={18} />
                 </button>
                 <button 
                     onClick={() => handleDelete(cl.id)} 
-                    className="w-11 h-11 flex items-center justify-center text-text-secondary hover:text-danger transition-all bg-background rounded-2xl shadow-xl border border-border"
+                    className="w-11 h-11 flex items-center justify-center text-text-secondary hover:text-danger transition-all bg-surface rounded-2xl shadow-pop-sm border-2 border-border-dark"
                 >
                     <Trash2 size={18} />
                 </button>
@@ -70,27 +70,27 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, isTooEarly, t, isRT
 
             <div className="mb-10 text-start">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className={`academic-badge ${isLive ? 'academic-badge-success' : hasEnded ? '' : 'academic-badge-primary'}`}>
+                    <div className={`academic-badge ${isLive ? 'academic-badge-success' : hasEnded ? 'bg-muted text-text-secondary border-2 border-border-dark' : 'academic-badge-primary'}`}>
                         {isLive ? t('hub.liveNow') : hasEnded ? t('hub.ended') : cl.type}
                     </div>
-                    <div className="text-[10px] font-black text-text-secondary/50 uppercase tracking-widest">{cl.date}</div>
+                    <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{cl.date}</div>
                 </div>
                 
-                <h3 className="font-black text-2xl tracking-tight uppercase text-text leading-tight mb-8 min-h-[3.5rem] line-clamp-2">{cl.name}</h3>
+                <h3 className="font-display font-bold text-2xl tracking-tight uppercase text-text leading-tight mb-8 min-h-[3.5rem] line-clamp-2">{cl.name}</h3>
                 
                 <div className="space-y-4">
-                    <div className="flex items-center gap-4 p-4 bg-background/50 rounded-2xl border border-border">
-                        <div className="p-2.5 bg-sidebar rounded-xl shadow-sm border border-border"><MapPin size={18} className="text-primary" /></div>
+                    <div className="flex items-center gap-4 p-4 bg-surface rounded-2xl border-2 border-border-dark shadow-pop-sm">
+                        <div className="p-2.5 bg-primary/10 rounded-xl border-2 border-primary"><MapPin size={18} className="text-primary" /></div>
                         <div className="text-start">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50 leading-none mb-1">Assigned Hall</p>
-                            <p className="text-sm font-black text-text uppercase leading-none">{cl.room || 'TBA'}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-text-secondary leading-none mb-1">Assigned Hall</p>
+                            <p className="text-sm font-display font-bold text-text uppercase leading-none">{cl.room || 'TBA'}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-4 p-4 bg-background/50 rounded-2xl border border-border">
-                        <div className="p-2.5 bg-sidebar rounded-xl shadow-sm border border-border"><Clock size={18} className="text-primary" /></div>
+                    <div className="flex items-center gap-4 p-4 bg-surface rounded-2xl border-2 border-border-dark shadow-pop-sm">
+                        <div className="p-2.5 bg-primary/10 rounded-xl border-2 border-primary"><Clock size={18} className="text-primary" /></div>
                         <div className="text-start">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50 leading-none mb-1">Temporal Block</p>
-                            <p className="text-sm font-black text-text uppercase leading-none">{cl.time} — {cl.endTime}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-text-secondary leading-none mb-1">Temporal Block</p>
+                            <p className="text-sm font-display font-bold text-text uppercase leading-none">{cl.time} — {cl.endTime}</p>
                         </div>
                     </div>
                 </div>
@@ -99,7 +99,7 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, isTooEarly, t, isRT
             <button 
                 onClick={() => !(hasEnded || isTooEarly) && navigate('/scanner', { state: { classId: cl.id } })}
                 disabled={hasEnded || isTooEarly}
-                className={`w-full py-5 academic-button ${(hasEnded || isTooEarly) ? 'opacity-50 cursor-not-allowed' : 'academic-button-primary'}`}
+                className={`w-full py-5 academic-button ${(hasEnded || isTooEarly) ? 'opacity-50 cursor-not-allowed bg-muted border-2 border-border-dark text-text-secondary shadow-none' : 'academic-button-primary'}`}
             >
                 {hasEnded ? <CalendarOff size={20} /> : isTooEarly ? <Clock size={20} /> : <Scan size={20} />}
                 {hasEnded ? t('hub.ended') : isTooEarly ? 'Upcoming' : t('hub.marks')}
@@ -109,7 +109,7 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, isTooEarly, t, isRT
     );
 });
 
-const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
+const Classes: React.FC<ClassesProps> = () => {
     const { user } = useAuth();
     const { t, isRTL } = useLanguage();
     const navigate = useNavigate();
@@ -237,12 +237,12 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
 
     return (
         <div className="fade-in max-w-7xl mx-auto">
-            <div className={`mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-10`}>
+            <div className={`mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b-4 border-border-dark pb-10`}>
                 <div className="text-start">
-                    <h2 className="text-4xl lg:text-5xl font-black tracking-tighter uppercase text-text leading-none">{t('nav.hub')}</h2>
+                    <h2 className="text-4xl lg:text-5xl font-display font-bold tracking-tighter uppercase text-text leading-none">{t('nav.hub')}</h2>
                     <div className="flex items-center gap-3 mt-4">
                         <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-                        <p className="text-[11px] font-black text-text-secondary/50 uppercase tracking-[0.3em]">{t('hub.title')}</p>
+                        <p className="text-[11px] font-bold text-text-secondary uppercase tracking-[0.3em]">{t('hub.title')}</p>
                     </div>
                 </div>
                 <button 
@@ -278,40 +278,40 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
 
             {isModalOpen && (
                 <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-300">
-                    <div className="bg-sidebar rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.3)] max-w-2xl w-full p-12 md:p-16 relative overflow-hidden border border-border max-h-[90vh] overflow-y-auto scroll-hide">
-                        <button onClick={() => setIsModalOpen(false)} className={`absolute top-10 ${isRTL ? 'left-10' : 'right-10'} p-3 bg-background rounded-2xl text-text-secondary hover:text-danger transition-all border border-border`}><X size={24} /></button>
+                    <div className="bg-surface rounded-3xl shadow-pop max-w-2xl w-full p-12 md:p-16 relative overflow-hidden border-4 border-border-dark max-h-[90vh] overflow-y-auto scroll-hide">
+                        <button onClick={() => setIsModalOpen(false)} className={`absolute top-10 ${isRTL ? 'left-10' : 'right-10'} p-3 bg-surface rounded-2xl text-text-secondary hover:text-danger transition-all border-2 border-border-dark shadow-pop-sm`}><X size={24} /></button>
                         
                         <div className="text-start mb-12">
-                            <h3 className="text-3xl font-black uppercase tracking-tight text-text">{t('hub.config')}</h3>
-                            <p className="text-xs font-black text-text-secondary/50 uppercase tracking-widest mt-2">Institutional Session Parameterization</p>
+                            <h3 className="text-3xl font-display font-bold uppercase tracking-tight text-text">{t('hub.config')}</h3>
+                            <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mt-2">Institutional Session Parameterization</p>
                         </div>
 
                         <form onSubmit={handleSave} className="space-y-8 text-start">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.name')}</label>
+                                <label className="text-[10px] font-bold uppercase text-text-secondary tracking-widest px-2">{t('hub.name')}</label>
                                 <input name="name" defaultValue={editingClass?.name} placeholder="Academic Session Title" className="academic-input" required />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.date')}</label>
+                                    <label className="text-[10px] font-bold uppercase text-text-secondary tracking-widest px-2">{t('hub.date')}</label>
                                     <input type="date" name="date" defaultValue={editingClass?.date} className="academic-input" required />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.room')}</label>
+                                    <label className="text-[10px] font-bold uppercase text-text-secondary tracking-widest px-2">{t('hub.room')}</label>
                                     <input name="room" defaultValue={editingClass?.room} placeholder="Hall Identifier" className="academic-input" required />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.start')}</label>
+                                    <label className="text-[10px] font-bold uppercase text-text-secondary tracking-widest px-2">{t('hub.start')}</label>
                                     <select name="time" defaultValue={editingClass?.time || '08:00'} className="academic-input cursor-pointer appearance-none">
                                         {['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00'].map(t => <option key={t} value={t}>{t}</option>)}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.end')}</label>
+                                    <label className="text-[10px] font-bold uppercase text-text-secondary tracking-widest px-2">{t('hub.end')}</label>
                                     <select name="endTime" defaultValue={editingClass?.endTime || '09:00'} className="academic-input cursor-pointer appearance-none">
                                         {['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'].map(t => <option key={t} value={t}>{t}</option>)}
                                     </select>
@@ -319,15 +319,15 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                             </div>
 
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2 flex items-center justify-between">
+                                <label className="text-[10px] font-bold uppercase text-text-secondary tracking-widest px-2 flex items-center justify-between">
                                     {t('hub.attachments')}
-                                    <span className="text-primary font-black">{attachments.length} {t('hub.filesSelected')}</span>
+                                    <span className="text-primary font-bold">{attachments.length} {t('hub.filesSelected')}</span>
                                 </label>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {attachments.map((file, i) => (
-                                        <div key={i} className="flex items-center justify-between p-4 bg-background rounded-2xl border border-border animate-in zoom-in duration-300">
+                                        <div key={i} className="flex items-center justify-between p-4 bg-surface rounded-2xl border-2 border-border-dark shadow-pop-sm animate-in zoom-in duration-300">
                                             <div className="flex items-center gap-3 overflow-hidden">
-                                                <div className="p-2 bg-sidebar rounded-lg shadow-sm border border-border"><FileText size={16} className="text-primary" /></div>
+                                                <div className="p-2 bg-primary/10 rounded-lg border-2 border-primary"><FileText size={16} className="text-primary" /></div>
                                                 <span className="text-[11px] font-bold truncate text-text">{file.name}</span>
                                             </div>
                                             <button type="button" onClick={() => removeAttachment(i)} className="p-2 text-danger hover:bg-danger/10 rounded-xl transition-all">
@@ -335,10 +335,10 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                                             </button>
                                         </div>
                                     ))}
-                                    <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-3xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group min-h-[100px]">
+                                    <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border-dark rounded-3xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group min-h-[100px]">
                                         <div className="flex items-center gap-3">
-                                            <div className="p-3 bg-background rounded-2xl group-hover:bg-primary group-hover:text-white transition-all border border-border"><Plus size={20} /></div>
-                                            <span className="text-[11px] font-black uppercase tracking-widest text-text-secondary/50 group-hover:text-primary">{t('hub.clickToAdd')}</span>
+                                            <div className="p-3 bg-surface rounded-2xl group-hover:bg-primary group-hover:text-white transition-all border-2 border-border-dark shadow-pop-sm"><Plus size={20} /></div>
+                                            <span className="text-[11px] font-bold uppercase tracking-widest text-text-secondary group-hover:text-primary">{t('hub.clickToAdd')}</span>
                                         </div>
                                         <input type="file" multiple className="hidden" onChange={handleFileChange} />
                                     </label>
@@ -346,12 +346,12 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('hub.type')}</label>
+                                <label className="text-[10px] font-bold uppercase text-text-secondary tracking-widest px-2">{t('hub.type')}</label>
                                 <div className="grid grid-cols-3 gap-4">
                                     {['Cours', 'TD', 'Exam'].map(tp => (
                                         <label key={tp} className="relative group cursor-pointer">
                                             <input type="radio" name="type" value={tp} defaultChecked={editingClass?.type === tp || (tp === 'Cours' && !editingClass)} className="peer hidden" />
-                                            <div className="p-5 text-center rounded-3xl border-2 border-border font-black text-[11px] uppercase tracking-widest peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all group-hover:border-primary/50 text-text-secondary">
+                                            <div className="p-5 text-center rounded-2xl border-2 border-border-dark font-bold text-[11px] uppercase tracking-widest peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-primary transition-all group-hover:border-primary/50 text-text-secondary shadow-pop-sm">
                                                 {tp}
                                             </div>
                                         </label>

@@ -1,5 +1,5 @@
 {
-  "name": "Edu-Alg OS",
+  "name": "Edu-Alg",
   "description": "A professional academic management system designed for Algerian educational institutions.",
   "requestFramePermissions": ["camera", "microphone", "geolocation"]
 }

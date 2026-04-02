@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { collection, onSnapshot, doc, updateDoc, setDoc, query, where, addDoc, Timestamp, orderBy, limit } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
+import { safeStringify } from '../utils';
 import { User, StudentSubscription, TeacherPayment, FinancialAuditLog, FinancialSummary, StudentPaymentRecord, Subject } from '../types';
 import { 
     Search, 
@@ -405,11 +406,7 @@ const EconomicDashboard: React.FC = () => {
                 }
                 
                 // Handle other objects - try to stringify, fallback to string representation
-                try {
-                    return JSON.stringify(value);
-                } catch (e) {
-                    return '[Complex Data]';
-                }
+                return safeStringify(value);
             }
             return value;
         };

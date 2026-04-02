@@ -1,6 +1,6 @@
 export const translations = {
   en: {
-    appName: "Edu-Alg OS",
+    appName: "Edu-Alg",
     appSubName: "Algerian Academic OS",
     roles: { student: "Student", teacher: "Teacher", admin: "Admin", faculty: "Faculty", economic: "Economic" },
     common: {
@@ -170,7 +170,7 @@ export const translations = {
     }
   },
   fr: {
-    appName: "Edu-Alg OS",
+    appName: "Edu-Alg",
     appSubName: "OS Académique Algérien",
     roles: { student: "Étudiant", teacher: "Enseignant", admin: "Admin", faculty: "Faculté", economic: "Économique" },
     common: {
@@ -340,7 +340,7 @@ export const translations = {
     }
   },
   ar: {
-    appName: "Edu-Alg OS",
+    appName: "Edu-Alg",
     appSubName: "نظام الأكاديمية الجزائري",
     roles: { student: "طالب", teacher: "أستاذ", admin: "مدير", faculty: "الهيئة التدريسية", economic: "اقتصادي" },
     common: {

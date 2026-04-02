@@ -1,7 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { usePlatform } from '../contexts/PlatformContext';
-import { useLanguage } from '../contexts/LanguageContext';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { db, collections } from '../services/firebase';
+import { ClassSession, RecurringSession, Assignment, Submission } from '../types';
 import Classes from './Classes';
 import QRIdentity from './QRIdentity';
 import AdminRegistry from './AdminRegistry';
@@ -11,9 +13,6 @@ import {
     Clock, 
     Users, 
     BookOpen, 
-    TrendingUp, 
-    ShieldCheck,
-    ChevronRight,
     ArrowUpRight
 } from 'lucide-react';
 
@@ -24,7 +23,99 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     const { user } = useAuth();
     const { isMobile } = usePlatform();
-    const { t } = useLanguage();
+    const [nextClass, setNextClass] = useState<any>(null);
+    const [pendingTask, setPendingTask] = useState<Assignment | null>(null);
+    const [stats, setStats] = useState({ sessions: 0, students: 0, materials: 0 });
+
+    useEffect(() => {
+        if (!user) return;
+
+        // Stats for teacher
+        if (user.role === 'teacher') {
+            const unsubClasses = onSnapshot(query(collection(db, collections.classes), where('teacherId', '==', user.id)), (snap) => {
+                setStats(prev => ({ ...prev, sessions: snap.size }));
+            });
+            const unsubStudents = onSnapshot(query(collection(db, collections.users), where('role', '==', 'student'), where('teacherId', '==', user.id)), (snap) => {
+                setStats(prev => ({ ...prev, students: snap.size }));
+            });
+            const unsubMaterials = onSnapshot(query(collection(db, collections.materials), where('teacherId', '==', user.id)), (snap) => {
+                setStats(prev => ({ ...prev, materials: snap.size }));
+            });
+            return () => { unsubClasses(); unsubStudents(); unsubMaterials(); };
+        }
+
+        // Next Class for student
+        if (user.role === 'student') {
+            const now = new Date();
+            const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+
+            const unsubClasses = onSnapshot(collection(db, collections.classes), (snap) => {
+                const classes = snap.docs.map(d => ({ id: d.id, ...d.data() } as ClassSession));
+                const unsubRecurring = onSnapshot(collection(db, 'recurring_sessions'), (snapRec) => {
+                    const recurring = snapRec.docs.map(d => ({ id: d.id, ...d.data() } as RecurringSession));
+                    
+                    const studentSubjects = user.subjectsStudied || [];
+                    const myClasses = classes.filter(c => c.subjectId && studentSubjects.includes(c.subjectId));
+                    const myRecurring = recurring.filter(s => s.subjectId && studentSubjects.includes(s.subjectId) && s.status !== 'paused');
+
+                    // Find next class in the next 7 days
+                    let foundNext = null;
+                    for (let i = 0; i < 7; i++) {
+                        const checkDate = new Date(now);
+                        checkDate.setDate(now.getDate() + i);
+                        const dateStr = checkDate.toISOString().split('T')[0];
+                        const dayName = checkDate.toLocaleDateString('en-US', { weekday: 'long' });
+
+                        const dayClasses = [
+                            ...myClasses.filter(c => c.date === dateStr),
+                            ...myRecurring.filter(s => s.dayOfWeek === dayName).map(s => ({ ...s, date: dateStr, time: s.startTime }))
+                        ];
+
+                        const filtered = i === 0 
+                            ? dayClasses.filter(c => c.time > currentTime)
+                            : dayClasses;
+
+                        if (filtered.length > 0) {
+                            filtered.sort((a, b) => a.time.localeCompare(b.time));
+                            foundNext = { ...filtered[0], isToday: i === 0, dayName: i === 1 ? 'Tomorrow' : dayName };
+                            break;
+                        }
+                    }
+
+                    if (foundNext) {
+                        setNextClass({
+                            name: foundNext.name,
+                            time: foundNext.time,
+                            countdown: foundNext.isToday ? `Today at ${foundNext.time}` : `${foundNext.dayName} at ${foundNext.time}`
+                        });
+                    } else {
+                        setNextClass({ name: 'No upcoming classes', countdown: 'Check back later' });
+                    }
+                });
+                return () => unsubRecurring();
+            });
+
+            // Pending Tasks for student
+            const unsubAssignments = onSnapshot(collection(db, collections.assignments), (snap) => {
+                const assignments = snap.docs.map(d => ({ id: d.id, ...d.data() } as Assignment));
+                
+                const unsubSubmissions = onSnapshot(query(collection(db, collections.submissions), where('studentId', '==', user.id)), (snapSub) => {
+                    const submittedIds = snapSub.docs.map(d => (d.data() as Submission).assignmentId);
+                    const pending = assignments.filter(a => !submittedIds.includes(a.id))
+                        .sort((a, b) => a.deadlineDate.localeCompare(b.deadlineDate));
+                    
+                    if (pending.length > 0) {
+                        setPendingTask(pending[0]);
+                    } else {
+                        setPendingTask(null);
+                    }
+                });
+                return () => unsubSubmissions();
+            });
+
+            return () => { unsubClasses(); unsubAssignments(); };
+        }
+    }, [user]);
 
     const welcomeMessage = useMemo(() => {
         const hour = new Date().getHours();
@@ -44,34 +135,25 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     if (user?.role === 'teacher') {
         return (
             <div className={`space-y-12 ${isMobile ? 'pb-10' : ''}`}>
-                <header className="space-y-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                            <ShieldCheck size={20} />
-                        </div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Faculty Protocol Active</p>
-                    </div>
+                <header className="space-y-4 text-center">
                     <h1 className="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-text leading-none">
                         {welcomeMessage}, <span className="text-primary">{user.name.split(' ')[0]}</span>
                     </h1>
-                    <p className="text-institutional-500 font-medium max-w-2xl">
-                        Welcome to your central command hub. Manage your academic sessions, track attendance, and oversee student progress with institutional precision.
-                    </p>
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                     {[
-                        { label: 'Active Sessions', value: '12', icon: Clock, color: 'text-primary' },
-                        { label: 'Total Students', value: '142', icon: Users, color: 'text-success' },
-                        { label: 'Course Materials', value: '28', icon: BookOpen, color: 'text-warning' }
+                        { label: 'Active Sessions', value: stats.sessions.toString(), icon: Clock, color: 'text-primary' },
+                        { label: 'Total Students', value: stats.students.toString(), icon: Users, color: 'text-success' },
+                        { label: 'Course Materials', value: stats.materials.toString(), icon: BookOpen, color: 'text-warning' }
                     ].map((stat, i) => (
-                        <div key={i} className="academic-stat-card p-6 md:p-8 flex items-center justify-between group cursor-default">
+                        <div key={i} className="flat-stat-card flex items-center justify-between group cursor-default">
                             <div>
                                 <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary/50 mb-1 md:mb-2">{stat.label}</p>
                                 <h3 className="text-2xl md:text-3xl font-bold text-text">{stat.value}</h3>
                             </div>
                             <div className={`p-3 md:p-4 rounded-2xl bg-institutional-50 dark:bg-institutional-900 ${stat.color} group-hover:scale-110 transition-transform`}>
-                                <stat.icon size={20} md:size={24} />
+                                <stat.icon size={24} />
                             </div>
                         </div>
                     ))}
@@ -92,19 +174,31 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     
     return (
         <div className="space-y-12">
-            <header className="space-y-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                        <ShieldCheck size={20} />
-                    </div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Student Identity Verified</p>
+            <header className="space-y-6 text-center">
+                <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
+                    <button onClick={() => onNavigate('/schedule')} className="academic-stat-card p-2 px-4 flex items-center gap-3 group text-start transition-all hover:border-primary">
+                        <div className="w-8 h-8 rounded-lg bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-all flex items-center justify-center shrink-0">
+                            <Calendar size={14} />
+                        </div>
+                        <div className="overflow-hidden">
+                            <p className="text-[8px] font-bold uppercase tracking-widest text-text-secondary/40 leading-none mb-1">Next Class</p>
+                            <h4 className="text-xs font-bold text-text uppercase truncate leading-none">{nextClass?.name || 'Loading...'}</h4>
+                        </div>
+                    </button>
+                    <button onClick={() => onNavigate('/assignments')} className="academic-stat-card p-2 px-4 flex items-center gap-3 group text-start transition-all hover:border-danger">
+                        <div className="w-8 h-8 rounded-lg bg-danger/5 text-danger group-hover:bg-danger group-hover:text-white transition-all flex items-center justify-center shrink-0">
+                            <Clock size={14} />
+                        </div>
+                        <div className="overflow-hidden">
+                            <p className="text-[8px] font-bold uppercase tracking-widest text-text-secondary/40 leading-none mb-1">Pending Tasks</p>
+                            <h4 className="text-xs font-bold text-text uppercase truncate leading-none">{pendingTask?.title || 'No Pending Tasks'}</h4>
+                        </div>
+                    </button>
                 </div>
+
                 <h1 className="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-text leading-none">
                     {welcomeMessage}, <span className="text-primary">{user?.name?.split(' ')[0] || 'Student'}</span>
                 </h1>
-                <p className="text-institutional-500 font-medium max-w-2xl">
-                    Access your digital identity, track your academic journey, and stay connected with your institutional ecosystem.
-                </p>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -112,51 +206,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                     <QRIdentity />
                 </div>
                 <div className="lg:col-span-2 space-y-8">
-                    <div className="academic-card p-10 space-y-8">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-xl font-bold uppercase tracking-tight text-text">Academic Snapshot</h3>
-                            <TrendingUp size={20} className="text-success" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-8">
-                            <div className="space-y-2">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary/50">Attendance Rate</p>
-                                <p className="text-4xl font-bold text-text">94%</p>
-                                <div className="w-full h-1.5 bg-institutional-100 dark:bg-institutional-800 rounded-full overflow-hidden">
-                                    <div className="h-full bg-success w-[94%] transition-all duration-1000" />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary/50">Credits Earned</p>
-                                <p className="text-4xl font-bold text-text">18/24</p>
-                                <div className="w-full h-1.5 bg-institutional-100 dark:bg-institutional-800 rounded-full overflow-hidden">
-                                    <div className="h-full bg-primary w-[75%] transition-all duration-1000" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <button onClick={() => onNavigate('/schedule')} className="academic-stat-card p-8 flex items-center justify-between group text-start">
-                            <div>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary/50 mb-2">Next Class</p>
-                                <h4 className="text-lg font-bold text-text uppercase">Advanced Algorithmic Logic</h4>
-                                <p className="text-xs font-bold text-primary mt-1">Starts in 15 mins</p>
-                            </div>
-                            <div className="p-4 rounded-2xl bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-all">
-                                <Calendar size={20} />
-                            </div>
-                        </button>
-                        <button onClick={() => onNavigate('/assignments')} className="academic-stat-card p-8 flex items-center justify-between group text-start">
-                            <div>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary/50 mb-2">Pending Tasks</p>
-                                <h4 className="text-lg font-bold text-text uppercase">System Architecture Review</h4>
-                                <p className="text-xs font-bold text-danger mt-1">Due Today</p>
-                            </div>
-                            <div className="p-4 rounded-2xl bg-danger/5 text-danger group-hover:bg-danger group-hover:text-white transition-all">
-                                <Clock size={20} />
-                            </div>
-                        </button>
-                    </div>
+                    {/* Main content area */}
                 </div>
             </div>
         </div>
