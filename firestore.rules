@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/artifacts/edusaas-live-demo-v2/public/data/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "abs20664@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    // Match all documents in the artifacts path
+    match /artifacts/edusaas-live-demo-v2/public/data/{collection}/{document=**} {
+      // For a demo/prototype, we'll allow authenticated users to read/write to most things
+      // but in a real app we'd be more specific.
+      allow read, write: if isAuthenticated();
+    }
+
+    // Specific rules for users to allow initial setup/login
+    match /artifacts/edusaas-live-demo-v2/public/data/users/{userId} {
+      allow read: if true; // Allow reading users for the "Quick Access" list
+      allow write: if isAuthenticated() && (isOwner(userId) || isAdmin());
+    }
+  }
+}

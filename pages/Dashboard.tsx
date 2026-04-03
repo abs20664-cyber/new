@@ -31,6 +31,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     const [pendingTask, setPendingTask] = useState<Assignment | null>(null);
     const [stats, setStats] = useState({ sessions: 0, students: 0, materials: 0 });
     const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+    const [editingSession, setEditingSession] = useState<ClassSession | null>(null);
 
     useEffect(() => {
         if (!user) return;
@@ -158,8 +159,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
                 <SessionModal 
                     isOpen={isSessionModalOpen} 
-                    onClose={() => setIsSessionModalOpen(false)} 
-                    editingClass={null} 
+                    onClose={() => {
+                        setIsSessionModalOpen(false);
+                        setEditingSession(null);
+                    }} 
+                    editingClass={editingSession} 
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -187,7 +191,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                             View Full Schedule <ArrowUpRight size={14} />
                         </button>
                     </div>
-                    <Classes onNavigate={onNavigate} />
+                    <Classes 
+                        onNavigate={onNavigate} 
+                        onEditSession={(cl) => {
+                            setEditingSession(cl);
+                            setIsSessionModalOpen(true);
+                        }}
+                    />
                 </div>
             </div>
         );

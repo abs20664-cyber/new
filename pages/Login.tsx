@@ -3,14 +3,15 @@ import { useAuth } from '../contexts/AuthContext';
 import { collection, getDocs } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { User } from '../types';
-import { GraduationCap, Mail, Lock, LogIn, Users, ChevronRight } from 'lucide-react';
+import { GraduationCap, Mail, Lock, LogIn, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const Login: React.FC = () => {
-    const { login } = useAuth();
+    const { login, directLogin } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [availableUsers, setAvailableUsers] = useState<User[]>([]);
+    const [showManual, setShowManual] = useState(false);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -30,6 +31,10 @@ const Login: React.FC = () => {
         } catch (err: any) {
             console.error("Authentication failed.", err);
         }
+    };
+
+    const handleDirectLogin = (user: User) => {
+        directLogin(user);
     };
 
     return (
@@ -91,10 +96,56 @@ const Login: React.FC = () => {
                                 >
                                     <GraduationCap className="text-white w-8 h-8" />
                                 </motion.div>
-                                <h1 className="font-['Manrope'] text-4xl font-black tracking-tight text-[#191c1b] mb-3">Welcome Back</h1>
-                                <p className="text-[#4b5563] text-sm font-medium leading-relaxed opacity-70">Enter your credentials to access your institutional workspace.</p>
+                                <h1 className="font-['Manrope'] text-4xl font-black tracking-tight text-[#191c1b] mb-3">Direct Access</h1>
+                                <p className="text-[#4b5563] text-sm font-medium leading-relaxed opacity-70">Select your profile to sign in directly without authentication.</p>
                             </div>
-                            <form onSubmit={handleSubmit} className="space-y-6">
+
+                            <div className="space-y-3 mb-8">
+                                <AnimatePresence>
+                                    {availableUsers.map((u, idx) => (
+                                        <motion.div 
+                                            key={u.id}
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: 0.1 + (idx * 0.05) }}
+                                            className="group flex items-center justify-between p-4 bg-white/40 border border-white/60 rounded-2xl cursor-pointer hover:bg-white hover:border-[#005943]/20 hover:shadow-xl hover:shadow-[#005943]/5 transition-all" 
+                                            onClick={() => handleDirectLogin(u)}
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-11 h-11 rounded-xl overflow-hidden ring-4 ring-white/50 shadow-sm">
+                                                    <img alt={u.name} className="w-full h-full object-cover" src={`https://ui-avatars.com/api/?name=${u.name}&background=random&bold=true`} />
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-sm text-[#191c1b] tracking-tight">{u.name}</p>
+                                                    <p className="text-[9px] font-black text-[#005943] uppercase tracking-[0.15em] opacity-60">{u.role}</p>
+                                                </div>
+                                            </div>
+                                            <div className="w-8 h-8 rounded-lg bg-[#f1f4f1] flex items-center justify-center text-[#717975] group-hover:bg-[#005943] group-hover:text-white transition-all">
+                                                <ChevronRight className="w-4 h-4" />
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+
+                            <div className="pt-6 border-t border-[#c0c9c4]/10">
+                                <button 
+                                    onClick={() => setShowManual(!showManual)}
+                                    className="text-[10px] font-black uppercase tracking-[0.2em] text-[#4b5563] opacity-60 hover:opacity-100 transition-opacity flex items-center gap-2 mx-auto mb-8"
+                                >
+                                    {showManual ? 'Hide Manual Login' : 'Show Manual Login'}
+                                </button>
+                            </div>
+
+                            <AnimatePresence>
+                                {showManual && (
+                                    <motion.form 
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        onSubmit={handleSubmit} 
+                                        className="space-y-6 overflow-hidden"
+                                    >
                                 <div className="space-y-2.5">
                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#4b5563] ml-1 opacity-60">Email Address</label>
                                     <div className="relative group">
@@ -134,47 +185,13 @@ const Login: React.FC = () => {
                                     <LogIn className="w-4 h-4" />
                                     Sign In
                                 </motion.button>
-                            </form>
-                        </section>
-                        
-                        <section className="bg-[#f1f4f1]/30 p-10 md:p-12 border-t border-[#c0c9c4]/10">
-                            <div className="flex items-center justify-between mb-8">
-                                <h2 className="font-['Manrope'] text-[10px] font-black text-[#4b5563] tracking-[0.2em] uppercase opacity-60">Quick Access</h2>
-                                <Users className="text-[#717975] w-4 h-4 opacity-40" />
-                            </div>
-                            <div className="space-y-3">
-                                <AnimatePresence>
-                                    {availableUsers.map((u, idx) => (
-                                        <motion.div 
-                                            key={u.id}
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.4 + (idx * 0.1) }}
-                                            className="group flex items-center justify-between p-4 bg-white/40 border border-white/60 rounded-2xl cursor-pointer hover:bg-white hover:border-[#005943]/20 hover:shadow-xl hover:shadow-[#005943]/5 transition-all" 
-                                            onClick={() => {setEmail(u.email); setPassword(u.password || 'password')}}
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-11 h-11 rounded-xl overflow-hidden ring-4 ring-white/50 shadow-sm">
-                                                    <img alt={u.name} className="w-full h-full object-cover" src={`https://ui-avatars.com/api/?name=${u.name}&background=random&bold=true`} />
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-sm text-[#191c1b] tracking-tight">{u.name}</p>
-                                                    <p className="text-[9px] font-black text-[#005943] uppercase tracking-[0.15em] opacity-60">{u.role}</p>
-                                                </div>
-                                            </div>
-                                            <div className="w-8 h-8 rounded-lg bg-[#f1f4f1] flex items-center justify-center text-[#717975] group-hover:bg-[#005943] group-hover:text-white transition-all">
-                                                <ChevronRight className="w-4 h-4" />
-                                            </div>
-                                        </motion.div>
-                                    ))}
-                                </AnimatePresence>
-                            </div>
+                                    </motion.form>
+                                )}
+                            </AnimatePresence>
                         </section>
                     </div>
                 </motion.div>
             </main>
-            
-
         </div>
     );
 };

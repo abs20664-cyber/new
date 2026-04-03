@@ -7,6 +7,7 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebas
 interface AuthContextType {
   user: User | null;
   login: (email: string, pass: string) => Promise<void>;
+  directLogin: (user: User) => void;
   logout: () => Promise<void>;
   loading: boolean;
 }
@@ -17,7 +18,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Load mock user from localStorage if it exists
   useEffect(() => {
+    const savedUser = localStorage.getItem('mock_user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         // Fetch user profile from Firestore
@@ -44,7 +53,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsub = onSnapshot(doc(db, collections.users, user.id), (docSnap) => {
         if (docSnap.exists()) {
              const userData = docSnap.data() as User;
-             setUser(prev => ({ ...prev, ...userData, id: docSnap.id } as User));
+             setUser(prev => {
+                 const updatedUser = { ...prev, ...userData, id: docSnap.id } as User;
+                 if (localStorage.getItem('mock_user')) {
+                    localStorage.setItem('mock_user', JSON.stringify(updatedUser));
+                 }
+                 return updatedUser;
+             });
         } else {
              logout();
         }
@@ -77,8 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
         await signInWithEmailAndPassword(auth, email, pass);
-        // Do not set loading to false here on success.
-        // onAuthStateChanged will handle setting loading to false after fetching the user profile.
+        localStorage.removeItem('mock_user');
     } catch (e: any) {
         console.error("Login failed", e);
         setLoading(false);
@@ -86,13 +100,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const directLogin = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem('mock_user', JSON.stringify(userData));
+    setLoading(false);
+  };
+
   const logout = async () => {
     await signOut(auth);
+    localStorage.removeItem('mock_user');
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, directLogin, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

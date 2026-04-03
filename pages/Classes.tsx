@@ -2,9 +2,8 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { ClassSession, RecurringSession } from '../types';
-import { Trash2, SlidersHorizontal, MapPin, Clock, Plus, Scan, CalendarOff, ChevronRight } from 'lucide-react';
+import { Trash2, SlidersHorizontal, MapPin, Clock, Scan, CalendarOff, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import SessionModal from '../components/SessionModal';
 
 const checkIsLive = (classDate: string, startTime: string, endTime: string) => {
     const now = new Date();
@@ -37,6 +36,7 @@ const checkIsTooEarly = (classDate: string, startTime: string) => {
 
 interface ClassesProps {
     onNavigate: (path: string, state?: any) => void;
+    onEditSession?: (cl: ClassSession) => void;
 }
 
 const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, isTooEarly, t, isRTL, openModal, handleDelete, onNavigate }: {
@@ -108,12 +108,10 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, isTooEarly, t, isRT
     );
 });
 
-const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
+const Classes: React.FC<ClassesProps> = ({ onNavigate, onEditSession }) => {
     const { t, isRTL } = useLanguage();
     const [classes, setClasses] = useState<ClassSession[]>([]);
     const [recurringSessions, setRecurringSessions] = useState<RecurringSession[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingClass, setEditingClass] = useState<ClassSession | null>(null);
 
     const allSessions = useMemo(() => {
         const upcomingRecurring: ClassSession[] = [];
@@ -178,29 +176,13 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
     };
 
     const openModal = (cl?: ClassSession) => {
-        if (cl) { setEditingClass(cl); }
-        else { setEditingClass(null); }
-        setIsModalOpen(true);
+        if (cl && onEditSession) { 
+            onEditSession(cl); 
+        }
     };
 
     return (
         <div className="fade-in max-w-7xl mx-auto">
-            <div className={`mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b-4 border-border-dark pb-10`}>
-                <div className="text-start">
-                    <h2 className="text-4xl lg:text-5xl font-display font-bold tracking-tighter uppercase text-text leading-none">{t('nav.hub')}</h2>
-                    <div className="flex items-center gap-3 mt-4">
-                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-                        <p className="text-[11px] font-bold text-text-secondary uppercase tracking-[0.3em]">{t('hub.title')}</p>
-                    </div>
-                </div>
-                <button 
-                    onClick={() => openModal()}
-                    className="academic-button academic-button-primary px-8 py-5 flex items-center justify-center gap-3 group"
-                >
-                    <Plus size={20} className="transition-transform group-hover:rotate-90" /> {t('hub.newSession')}
-                </button>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
                 {allSessions.map(cl => {
                     const isLive = checkIsLive(cl.date, cl.time, cl.endTime);
@@ -223,12 +205,6 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                     );
                 })}
             </div>
-
-            <SessionModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
-                editingClass={editingClass} 
-            />
         </div>
     );
 };
