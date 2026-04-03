@@ -154,7 +154,7 @@ const Profile: React.FC = () => {
           >
             <ChevronLeft size={24} className={isRTL ? 'rotate-180' : ''} />
           </button>
-          <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tighter uppercase text-text">
+          <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tighter uppercase text-institutional-950 dark:text-white">
             {t('profile.title')}
           </h1>
         </div>
@@ -253,7 +253,7 @@ const Profile: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center border-4 border-border-dark">
                 <BookOpen size={24} />
               </div>
-              <h3 className="text-2xl font-display font-bold text-text uppercase tracking-tighter">
+              <h3 className="text-2xl font-display font-bold text-institutional-950 dark:text-white uppercase tracking-tighter">
                 {t('profile.academicInfo')}
               </h3>
             </div>
@@ -323,7 +323,7 @@ const Profile: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-muted text-text flex items-center justify-center border-4 border-border-dark">
                 <Briefcase size={24} />
               </div>
-              <h3 className="text-2xl font-display font-bold text-text uppercase tracking-tighter">
+              <h3 className="text-2xl font-display font-bold text-institutional-950 dark:text-white uppercase tracking-tighter">
                 {t('profile.personalInfo')}
               </h3>
             </div>

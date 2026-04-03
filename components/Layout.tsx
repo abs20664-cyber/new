@@ -37,7 +37,7 @@ import { toast } from 'sonner';
 interface LayoutProps {
     children: React.ReactNode;
     currentPath: string;
-    onNavigate: (path: string) => void;
+    onNavigate: (path: string, state?: any) => void;
 }
 
 const NOTIFICATION_SOUND_URL = "https://cdn.freesound.org/previews/263/263133_2064400-lq.mp3";

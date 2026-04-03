@@ -8,24 +8,29 @@ import Classes from './Classes';
 import QRIdentity from './QRIdentity';
 import AdminRegistry from './AdminRegistry';
 import EconomicDashboard from './EconomicDashboard';
+import SessionModal from '../components/SessionModal';
 import { 
     Calendar, 
     Clock, 
     Users, 
     BookOpen, 
-    ArrowUpRight
+    ArrowUpRight,
+    Plus
 } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface DashboardProps {
-    onNavigate: (path: string) => void;
+    onNavigate: (path: string, state?: any) => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     const { user } = useAuth();
     const { isMobile } = usePlatform();
+    const { t } = useLanguage();
     const [nextClass, setNextClass] = useState<any>(null);
     const [pendingTask, setPendingTask] = useState<Assignment | null>(null);
     const [stats, setStats] = useState({ sessions: 0, students: 0, materials: 0 });
+    const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -135,11 +140,27 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     if (user?.role === 'teacher') {
         return (
             <div className={`space-y-12 ${isMobile ? 'pb-10' : ''}`}>
-                <header className="space-y-4 text-center">
-                    <h1 className="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-text leading-none">
-                        {welcomeMessage}, <span className="text-primary">{user.name.split(' ')[0]}</span>
+                <header className="space-y-8 text-center">
+                    <h1 className="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-institutional-950 dark:text-white leading-none">
+                        {welcomeMessage}
                     </h1>
+                    
+                    <div className="flex justify-center">
+                        <button 
+                            onClick={() => setIsSessionModalOpen(true)}
+                            className="academic-button academic-button-primary px-8 py-4 flex items-center justify-center gap-3 group shadow-pop-sm"
+                        >
+                            <Plus size={20} className="transition-transform group-hover:rotate-90" /> 
+                            {t('hub.newSession')}
+                        </button>
+                    </div>
                 </header>
+
+                <SessionModal 
+                    isOpen={isSessionModalOpen} 
+                    onClose={() => setIsSessionModalOpen(false)} 
+                    editingClass={null} 
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                     {[
@@ -161,7 +182,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
                 <div className="space-y-6 md:space-y-8">
                     <div className="flex items-center justify-between border-b border-border pb-4 md:pb-6">
-                        <h2 className="text-xl md:text-2xl font-bold uppercase tracking-tight text-text">Session Management</h2>
+                        <h2 className="text-xl md:text-2xl font-bold uppercase tracking-tight text-institutional-950 dark:text-white">Session Management</h2>
                         <button onClick={() => onNavigate('/schedule')} className="text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-1 md:gap-2 hover:gap-3 transition-all">
                             View Full Schedule <ArrowUpRight size={14} />
                         </button>
@@ -176,36 +197,36 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         <div className="space-y-12">
             <header className="space-y-6 text-center">
                 <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
-                    <button onClick={() => onNavigate('/schedule')} className="academic-stat-card p-2 px-4 flex items-center gap-3 group text-start transition-all hover:border-primary">
+                    <button onClick={() => onNavigate('/schedule')} className="academic-stat-card p-2 px-4 flex flex-col items-center gap-2 group text-center transition-all hover:border-primary min-w-[140px]">
                         <div className="w-8 h-8 rounded-lg bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-all flex items-center justify-center shrink-0">
                             <Calendar size={14} />
                         </div>
                         <div className="overflow-hidden">
                             <p className="text-[8px] font-bold uppercase tracking-widest text-text-secondary/40 leading-none mb-1">Next Class</p>
-                            <h4 className="text-xs font-bold text-text uppercase truncate leading-none">{nextClass?.name || 'Loading...'}</h4>
+                            <h4 className="text-xs font-bold text-text dark:text-white uppercase truncate leading-none">{nextClass?.name || 'Loading...'}</h4>
                         </div>
                     </button>
-                    <button onClick={() => onNavigate('/assignments')} className="academic-stat-card p-2 px-4 flex items-center gap-3 group text-start transition-all hover:border-danger">
+                    <button onClick={() => onNavigate('/assignments')} className="academic-stat-card p-2 px-4 flex flex-col items-center gap-2 group text-center transition-all hover:border-danger min-w-[140px]">
                         <div className="w-8 h-8 rounded-lg bg-danger/5 text-danger group-hover:bg-danger group-hover:text-white transition-all flex items-center justify-center shrink-0">
                             <Clock size={14} />
                         </div>
                         <div className="overflow-hidden">
                             <p className="text-[8px] font-bold uppercase tracking-widest text-text-secondary/40 leading-none mb-1">Pending Tasks</p>
-                            <h4 className="text-xs font-bold text-text uppercase truncate leading-none">{pendingTask?.title || 'No Pending Tasks'}</h4>
+                            <h4 className="text-xs font-bold text-text dark:text-white uppercase truncate leading-none">{pendingTask?.title || 'No Pending Tasks'}</h4>
                         </div>
                     </button>
                 </div>
 
-                <h1 className="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-text leading-none">
-                    {welcomeMessage}, <span className="text-primary">{user?.name?.split(' ')[0] || 'Student'}</span>
+                <h1 className="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-institutional-950 dark:text-white leading-none">
+                    {welcomeMessage}
                 </h1>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                <div className="lg:col-span-1">
+            <div className="flex flex-col items-center gap-12 w-full">
+                <div className="w-full max-w-lg mx-auto">
                     <QRIdentity />
                 </div>
-                <div className="lg:col-span-2 space-y-8">
+                <div className="w-full max-w-4xl space-y-8">
                     {/* Main content area */}
                 </div>
             </div>

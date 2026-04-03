@@ -59,11 +59,11 @@ const AppContent: React.FC = () => {
 
   return (
     <PlatformProvider>
-        <Layout currentPath={location.pathname} onNavigate={(path) => navigate(path)}>
+        <Layout currentPath={location.pathname} onNavigate={(path: string, state?: any) => navigate(path, { state })}>
             <ErrorBoundary>
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
-                    <Route path="/" element={<Dashboard onNavigate={(path) => navigate(path)} />} />
+                    <Route path="/" element={<Dashboard onNavigate={(path: string, state?: any) => navigate(path, { state })} />} />
                     <Route path="/schedule" element={<Schedule />} />
                     <Route path="/assignments" element={<Assignments />} />
                     <Route path="/materials" element={<Materials />} />

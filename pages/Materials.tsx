@@ -63,7 +63,7 @@ const Materials: React.FC = () => {
         <div className="fade-in pb-10 max-w-7xl mx-auto">
             <div className={`mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-10`}>
                 <div className="text-start">
-                    <h2 className="text-4xl lg:text-5xl font-black tracking-tighter uppercase text-text leading-none">{t('nav.cabinet')}</h2>
+                    <h2 className="text-4xl lg:text-5xl font-black tracking-tighter uppercase text-institutional-950 dark:text-white leading-none">{t('nav.cabinet')}</h2>
                     <div className="flex items-center gap-3 mt-4">
                         <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
                         <p className="text-[11px] font-black text-text-secondary/50 uppercase tracking-[0.3em]">{t('cabinet.title')}</p>
