@@ -108,53 +108,7 @@ const Login: React.FC = () => {
 
     return (
         <div className={`min-h-screen flex bg-background relative overflow-hidden ${isRTL ? 'font-arabic' : ''}`}>
-            {/* Left Side - Algerian Education Themed */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-algeria-green">
-                {/* Subtle Islamic Geometric Pattern Overlay */}
-                <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
-                
-                {/* Beautiful Background Image (Algiers/Architecture) */}
-                <img 
-                    src="https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?q=80&w=2070&auto=format&fit=crop" 
-                    alt="Algerian Architecture" 
-                    className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity"
-                    referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-algeria-green via-algeria-green/80 to-transparent" />
-                
-                {/* Decorative Red Accent */}
-                <div className="absolute top-0 left-0 w-full h-1.5 bg-algeria-red" />
-
-                <motion.div 
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative z-10 flex flex-col justify-end p-16 w-full h-full text-institutional-50"
-                >
-                    <div className="mb-auto">
-                        <div className="inline-flex items-center gap-3 px-4 py-2 bg-institutional-50/10 backdrop-blur-md rounded-full border border-white/20">
-                            <GraduationCap className="text-institutional-50" size={18} />
-                            <span className="text-xs font-medium tracking-wide">وزارة التعليم العالي والبحث العلمي</span>
-                        </div>
-                    </div>
-
-                    <div className="max-w-xl">
-                        <h1 className="text-5xl xl:text-6xl font-arabic mb-6 leading-[1.2] tracking-tight" dir="rtl">
-                            "اطلبوا العلم من المهد إلى اللحد"
-                        </h1>
-                        
-                        <div className="flex items-center gap-4 text-institutional-50">
-                            <div className="w-12 h-px bg-algeria-red" />
-                            <p className="text-sm font-medium tracking-widest uppercase">
-                                Algerian Academic Excellence
-                            </p>
-                        </div>
-                    </div>
-                </motion.div>
-            </div>
-
-            {/* Right Side - Login Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-institutional-50 dark:bg-institutional-950 relative">
+            <div className="w-full flex items-center justify-center p-6 sm:p-12 bg-institutional-50 dark:bg-institutional-950 relative">
                 {/* Subtle Background Detail for Right Side */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.02] dark:opacity-[0.05]">
                     <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_100%_0%,#000_0%,transparent_50%)]" />
