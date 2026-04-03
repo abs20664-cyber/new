@@ -88,7 +88,7 @@ const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ src, duration: 
                         backgroundRepeat: 'no-repeat'
                     }}
                 />
-                <div className={`flex justify-between text-[10px] font-bold tracking-wider uppercase ${isMe ? 'text-institutional-50/90' : 'text-institutional-500 dark:text-institutional-400'}`}>
+                <div className={`flex justify-between text-[10px] font-bold tracking-wider uppercase ${isMe ? 'text-institutional-50' : 'text-institutional-600 dark:text-institutional-400'}`}>
                     <span>{formatTime(currentTime)}</span>
                     <span>{formatTime(duration)}</span>
                 </div>

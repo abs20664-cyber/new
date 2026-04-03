@@ -143,7 +143,7 @@ const Login: React.FC = () => {
                             "اطلبوا العلم من المهد إلى اللحد"
                         </h1>
                         
-                        <div className="flex items-center gap-4 text-institutional-50/80">
+                        <div className="flex items-center gap-4 text-institutional-50">
                             <div className="w-12 h-px bg-algeria-red" />
                             <p className="text-sm font-medium tracking-widest uppercase">
                                 Algerian Academic Excellence
@@ -154,7 +154,7 @@ const Login: React.FC = () => {
             </div>
 
             {/* Right Side - Login Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-institutional-50 dark:bg-slate-950 relative">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-institutional-50 dark:bg-institutional-950 relative">
                 {/* Subtle Background Detail for Right Side */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.02] dark:opacity-[0.05]">
                     <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_100%_0%,#000_0%,transparent_50%)]" />
@@ -176,7 +176,7 @@ const Login: React.FC = () => {
                                     <button
                                         key={lang.code}
                                         onClick={() => setLanguage(lang.code)}
-                                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${language === lang.code ? 'bg-institutional-50 dark:bg-institutional-800 text-primary shadow-sm' : 'text-institutional-400 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
+                                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${language === lang.code ? 'bg-institutional-50 dark:bg-institutional-800 text-primary shadow-sm' : 'text-institutional-600 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
                                     >
                                         {lang.code}
                                     </button>
@@ -184,10 +184,10 @@ const Login: React.FC = () => {
                             </div>
                         </div>
                         
-                        <h2 className="text-4xl font-serif text-slate-900 dark:text-institutional-50 tracking-tight leading-tight mb-3">
+                        <h2 className="text-4xl font-serif text-institutional-900 dark:text-institutional-50 tracking-tight leading-tight mb-3">
                             {pendingUser ? t('economic.changePassword') : t('login.welcome')}
                         </h2>
-                        <p className="text-slate-500 text-sm font-medium">
+                        <p className="text-institutional-600 text-sm font-medium">
                             {pendingUser ? t('login.updatePasswordPrompt') : t('login.enterDetailsPrompt')}
                         </p>
                     </motion.div>
@@ -215,29 +215,29 @@ const Login: React.FC = () => {
                                 className="space-y-6"
                             >
                                 <div>
-                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-2 block px-1">{t('login.newPassword')}</label>
+                                    <label className="text-[10px] font-black uppercase text-institutional-600 tracking-[0.2em] mb-2 block px-1">{t('login.newPassword')}</label>
                                     <div className="relative group">
-                                        <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors`} size={20} />
+                                        <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600 group-focus-within:text-primary transition-colors`} size={20} />
                                         <input 
                                             type="password" 
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder={t('login.minCharacters')} 
-                                            className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 font-bold focus:border-primary focus:bg-institutional-50 dark:focus:bg-slate-900 outline-none text-sm transition-all`}
+                                            className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-institutional-100 dark:border-institutional-800 font-bold focus:border-primary focus:bg-institutional-50 dark:focus:bg-institutional-900 outline-none text-sm transition-all`}
                                             required 
                                         />
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-2 block px-1">{t('login.confirmPassword')}</label>
+                                    <label className="text-[10px] font-black uppercase text-institutional-600 tracking-[0.2em] mb-2 block px-1">{t('login.confirmPassword')}</label>
                                     <div className="relative group">
-                                        <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors`} size={20} />
+                                        <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600 group-focus-within:text-primary transition-colors`} size={20} />
                                         <input 
                                             type="password" 
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder={t('login.repeatPassword')} 
-                                            className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 font-bold focus:border-primary focus:bg-institutional-50 dark:focus:bg-slate-900 outline-none text-sm transition-all`}
+                                            className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-institutional-100 dark:border-institutional-800 font-bold focus:border-primary focus:bg-institutional-50 dark:focus:bg-institutional-900 outline-none text-sm transition-all`}
                                             required 
                                         />
                                     </div>
@@ -253,7 +253,7 @@ const Login: React.FC = () => {
                                 <button 
                                     type="button"
                                     onClick={() => setPendingUser(null)}
-                                    className="w-full text-[10px] font-black uppercase text-slate-400 tracking-widest hover:text-slate-600 transition-all"
+                                    className="w-full text-[10px] font-black uppercase text-institutional-600 tracking-widest hover:text-institutional-600 transition-all"
                                 >
                                     {t('common.cancel')}
                                 </button>
@@ -271,27 +271,27 @@ const Login: React.FC = () => {
                                     {isSignUp && (
                                         <>
                                             <div>
-                                                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 block px-1">Name</label>
+                                                <label className="text-xs font-semibold text-institutional-600 dark:text-institutional-400 mb-2 block px-1">Name</label>
                                                 <div className="relative group">
-                                                    <UserPlus className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors`} size={20} />
+                                                    <UserPlus className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600 group-focus-within:text-primary transition-colors`} size={20} />
                                                     <input 
                                                         type="text" 
                                                         value={name}
                                                         onChange={(e) => setName(e.target.value)}
                                                         placeholder="Full Name" 
-                                                        className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                        className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 dark:border-institutional-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
                                                         required 
                                                     />
                                                 </div>
                                             </div>
                                             <div>
-                                                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 block px-1">{t('profile.role')}</label>
+                                                <label className="text-xs font-semibold text-institutional-600 dark:text-institutional-400 mb-2 block px-1">{t('profile.role')}</label>
                                                 <div className="relative group">
-                                                    <GraduationCap className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors`} size={20} />
+                                                    <GraduationCap className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600 group-focus-within:text-primary transition-colors`} size={20} />
                                                     <select 
                                                         value={role}
                                                         onChange={(e) => setRole(e.target.value as UserRole)}
-                                                        className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all appearance-none cursor-pointer`}
+                                                        className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 dark:border-institutional-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all appearance-none cursor-pointer`}
                                                         required
                                                     >
                                                         <option value="student">{t('roles.student')}</option>
@@ -299,36 +299,36 @@ const Login: React.FC = () => {
                                                         <option value="admin">{t('roles.admin')}</option>
                                                         <option value="economic">{t('roles.economic')}</option>
                                                     </select>
-                                                    <ChevronDown className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none`} size={16} />
+                                                    <ChevronDown className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 text-institutional-600 pointer-events-none`} size={16} />
                                                 </div>
                                             </div>
                                         </>
                                     )}
                                     <div>
-                                        <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 block px-1">{t('login.email')}</label>
+                                        <label className="text-xs font-semibold text-institutional-600 dark:text-institutional-400 mb-2 block px-1">{t('login.email')}</label>
                                         <div className="relative group">
-                                            <Mail className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors`} size={20} />
+                                            <Mail className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600 group-focus-within:text-primary transition-colors`} size={20} />
                                             <input 
                                                 type="email" 
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
                                                 placeholder="name@institution.edu.dz" 
-                                                className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 dark:border-institutional-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
                                                 required 
                                             />
                                         </div>
                                     </div>
                                     
                                     <div>
-                                        <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 block px-1">{t('login.password')}</label>
+                                        <label className="text-xs font-semibold text-institutional-600 dark:text-institutional-400 mb-2 block px-1">{t('login.password')}</label>
                                         <div className="relative group">
-                                            <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors`} size={20} />
+                                            <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600 group-focus-within:text-primary transition-colors`} size={20} />
                                             <input 
                                                 type="password" 
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 placeholder="••••••••" 
-                                                className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-slate-200 dark:border-slate-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 dark:border-institutional-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
                                                 required 
                                             />
                                         </div>
@@ -347,7 +347,7 @@ const Login: React.FC = () => {
                                     <button 
                                         type="button"
                                         onClick={() => setIsSignUp(!isSignUp)}
-                                        className="text-xs font-medium text-slate-500 hover:text-primary transition-all"
+                                        className="text-xs font-medium text-institutional-600 hover:text-primary transition-all"
                                     >
                                         {isSignUp ? 'Already have an account? Login' : 'Need an account? Sign Up'}
                                     </button>
@@ -364,7 +364,7 @@ const Login: React.FC = () => {
                     >
                         <button 
                             onClick={() => setShowCredentials(!showCredentials)}
-                            className="text-xs font-medium text-slate-500 hover:text-primary transition-all flex items-center justify-center gap-2 mx-auto py-2"
+                            className="text-xs font-medium text-institutional-600 hover:text-primary transition-all flex items-center justify-center gap-2 mx-auto py-2"
                         >
                             {showCredentials ? t('common.close') : t('login.demoAccounts')}
                             <ChevronDown size={14} className={`transition-transform duration-300 ${showCredentials ? 'rotate-180' : ''}`} />
@@ -383,7 +383,7 @@ const Login: React.FC = () => {
                                     <button 
                                         key={u.id}
                                         onClick={() => fillCredentials(u)}
-                                        className="w-full text-left bg-institutional-50 dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-800 transition-all group active:scale-[0.98] shadow-sm"
+                                        className="w-full text-left bg-institutional-50 dark:bg-institutional-900 hover:bg-institutional-50 dark:hover:bg-institutional-800 p-4 rounded-xl border border-institutional-200 dark:border-institutional-800 transition-all group active:scale-[0.98] shadow-sm"
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
@@ -391,8 +391,8 @@ const Login: React.FC = () => {
                                                     {u.role.charAt(0).toUpperCase()}
                                                 </div>
                                                 <div>
-                                                    <p className="text-slate-900 dark:text-institutional-50 font-semibold text-sm">{u.name}</p>
-                                                    <p className="text-xs text-slate-500 capitalize">{u.role}</p>
+                                                    <p className="text-institutional-900 dark:text-institutional-50 font-semibold text-sm">{u.name}</p>
+                                                    <p className="text-xs text-institutional-600 capitalize">{u.role}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -402,8 +402,8 @@ const Login: React.FC = () => {
                         )}
                     </AnimatePresence>
                     
-                    <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center gap-3 text-slate-400">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-300 dark:text-slate-600">
+                    <div className="mt-12 pt-8 border-t border-institutional-100 dark:border-institutional-800 flex flex-col items-center justify-center gap-3 text-institutional-600">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-institutional-600 dark:text-institutional-600">
                             الجمهورية الجزائرية الديمقراطية الشعبية
                         </p>
                         <div className="flex items-center gap-6">
@@ -411,7 +411,7 @@ const Login: React.FC = () => {
                                 <Globe size={14} />
                                 <span className="text-xs font-medium">MESRS Platform</span>
                             </div>
-                            <div className="w-1 h-1 bg-slate-300 rounded-full" />
+                            <div className="w-1 h-1 bg-institutional-300 rounded-full" />
                             <div className="flex items-center gap-2">
                                 <ShieldCheck size={14} />
                                 <span className="text-xs font-medium">Secure Access</span>

@@ -244,7 +244,7 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                     <AlertTriangle size={40} />
                 </div>
                 <h3 className="text-xl font-black uppercase text-institutional-950 dark:text-institutional-50 mb-2">{errorMsg}</h3>
-                <p className="text-sm font-bold text-institutional-500 mb-8 uppercase tracking-widest">{t('scanner.protocolError')}</p>
+                <p className="text-sm font-bold text-institutional-600 mb-8 uppercase tracking-widest">{t('scanner.protocolError')}</p>
                 <button onClick={onBack} className="bg-institutional-900 dark:bg-institutional-50 text-institutional-50 dark:text-institutional-900 px-10 py-4 rounded-xl font-black uppercase text-xs tracking-[0.2em] shadow-2xl transition-transform hover:scale-105">{t('scanner.returnHub')}</button>
             </div>
         );
@@ -257,7 +257,7 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                     <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-institutional-950 dark:text-institutional-50">{t('scanner.title')}</h2>
                     <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{sessionData?.name}</p>
                 </div>
-                <button onClick={onBack} className="w-12 h-12 flex items-center justify-center bg-institutional-200 dark:bg-institutional-800 text-institutional-500 hover:bg-danger hover:text-institutional-50 rounded-xl transition-all shadow-lg"><X size={24} /></button>
+                <button onClick={onBack} className="w-12 h-12 flex items-center justify-center bg-institutional-200 dark:bg-institutional-800 text-institutional-600 hover:bg-danger hover:text-institutional-50 rounded-xl transition-all shadow-lg"><X size={24} /></button>
             </div>
             
             <div className={`flex-1 card-edu rounded-[2.5rem] bg-black overflow-hidden relative flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)] border-4 border-black`}>

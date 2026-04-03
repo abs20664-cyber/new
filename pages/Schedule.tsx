@@ -111,19 +111,19 @@ const Schedule: React.FC = () => {
         const weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
         return (
-            <div className="bg-institutional-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm w-full max-w-sm mx-auto">
+            <div className="bg-institutional-50 dark:bg-institutional-900 rounded-2xl border border-institutional-200 dark:border-institutional-800 p-5 shadow-sm w-full max-w-sm mx-auto">
                 <div className="flex justify-between items-center mb-6">
-                    <button onClick={() => navigateMonth(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                        <ChevronLeft size={18} className="text-slate-600 dark:text-slate-400" />
+                    <button onClick={() => navigateMonth(-1)} className="p-2 hover:bg-institutional-100 dark:hover:bg-institutional-800 rounded-lg transition-colors">
+                        <ChevronLeft size={18} className="text-institutional-600 dark:text-institutional-400" />
                     </button>
-                    <h3 className="font-semibold text-slate-900 dark:text-institutional-50 text-base">
+                    <h3 className="font-semibold text-institutional-900 dark:text-institutional-50 text-base">
                         {currentDate.toLocaleDateString(language, { month: 'long', year: 'numeric' })}
                     </h3>
-                    <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                        <ChevronRight size={18} className="text-slate-600 dark:text-slate-400" />
+                    <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-institutional-100 dark:hover:bg-institutional-800 rounded-lg transition-colors">
+                        <ChevronRight size={18} className="text-institutional-600 dark:text-institutional-400" />
                     </button>
                 </div>
-                <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-400 mb-3">
+                <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-institutional-600 mb-3">
                     {weekDays.map(d => <div key={d}>{d}</div>)}
                 </div>
                 <div className="grid grid-cols-7 gap-1">
@@ -146,7 +146,7 @@ const Schedule: React.FC = () => {
                                 className={`h-10 w-10 mx-auto rounded-full flex flex-col items-center justify-center text-sm relative transition-all
                                     ${isSelected ? 'bg-primary text-institutional-50 font-semibold shadow-md' : 
                                       isToday ? 'bg-primary/10 text-primary font-semibold' : 
-                                      'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}
+                                      'text-institutional-700 dark:text-institutional-300 hover:bg-institutional-100 dark:hover:bg-institutional-800'}
                                 `}
                             >
                                 <span>{d.getDate()}</span>
@@ -157,7 +157,7 @@ const Schedule: React.FC = () => {
                         );
                     })}
                 </div>
-                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-center">
+                <div className="mt-6 pt-4 border-t border-institutional-100 dark:border-institutional-800 flex justify-center">
                     <button 
                         onClick={() => setCurrentDate(new Date())}
                         className="text-xs font-medium text-primary hover:text-primary-hover transition-colors"
@@ -172,8 +172,8 @@ const Schedule: React.FC = () => {
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 pb-24">
             <div className="text-center mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-institutional-50 mb-2">{t('schedule.title')}</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Manage your academic timeline and sessions</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-institutional-900 dark:text-institutional-50 mb-2">{t('schedule.title')}</h2>
+                <p className="text-sm text-institutional-600 dark:text-institutional-400">Manage your academic timeline and sessions</p>
             </div>
 
             <div className="flex flex-col md:flex-row gap-8 items-start justify-center">
@@ -185,11 +185,11 @@ const Schedule: React.FC = () => {
                 {/* Schedule List Section */}
                 <div className="w-full max-w-lg flex-1">
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-institutional-50 flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-institutional-900 dark:text-institutional-50 flex items-center gap-2">
                             <CalendarDays size={18} className="text-primary" />
                             {currentDate.toLocaleDateString(language, { weekday: 'long', month: 'long', day: 'numeric' })}
                         </h3>
-                        <span className="text-xs font-medium px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full">
+                        <span className="text-xs font-medium px-2.5 py-1 bg-institutional-100 dark:bg-institutional-800 text-institutional-600 dark:text-institutional-300 rounded-full">
                             {todaysClasses.length} {todaysClasses.length === 1 ? 'Session' : 'Sessions'}
                         </span>
                     </div>
@@ -214,7 +214,7 @@ const Schedule: React.FC = () => {
                                         <div 
                                             key={s.id} 
                                             onClick={() => user?.role !== 'student' && setExpandedSession(isExpanded ? null : s.id)}
-                                            className={`bg-institutional-50 dark:bg-slate-900 p-5 rounded-2xl border transition-all relative overflow-hidden ${isLive ? 'border-primary shadow-md ring-1 ring-primary/20' : 'border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md'} ${user?.role !== 'student' ? 'cursor-pointer' : ''}`}
+                                            className={`bg-institutional-50 dark:bg-institutional-900 p-5 rounded-2xl border transition-all relative overflow-hidden ${isLive ? 'border-primary shadow-md ring-1 ring-primary/20' : 'border-institutional-200 dark:border-institutional-800 shadow-sm hover:shadow-md'} ${user?.role !== 'student' ? 'cursor-pointer' : ''}`}
                                         >
                                             {isLive && (
                                                 <div className="absolute top-0 right-0 p-3">
@@ -227,15 +227,15 @@ const Schedule: React.FC = () => {
                                             
                                             <div className="flex justify-between items-start mb-4">
                                                 <div className="flex-1 pr-4">
-                                                    <span className="inline-block px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+                                                    <span className="inline-block px-2 py-0.5 bg-institutional-100 dark:bg-institutional-800 rounded text-[10px] font-semibold text-institutional-600 dark:text-institutional-400 uppercase tracking-wider mb-2">
                                                         {s.type}
                                                     </span>
-                                                    <h4 className="font-bold text-base text-slate-900 dark:text-institutional-50 leading-tight">{s.name}</h4>
+                                                    <h4 className="font-bold text-base text-institutional-900 dark:text-institutional-50 leading-tight">{s.name}</h4>
                                                 </div>
                                                 
                                                 <div className="shrink-0 mt-1">
                                                     {typeof status === 'string' ? (
-                                                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${status === 'present' ? 'bg-success/10 text-success' : status === 'absent' ? 'bg-danger/10 text-danger' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
+                                                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${status === 'present' ? 'bg-success/10 text-success' : status === 'absent' ? 'bg-danger/10 text-danger' : 'bg-institutional-100 dark:bg-institutional-800 text-institutional-600'}`}>
                                                             {status === 'present' ? <CheckCircle2 size={12} /> : status === 'absent' ? <XCircle size={12} /> : <Clock size={12} />}
                                                             {t(`schedule.${status}`)}
                                                         </div>
@@ -248,33 +248,33 @@ const Schedule: React.FC = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-6 pt-4 border-t border-slate-100 dark:border-slate-800">
-                                                <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                                            <div className="flex items-center gap-6 pt-4 border-t border-institutional-100 dark:border-institutional-800">
+                                                <div className="flex items-center gap-2 text-institutional-600 dark:text-institutional-400">
                                                     <Clock size={14} className="text-primary" />
                                                     <span className="text-xs font-medium">{s.time} — {s.endTime}</span>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                                                <div className="flex items-center gap-2 text-institutional-600 dark:text-institutional-400">
                                                     <MapPin size={14} className="text-primary" />
                                                     <span className="text-xs font-medium truncate max-w-[120px]">{s.room}</span>
                                                 </div>
                                             </div>
 
                                             {isExpanded && user?.role !== 'student' && (
-                                                <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 animate-in slide-in-from-top-2 duration-200" onClick={(e) => e.stopPropagation()}>
+                                                <div className="mt-6 pt-6 border-t border-institutional-100 dark:border-institutional-800 animate-in slide-in-from-top-2 duration-200" onClick={(e) => e.stopPropagation()}>
                                                     <div className="flex items-center justify-between mb-4">
-                                                        <h5 className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Present Students ({attendees.length})</h5>
+                                                        <h5 className="text-[10px] font-black uppercase text-institutional-600 tracking-widest">Present Students ({attendees.length})</h5>
                                                     </div>
                                                     
                                                     {attendees.length > 0 ? (
                                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-1 scroll-hide">
                                                             {attendees.map((a: any) => (
-                                                                <div key={a.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-institutional-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                                                                <div key={a.id} className="flex items-center gap-3 p-3 bg-institutional-50 dark:bg-institutional-800/50 rounded-xl border border-institutional-100 dark:border-institutional-800 hover:bg-institutional-50 dark:hover:bg-institutional-800 transition-colors shadow-sm">
                                                                     <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center text-success shrink-0 font-bold text-xs">
                                                                         {a.studentName.charAt(0)}
                                                                     </div>
                                                                     <div className="min-w-0 flex-1">
-                                                                        <p className="text-xs font-bold text-slate-900 dark:text-institutional-50 truncate">{a.studentName}</p>
-                                                                        <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                                                                        <p className="text-xs font-bold text-institutional-900 dark:text-institutional-50 truncate">{a.studentName}</p>
+                                                                        <p className="text-[10px] font-medium text-institutional-600 uppercase tracking-wider flex items-center gap-1">
                                                                             <CheckCircle2 size={10} className="text-success" />
                                                                             {a.timestamp?.seconds ? new Date(a.timestamp.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Verified'}
                                                                         </p>
@@ -283,8 +283,8 @@ const Schedule: React.FC = () => {
                                                             ))}
                                                         </div>
                                                     ) : (
-                                                        <div className="text-center py-8 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
-                                                            <p className="text-xs font-medium text-slate-400 italic">No students scanned yet.</p>
+                                                        <div className="text-center py-8 bg-institutional-50 dark:bg-institutional-800/30 rounded-xl border border-dashed border-institutional-200 dark:border-institutional-800">
+                                                            <p className="text-xs font-medium text-institutional-600 italic">No students scanned yet.</p>
                                                         </div>
                                                     )}
                                                 </div>
@@ -292,12 +292,12 @@ const Schedule: React.FC = () => {
                                         </div>
                                     );
                                 }) : (
-                                    <div className="py-16 text-center bg-institutional-50 dark:bg-slate-900 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center px-6">
-                                        <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                                    <div className="py-16 text-center bg-institutional-50 dark:bg-institutional-900 rounded-2xl border border-dashed border-institutional-200 dark:border-institutional-800 flex flex-col items-center justify-center px-6">
+                                        <div className="w-12 h-12 bg-institutional-50 dark:bg-institutional-800 rounded-full flex items-center justify-center text-institutional-600 mb-4">
                                             <CalendarIcon size={24} />
                                         </div>
-                                        <h4 className="font-semibold text-sm text-slate-900 dark:text-institutional-50 mb-1">No sessions scheduled</h4>
-                                        <p className="text-xs text-slate-500">You have no classes on this date.</p>
+                                        <h4 className="font-semibold text-sm text-institutional-900 dark:text-institutional-50 mb-1">No sessions scheduled</h4>
+                                        <p className="text-xs text-institutional-600">You have no classes on this date.</p>
                                     </div>
                                 )}
                             </motion.div>

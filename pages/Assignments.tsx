@@ -56,7 +56,7 @@ const AssignmentItem = React.memo(({ hw, user, t, isRTL, isTeacher, studentCount
             
             <div className="flex-1 text-start">
                 <div className="flex items-center gap-3 mb-6">
-                    <span className={`inline-flex px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isExpired ? 'bg-background text-text-secondary/50 border border-border' : 'bg-primary/10 text-primary border border-primary/10'}`}>
+                    <span className={`inline-flex px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isExpired ? 'bg-background text-text-secondary border border-border' : 'bg-primary/10 text-primary border border-primary/10'}`}>
                         {hw.deadlineDate} @ {hw.deadlineTime}
                     </span>
                     {isTeacher && (
@@ -71,7 +71,7 @@ const AssignmentItem = React.memo(({ hw, user, t, isRTL, isTeacher, studentCount
                 <p className="text-sm text-text-secondary line-clamp-3 mb-8 leading-relaxed font-medium">{hw.description}</p>
                 
                 <div className="flex flex-wrap items-center gap-6 mb-8">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary/50">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary">
                         <Clock size={16} />
                         <span>{isExpired ? t('dropbox.closed') : t('dropbox.deadline')}</span>
                     </div>
@@ -94,13 +94,13 @@ const AssignmentItem = React.memo(({ hw, user, t, isRTL, isTeacher, studentCount
                             </div>
                             <span className="text-[11px] font-black uppercase tracking-widest text-text">{t('dropbox.score')}</span>
                         </div>
-                        <span className="text-3xl font-black text-success tracking-tighter">{mySubmission.grade ?? '--'} <span className="text-xs text-text-secondary/50 font-black uppercase tracking-widest ml-1">/ 20</span></span>
+                        <span className="text-3xl font-black text-success tracking-tighter">{mySubmission.grade ?? '--'} <span className="text-xs text-text-secondary font-black uppercase tracking-widest ml-1">/ 20</span></span>
                     </div>
                     {mySubmission.review && (
                         <div className="pt-6 border-t border-success/10">
-                            <p className="text-[9px] font-black text-text-secondary/50 uppercase tracking-[0.3em] mb-3">{t('dropbox.review')}</p>
+                            <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em] mb-3">{t('dropbox.review')}</p>
                             <p className="text-sm text-text-secondary italic bg-background p-5 rounded-2xl border border-border shadow-inner leading-relaxed font-medium">"{mySubmission.review}"</p>
-                            <div className="mt-4 flex items-center gap-3 text-[10px] text-text-secondary/50 font-black uppercase tracking-widest">
+                            <div className="mt-4 flex items-center gap-3 text-[10px] text-text-secondary font-black uppercase tracking-widest">
                                 <UserIcon size={14} />
                                 <span>{mySubmission.gradedByName}</span>
                                 {mySubmission.gradedAt && (
@@ -124,7 +124,7 @@ const AssignmentItem = React.memo(({ hw, user, t, isRTL, isTeacher, studentCount
                     <button 
                         onClick={() => !isExpired && !mySubmission && setIsSubmitModalOpen(hw.id)} 
                         disabled={isExpired || !!mySubmission} 
-                        className={`w-full inline-flex items-center justify-center gap-3 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all ${isExpired || mySubmission ? 'bg-background text-text-secondary/30 cursor-not-allowed border border-border' : 'bg-primary text-institutional-50 hover:bg-primary/90 shadow-xl shadow-primary/20 hover:scale-[1.02]'}`}
+                        className={`w-full inline-flex items-center justify-center gap-3 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all ${isExpired || mySubmission ? 'bg-background text-text-secondary cursor-not-allowed border border-border' : 'bg-primary text-institutional-50 hover:bg-primary/90 shadow-xl shadow-primary/20 hover:scale-[1.02]'}`}
                     >
                         {mySubmission ? <CheckCircle size={20} /> : isExpired ? <AlertCircle size={20} /> : <UploadCloud size={20} />}
                         {mySubmission ? t('common.success') : isExpired ? t('dropbox.closed') : t('dropbox.submit')}
@@ -262,7 +262,7 @@ const Assignments: React.FC = () => {
                     <h2 className="text-4xl lg:text-5xl font-black tracking-tighter uppercase text-text leading-none">{t('nav.dropbox')}</h2>
                     <div className="flex items-center gap-3 mt-4">
                         <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-                        <p className="text-[11px] font-black text-text-secondary/50 uppercase tracking-[0.3em]">{t('dropbox.title')}</p>
+                        <p className="text-[11px] font-black text-text-secondary uppercase tracking-[0.3em]">{t('dropbox.title')}</p>
                     </div>
                 </div>
                 {isTeacher && (
@@ -294,7 +294,7 @@ const Assignments: React.FC = () => {
                             
                             <div className="flex-1 text-start">
                                 <div className="flex items-center gap-3 mb-6">
-                                    <span className={`inline-flex px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isExpired ? 'bg-background text-text-secondary/50 border border-border' : 'bg-primary/10 text-primary border border-primary/10'}`}>
+                                    <span className={`inline-flex px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isExpired ? 'bg-background text-text-secondary border border-border' : 'bg-primary/10 text-primary border border-primary/10'}`}>
                                         {hw.deadlineDate} @ {hw.deadlineTime}
                                     </span>
                                     {isTeacher && (
@@ -309,7 +309,7 @@ const Assignments: React.FC = () => {
                                 <p className="text-sm text-text-secondary line-clamp-3 mb-8 leading-relaxed font-medium">{hw.description}</p>
                                 
                                 <div className="flex flex-wrap items-center gap-6 mb-8">
-                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary/50">
+                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary">
                                         <Clock size={16} />
                                         <span>{isExpired ? t('dropbox.closed') : t('dropbox.deadline')}</span>
                                     </div>
@@ -332,13 +332,13 @@ const Assignments: React.FC = () => {
                                             </div>
                                             <span className="text-[11px] font-black uppercase tracking-widest text-text">{t('dropbox.score')}</span>
                                         </div>
-                                        <span className="text-3xl font-black text-success tracking-tighter">{mySubmission.grade ?? '--'} <span className="text-xs text-text-secondary/50 font-black uppercase tracking-widest ml-1">/ 20</span></span>
+                                        <span className="text-3xl font-black text-success tracking-tighter">{mySubmission.grade ?? '--'} <span className="text-xs text-text-secondary font-black uppercase tracking-widest ml-1">/ 20</span></span>
                                     </div>
                                     {mySubmission.review && (
                                         <div className="pt-6 border-t border-success/10">
-                                            <p className="text-[9px] font-black text-text-secondary/50 uppercase tracking-[0.3em] mb-3">{t('dropbox.review')}</p>
+                                            <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em] mb-3">{t('dropbox.review')}</p>
                                             <p className="text-sm text-text-secondary italic bg-background p-5 rounded-2xl border border-border shadow-inner leading-relaxed font-medium">"{mySubmission.review}"</p>
-                                            <div className="mt-4 flex items-center gap-3 text-[10px] text-text-secondary/50 font-black uppercase tracking-widest">
+                                            <div className="mt-4 flex items-center gap-3 text-[10px] text-text-secondary font-black uppercase tracking-widest">
                                                 <UserIcon size={14} />
                                                 <span>{mySubmission.gradedByName}</span>
                                                 {mySubmission.gradedAt && (
@@ -362,7 +362,7 @@ const Assignments: React.FC = () => {
                                     <button 
                                         onClick={() => !isExpired && !mySubmission && setIsSubmitModalOpen(hw.id)} 
                                         disabled={isExpired || !!mySubmission} 
-                                        className={`w-full inline-flex items-center justify-center gap-3 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all ${isExpired || mySubmission ? 'bg-background text-text-secondary/30 cursor-not-allowed border border-border' : 'bg-primary text-institutional-50 hover:bg-primary/90 shadow-xl shadow-primary/20 hover:scale-[1.02]'}`}
+                                        className={`w-full inline-flex items-center justify-center gap-3 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all ${isExpired || mySubmission ? 'bg-background text-text-secondary cursor-not-allowed border border-border' : 'bg-primary text-institutional-50 hover:bg-primary/90 shadow-xl shadow-primary/20 hover:scale-[1.02]'}`}
                                     >
                                         {mySubmission ? <CheckCircle size={20} /> : isExpired ? <AlertCircle size={20} /> : <UploadCloud size={20} />}
                                         {mySubmission ? t('common.success') : isExpired ? t('dropbox.closed') : t('dropbox.submit')}
@@ -376,38 +376,38 @@ const Assignments: React.FC = () => {
 
             {/* Modal: Creation */}
             {isCreateModalOpen && (
-                <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-[200] bg-institutional-950/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-300">
                     <div className="bg-sidebar rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.3)] max-w-2xl w-full max-h-[90vh] overflow-y-auto scroll-hide p-12 relative border border-border">
                         <button onClick={() => setIsCreateModalOpen(false)} className={`absolute top-10 ${isRTL ? 'left-10' : 'right-10'} p-3 bg-background rounded-2xl text-text-secondary hover:text-danger transition-all border border-border`}><X size={24} /></button>
                         <div className="text-start mb-10">
                             <h3 className="text-3xl font-black uppercase tracking-tight text-text leading-none">{t('dropbox.issueTask')}</h3>
-                            <p className="text-[10px] font-black text-text-secondary/50 uppercase tracking-[0.3em] mt-3">Institutional Mandate Generation</p>
+                            <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] mt-3">Institutional Mandate Generation</p>
                         </div>
                         <form onSubmit={handleCreateAssignment} className="space-y-8 text-start">
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('dropbox.taskTitle')}</label>
+                                <label className="text-[10px] font-black uppercase text-text-secondary tracking-widest px-2">{t('dropbox.taskTitle')}</label>
                                 <input name="title" className="w-full bg-background p-5 rounded-2xl border border-border text-sm font-black focus:border-primary outline-none shadow-inner text-text" placeholder="Task Title" required />
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">{t('dropbox.technicalObj')}</label>
+                                <label className="text-[10px] font-black uppercase text-text-secondary tracking-widest px-2">{t('dropbox.technicalObj')}</label>
                                 <textarea name="description" rows={4} className="w-full bg-background p-5 rounded-2xl border border-border text-sm font-black focus:border-primary outline-none resize-none shadow-inner text-text leading-relaxed" placeholder="Task description..." required />
                             </div>
                             <div className="grid grid-cols-2 gap-8">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">Date</label>
+                                    <label className="text-[10px] font-black uppercase text-text-secondary tracking-widest px-2">Date</label>
                                     <input type="date" name="date" className="w-full bg-background p-5 rounded-2xl border border-border text-sm font-black focus:border-primary outline-none shadow-inner text-text" required />
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase text-text-secondary/50 tracking-widest px-2">Time</label>
+                                    <label className="text-[10px] font-black uppercase text-text-secondary tracking-widest px-2">Time</label>
                                     <input type="time" name="time" className="w-full bg-background p-5 rounded-2xl border border-border text-sm font-black focus:border-primary outline-none shadow-inner text-text" required />
                                 </div>
                             </div>
                             <div className="p-10 border-2 border-dashed border-border rounded-[2rem] flex flex-col items-center gap-4 bg-background/50 hover:bg-background transition-all group cursor-pointer">
-                                <Paperclip size={32} className="text-text-secondary/30 group-hover:text-primary transition-colors" />
+                                <Paperclip size={32} className="text-text-secondary group-hover:text-primary transition-colors" />
                                 <input type="file" id="file-create" className="hidden" onChange={handleFile} />
                                 <label htmlFor="file-create" className="cursor-pointer text-center">
                                     <p className="text-sm font-black text-text uppercase tracking-tight">{fileData ? fileData.name : t('dropbox.resource')}</p>
-                                    <p className="text-[10px] text-text-secondary/50 uppercase font-black tracking-widest mt-2">Max 10MB (Optional)</p>
+                                    <p className="text-[10px] text-text-secondary uppercase font-black tracking-widest mt-2">Max 10MB (Optional)</p>
                                 </label>
                             </div>
                             <button type="submit" className="w-full py-5 bg-primary text-institutional-50 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] transition-all mt-4 text-[11px]">
@@ -420,20 +420,20 @@ const Assignments: React.FC = () => {
             
             {/* Modal: Submission */}
             {isSubmitModalOpen && (
-                <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-[200] bg-institutional-950/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-300">
                     <div className="bg-sidebar rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.3)] max-w-md w-full p-12 relative border border-border">
                          <button onClick={() => setIsSubmitModalOpen(null)} className={`absolute top-10 ${isRTL ? 'left-10' : 'right-10'} p-3 bg-background rounded-2xl text-text-secondary hover:text-danger transition-all border border-border`}><X size={24} /></button>
                          <div className="text-start mb-10">
                             <h3 className="text-3xl font-black uppercase tracking-tight text-text leading-none">{t('dropbox.submit')}</h3>
-                            <p className="text-[10px] font-black text-text-secondary/50 uppercase tracking-[0.3em] mt-3">Artifact Deployment Protocol</p>
+                            <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] mt-3">Artifact Deployment Protocol</p>
                         </div>
                          <form onSubmit={handleSubmitWork} className="space-y-8">
                             <div className="p-12 border-4 border-dashed border-border rounded-[2.5rem] flex flex-col items-center gap-6 hover:border-primary/30 bg-background/50 hover:bg-background transition-all group cursor-pointer">
-                                <UploadCloud size={56} className="text-primary/40 group-hover:text-primary transition-all" />
+                                <UploadCloud size={56} className="text-primary group-hover:text-primary transition-all" />
                                 <input type="file" id="file-submit" className="hidden" onChange={handleFile} />
                                 <label htmlFor="file-submit" className="cursor-pointer text-center">
                                     <p className="text-sm font-black text-text uppercase tracking-tight">{fileData ? fileData.name : t('dropbox.selectArchive')}</p>
-                                    <p className="text-[10px] text-text-secondary/50 font-black uppercase tracking-widest mt-2">{t('dropbox.prefFiles')}</p>
+                                    <p className="text-[10px] text-text-secondary font-black uppercase tracking-widest mt-2">{t('dropbox.prefFiles')}</p>
                                 </label>
                             </div>
                             <button type="submit" className="w-full py-5 bg-primary text-institutional-50 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 text-[11px]">
@@ -446,7 +446,7 @@ const Assignments: React.FC = () => {
 
             {/* Audit Ledger: Teacher Submissions View */}
             {viewingSubmissionsFor && (
-                <div className="fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-0 md:p-12 animate-in fade-in duration-500">
+                <div className="fixed inset-0 z-[200] bg-institutional-950/90 backdrop-blur-2xl flex items-center justify-center p-0 md:p-12 animate-in fade-in duration-500">
                     <div className="bg-background w-full h-full md:max-w-7xl md:h-auto md:max-h-[90vh] md:rounded-[3.5rem] flex flex-col shadow-[0_50px_150px_rgba(0,0,0,0.5)] overflow-hidden border border-border">
                         
                         <div className="p-8 md:p-12 bg-sidebar border-b border-border flex justify-between items-center shrink-0">
@@ -469,7 +469,7 @@ const Assignments: React.FC = () => {
                             ) : (
                                 <div className="space-y-6">
                                     {/* Desktop Table Header */}
-                                    <div className="hidden md:grid grid-cols-[2fr_1fr_1.5fr_1fr_80px] gap-6 px-10 py-5 bg-sidebar rounded-2xl border border-border text-[10px] font-black uppercase text-text-secondary/50 tracking-[0.3em] text-start">
+                                    <div className="hidden md:grid grid-cols-[2fr_1fr_1.5fr_1fr_80px] gap-6 px-10 py-5 bg-sidebar rounded-2xl border border-border text-[10px] font-black uppercase text-text-secondary tracking-[0.3em] text-start">
                                         <div>{t('dropbox.student')}</div>
                                         <div>{t('dropbox.submissionDate')}</div>
                                         <div>Asset</div>
@@ -495,17 +495,17 @@ const Assignments: React.FC = () => {
                                                             >
                                                                 {sub.studentName}
                                                             </p>
-                                                            <p className="text-[10px] font-black text-text-secondary/40 uppercase tracking-widest mt-1">ID: {sub.studentId.substring(0,8)}</p>
+                                                            <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest mt-1">ID: {sub.studentId.substring(0,8)}</p>
                                                         </div>
                                                     </div>
 
                                                     <div className="flex flex-col">
-                                                        <p className="md:hidden text-[9px] font-black text-text-secondary/50 uppercase tracking-widest mb-2">{t('dropbox.submissionDate')}</p>
+                                                        <p className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-widest mb-2">{t('dropbox.submissionDate')}</p>
                                                         <p className="text-xs text-text-secondary font-black tracking-widest">{subDate}</p>
                                                     </div>
 
                                                     <div>
-                                                        <p className="md:hidden text-[9px] font-black text-text-secondary/50 uppercase tracking-widest mb-2">Asset</p>
+                                                        <p className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-widest mb-2">Asset</p>
                                                         {sub.fileData ? (
                                                             <button 
                                                                 onClick={() => downloadFile(sub.fileData!, sub.fileName!)}
@@ -516,12 +516,12 @@ const Assignments: React.FC = () => {
                                                                 <ExternalLink size={12} className="opacity-30" />
                                                             </button>
                                                         ) : (
-                                                            <span className="text-[10px] text-text-secondary/30 font-black uppercase tracking-widest italic">No File</span>
+                                                            <span className="text-[10px] text-text-secondary font-black uppercase tracking-widest italic">No File</span>
                                                         )}
                                                     </div>
 
                                                     <div>
-                                                        <p className="md:hidden text-[9px] font-black text-text-secondary/50 uppercase tracking-widest mb-2">{t('dropbox.score')}</p>
+                                                        <p className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-widest mb-2">{t('dropbox.score')}</p>
                                                         <div className={`inline-flex px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${sub.grade !== undefined ? 'bg-success/10 text-success border border-success/10' : 'bg-warning/10 text-warning border border-warning/10'}`}>
                                                             {sub.grade !== undefined ? `${sub.grade} / 20` : t('dropbox.pending')}
                                                         </div>
@@ -556,7 +556,7 @@ const Assignments: React.FC = () => {
                                                         >
                                                             <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-10 text-start">
                                                                 <div className="space-y-3">
-                                                                    <label className="text-[10px] font-black text-text-secondary/50 uppercase tracking-[0.3em] px-2">{t('dropbox.score')} (/20)</label>
+                                                                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] px-2">{t('dropbox.score')} (/20)</label>
                                                                     <input 
                                                                         name="grade" 
                                                                         type="number" 
@@ -567,7 +567,7 @@ const Assignments: React.FC = () => {
                                                                     />
                                                                 </div>
                                                                 <div className="space-y-3">
-                                                                    <label className="text-[10px] font-black text-text-secondary/50 uppercase tracking-[0.3em] px-2">{t('dropbox.review')}</label>
+                                                                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] px-2">{t('dropbox.review')}</label>
                                                                     <textarea 
                                                                         name="review" 
                                                                         rows={5} 
@@ -588,8 +588,8 @@ const Assignments: React.FC = () => {
                                                 {/* Existing Review Display (Collapsible/Static) */}
                                                 {!isBeingGraded && sub.review && (
                                                     <div className="mx-10 mb-10 p-8 bg-background rounded-[2rem] border border-border text-start shadow-inner">
-                                                        <div className="flex items-center gap-3 mb-4 text-[10px] font-black text-text-secondary/50 uppercase tracking-[0.3em]">
-                                                            <MessageSquare size={16} className="text-primary/40" />
+                                                        <div className="flex items-center gap-3 mb-4 text-[10px] font-black text-text-secondary uppercase tracking-[0.3em]">
+                                                            <MessageSquare size={16} className="text-primary" />
                                                             {t('dropbox.review')}
                                                         </div>
                                                         <p className="text-sm text-text-secondary italic font-medium leading-relaxed">"{sub.review}"</p>

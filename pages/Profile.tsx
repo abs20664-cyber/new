@@ -137,8 +137,8 @@ const Profile: React.FC = () => {
   if (!profileUser) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <UserCircle size={64} className="text-institutional-300" />
-        <p className="text-institutional-500 font-bold uppercase tracking-widest">User Not Found</p>
+        <UserCircle size={64} className="text-institutional-600" />
+        <p className="text-institutional-600 font-bold uppercase tracking-widest">User Not Found</p>
         <button onClick={() => navigate(-1)} className="text-primary font-bold flex items-center gap-2">
           <ChevronLeft size={16} /> {t('common.back')}
         </button>
@@ -153,7 +153,7 @@ const Profile: React.FC = () => {
         <div className="flex items-center gap-4">
           <button 
             onClick={() => navigate(-1)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl bg-institutional-100 dark:bg-institutional-800 text-institutional-500 hover:text-primary transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-xl bg-institutional-100 dark:bg-institutional-800 text-institutional-600 hover:text-primary transition-colors"
           >
             <ChevronLeft size={20} className={isRTL ? 'rotate-180' : ''} />
           </button>
@@ -182,7 +182,7 @@ const Profile: React.FC = () => {
                 {profileUser.avatar ? (
                   <img src={profileUser.avatar} alt={profileUser.name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-4xl font-black text-institutional-400">
+                  <span className="text-4xl font-black text-institutional-600">
                     {profileUser.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                   </span>
                 )}
@@ -203,17 +203,17 @@ const Profile: React.FC = () => {
             <h2 className="text-xl font-black text-institutional-950 dark:text-institutional-50 mb-1">
               {profileUser.name}
             </h2>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-institutional-100 dark:bg-institutional-800 text-institutional-500 text-xs font-black uppercase tracking-widest mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-institutional-100 dark:bg-institutional-800 text-institutional-600 text-xs font-black uppercase tracking-widest mb-4">
               <Shield size={12} />
               {t(`roles.${profileUser.role}`)}
             </div>
 
             <div className="space-y-3 text-left" dir={isRTL ? 'rtl' : 'ltr'}>
-              <div className="flex items-center gap-3 text-institutional-500 dark:text-institutional-400 text-sm">
+              <div className="flex items-center gap-3 text-institutional-600 dark:text-institutional-400 text-sm">
                 <Mail size={16} className="shrink-0" />
                 <span className="truncate">{profileUser.email}</span>
               </div>
-              <div className="flex items-center gap-3 text-institutional-500 dark:text-institutional-400 text-sm">
+              <div className="flex items-center gap-3 text-institutional-600 dark:text-institutional-400 text-sm">
                 <Clock size={16} className="shrink-0" />
                 <span>{profileUser.id}</span>
               </div>
@@ -222,7 +222,7 @@ const Profile: React.FC = () => {
 
           {/* Platform Metadata */}
           <div className="bg-institutional-50 dark:bg-institutional-950/50 border-2 border-institutional-100 dark:border-institutional-800 rounded-3xl p-6 space-y-4">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-institutional-400 mb-2">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-institutional-600 mb-2">
               {t('profile.platformMetadata')}
             </h3>
             <div className="space-y-4">
@@ -231,7 +231,7 @@ const Profile: React.FC = () => {
                   <Calendar size={16} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase text-institutional-400 leading-none mb-1">{t('profile.memberSince')}</p>
+                  <p className="text-[10px] font-black uppercase text-institutional-600 leading-none mb-1">{t('profile.memberSince')}</p>
                   <p className="text-sm font-bold text-institutional-700 dark:text-institutional-300">{formatDate(profileUser.createdAt)}</p>
                 </div>
               </div>
@@ -240,7 +240,7 @@ const Profile: React.FC = () => {
                   <Clock size={16} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase text-institutional-400 leading-none mb-1">{t('profile.timeOnPlatform')}</p>
+                  <p className="text-[10px] font-black uppercase text-institutional-600 leading-none mb-1">{t('profile.timeOnPlatform')}</p>
                   <p className="text-sm font-bold text-institutional-700 dark:text-institutional-300">{calculateDuration(profileUser.createdAt)}</p>
                 </div>
               </div>
@@ -264,7 +264,7 @@ const Profile: React.FC = () => {
             <div className="grid grid-cols-1 gap-6">
               {profileUser.role === 'student' && !isEconomic && (
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-institutional-400 mb-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-institutional-600 mb-2">
                     {t('profile.fieldOfStudy')}
                   </label>
                   {isEditing ? (
@@ -285,7 +285,7 @@ const Profile: React.FC = () => {
 
               {profileUser.role === 'teacher' && !isEconomic && (
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-institutional-400 mb-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-institutional-600 mb-2">
                     {t('profile.subjects')}
                   </label>
                   {isEditing ? (
@@ -312,7 +312,7 @@ const Profile: React.FC = () => {
 
               {(profileUser.role === 'admin' || isEconomic) && (
                 <div className="p-4 bg-institutional-50 dark:bg-institutional-900/50 rounded-2xl border border-dashed border-institutional-200 dark:border-institutional-800">
-                  <p className="text-institutional-400 text-sm italic">
+                  <p className="text-institutional-600 text-sm italic">
                     {isEconomic && !isOwnProfile ? "Financial oversight role: Academic data restricted." : "Administrative accounts do not display public academic data."}
                   </p>
                 </div>
@@ -333,7 +333,7 @@ const Profile: React.FC = () => {
 
             <div className="space-y-6">
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-institutional-400 mb-2">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-institutional-600 mb-2">
                   {t('profile.age')}
                 </label>
                 {isEditing ? (
@@ -351,7 +351,7 @@ const Profile: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-institutional-400 mb-2">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-institutional-600 mb-2">
                   {t('profile.bio')}
                 </label>
                 {isEditing ? (

@@ -186,7 +186,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
             case 'message': return 'text-primary bg-primary/10';
             case 'task': return 'text-warning bg-warning/10';
             case 'attendance': return 'text-success bg-success/10';
-            default: return 'text-institutional-500 bg-institutional-500/10';
+            default: return 'text-institutional-600 bg-institutional-500/10';
         }
     };
 
@@ -256,7 +256,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-1">
                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">{toast.title}</p>
-                                <span className="text-[9px] font-bold text-institutional-400">{t('common.justNow')}</span>
+                                <span className="text-[9px] font-bold text-institutional-600">{t('common.justNow')}</span>
                             </div>
                             <p className="text-sm font-semibold text-institutional-900 dark:text-institutional-50 line-clamp-2 leading-tight">{toast.message}</p>
                         </div>
@@ -281,15 +281,15 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                         <div className="p-8 flex justify-between items-center border-b border-institutional-200 dark:border-institutional-800">
                             <div>
                                 <h3 className="text-2xl font-black tracking-tight text-institutional-900 dark:text-institutional-50 uppercase">Activity Ledger</h3>
-                                <p className="text-xs font-bold text-institutional-400 uppercase tracking-widest mt-1">Institutional Records</p>
+                                <p className="text-xs font-bold text-institutional-600 uppercase tracking-widest mt-1">Institutional Records</p>
                             </div>
-                            <button onClick={() => setIsNotifOpen(false)} className="p-3 bg-institutional-100 dark:bg-institutional-800 rounded-2xl text-institutional-500 hover:text-danger transition-all"><X size={20} /></button>
+                            <button onClick={() => setIsNotifOpen(false)} className="p-3 bg-institutional-100 dark:bg-institutional-800 rounded-2xl text-institutional-600 hover:text-danger transition-all"><X size={20} /></button>
                         </div>
                         
                         <div className="flex-1 overflow-y-auto p-6 space-y-4 scroll-smooth">
                             {notifications.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center opacity-20 py-20 text-center">
-                                    <Bell size={64} className="mb-6 text-institutional-300" />
+                                    <Bell size={64} className="mb-6 text-institutional-600" />
                                     <p className="font-black text-xs uppercase tracking-[0.4em]">Vault is Empty</p>
                                 </div>
                             ) : notifications.map(n => (
@@ -304,8 +304,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                             {getIconForType(n.type)}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-[10px] font-black uppercase text-institutional-400 tracking-[0.1em]">{n.title}</p>
-                                            <p className="text-[9px] font-bold text-institutional-500 mt-0.5">
+                                            <p className="text-[10px] font-black uppercase text-institutional-600 tracking-[0.1em]">{n.title}</p>
+                                            <p className="text-[9px] font-bold text-institutional-600 mt-0.5">
                                                 {n.timestamp ? new Date(n.timestamp.seconds * 1000).toLocaleString([], { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }) : '...'}
                                             </p>
                                         </div>
@@ -340,7 +340,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
 
                 <div className="px-6 mb-8">
                     <div className="relative group">
-                        <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-400 group-focus-within:text-primary transition-colors`} size={16} />
+                        <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600 group-focus-within:text-primary transition-colors`} size={16} />
                         <input 
                             type="text" 
                             placeholder="Global Search..." 
@@ -350,7 +350,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                 </div>
 
                 <nav className="flex-1 py-4 space-y-2 overflow-y-auto px-6 scroll-hide">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-institutional-400 mb-4 px-2">Navigation</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-institutional-600 mb-4 px-2">Navigation</p>
                     {routes.map((route) => {
                         const Icon = route.icon;
                         const isActive = currentPath === route.path;
@@ -358,7 +358,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             <button 
                                 key={route.path}
                                 onClick={() => { enableAudio(); onNavigate(route.path); }}
-                                className={`group w-full flex items-center justify-between px-5 py-4 rounded-[1.25rem] font-bold transition-all duration-300 ${isActive ? 'bg-primary text-institutional-50 shadow-strong shadow-primary/20' : 'text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-900 dark:text-institutional-400 hover:text-primary'}`}
+                                className={`group w-full flex items-center justify-between px-5 py-4 rounded-[1.25rem] font-bold transition-all duration-300 ${isActive ? 'bg-primary text-institutional-50 shadow-strong shadow-primary/20' : 'text-institutional-600 hover:bg-institutional-100 dark:hover:bg-institutional-900 dark:text-institutional-400 hover:text-primary'}`}
                             >
                                 <div className="flex items-center gap-4">
                                     <Icon size={20} className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
@@ -374,7 +374,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     <div className="flex items-center gap-2 p-1.5 bg-institutional-100 dark:bg-institutional-900 rounded-2xl border border-institutional-200 dark:border-institutional-800">
                         <button 
                             onClick={toggleTheme} 
-                            className="flex-1 flex items-center justify-center py-3 rounded-xl hover:bg-surface dark:hover:bg-institutional-800 transition-all text-institutional-500 hover:text-primary"
+                            className="flex-1 flex items-center justify-center py-3 rounded-xl hover:bg-surface dark:hover:bg-institutional-800 transition-all text-institutional-600 hover:text-primary"
                             title="Toggle Theme"
                         >
                             {isDarkMode ? <Sun size={18} className="text-warning" /> : <Moon size={18} className="text-primary" />}
@@ -382,7 +382,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                         <div className="w-px h-6 bg-institutional-200 dark:bg-institutional-800" />
                         <button 
                             onClick={() => { enableAudio(); setIsNotifOpen(true); }} 
-                            className="flex-1 flex items-center justify-center py-3 rounded-xl hover:bg-surface dark:hover:bg-institutional-800 transition-all text-institutional-500 hover:text-primary relative"
+                            className="flex-1 flex items-center justify-center py-3 rounded-xl hover:bg-surface dark:hover:bg-institutional-800 transition-all text-institutional-600 hover:text-primary relative"
                             title="Notifications"
                         >
                             <Bell size={18} />
@@ -406,7 +406,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                     <button 
                                         key={l.code} 
                                         onClick={(e) => { e.stopPropagation(); setLanguage(l.code); setIsLangOpen(false); }}
-                                        className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all text-xs font-black uppercase ${language === l.code ? 'text-primary bg-primary/5' : 'text-institutional-500'}`}
+                                        className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all text-xs font-black uppercase ${language === l.code ? 'text-primary bg-primary/5' : 'text-institutional-600'}`}
                                     >
                                         <span className="text-xl">{l.flag}</span>
                                         <span>{l.label}</span>
@@ -438,11 +438,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                 </div>
 
                                 <div className="flex items-center gap-4 h-12 px-2.5 bg-institutional-100 dark:bg-institutional-900 rounded-2xl border border-institutional-200 dark:border-institutional-800">
-                                    <button onClick={toggleTheme} className="p-2.5 text-institutional-500 hover:text-primary transition-all active:scale-90" aria-label="Toggle Theme">
+                                    <button onClick={toggleTheme} className="p-2.5 text-institutional-600 hover:text-primary transition-all active:scale-90" aria-label="Toggle Theme">
                                         {isDarkMode ? <Sun size={20} className="text-warning" /> : <Moon size={20} className="text-primary" />}
                                     </button>
                                     <div className="w-px h-6 bg-institutional-200 dark:bg-institutional-800 mx-1" />
-                                    <button onClick={() => { enableAudio(); setIsNotifOpen(true); }} className="relative p-2.5 text-institutional-500 hover:text-primary transition-all active:scale-90">
+                                    <button onClick={() => { enableAudio(); setIsNotifOpen(true); }} className="relative p-2.5 text-institutional-600 hover:text-primary transition-all active:scale-90">
                                         <Bell size={20} />
                                         {unreadCount > 0 && (
                                             <span className={`absolute top-2 ${isRTL ? 'start-2' : 'end-2'} w-4.5 h-4.5 bg-danger text-institutional-50 text-[9px] font-black flex items-center justify-center rounded-full border-2 border-surface dark:border-institutional-950 animate-bounce`}>
@@ -451,7 +451,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                         )}
                                     </button>
                                     <div className="w-px h-6 bg-institutional-200 dark:bg-institutional-800 mx-1" />
-                                    <button onClick={logout} className="p-2.5 text-institutional-500 hover:text-danger transition-all active:scale-90">
+                                    <button onClick={logout} className="p-2.5 text-institutional-600 hover:text-danger transition-all active:scale-90">
                                         <Power size={20} />
                                     </button>
                                 </div>
@@ -465,7 +465,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                     </div>
                                     <div className="text-start">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50">{user?.name.split(' ')[0]}</p>
-                                        <p className="text-[8px] font-bold uppercase tracking-widest text-institutional-400 leading-none mt-0.5">{user?.role}</p>
+                                        <p className="text-[8px] font-bold uppercase tracking-widest text-institutional-600 leading-none mt-0.5">{user?.role}</p>
                                     </div>
                                 </div>
                             </div>
@@ -483,10 +483,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             </div>
 
                             <div className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 p-1.5 shadow-2xl rounded-2xl flex items-center gap-1 pointer-events-auto">
-                                <button onClick={toggleTheme} className="p-1.5 sm:p-2 text-institutional-500 hover:text-primary transition-all active:scale-90">
+                                <button onClick={toggleTheme} className="p-1.5 sm:p-2 text-institutional-600 hover:text-primary transition-all active:scale-90">
                                     {isDarkMode ? <Sun size={16} className="text-warning" /> : <Moon size={16} className="text-primary" />}
                                 </button>
-                                <button onClick={() => { enableAudio(); setIsNotifOpen(true); }} className="relative p-1.5 sm:p-2 text-institutional-500 hover:text-primary transition-all active:scale-90">
+                                <button onClick={() => { enableAudio(); setIsNotifOpen(true); }} className="relative p-1.5 sm:p-2 text-institutional-600 hover:text-primary transition-all active:scale-90">
                                     <Bell size={16} />
                                     {unreadCount > 0 && (
                                         <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-danger text-institutional-50 text-[7px] font-black flex items-center justify-center rounded-full border border-surface dark:border-institutional-950">
@@ -494,7 +494,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                         </span>
                                     )}
                                 </button>
-                                <button onClick={logout} className="p-1.5 sm:p-2 text-institutional-500 hover:text-danger transition-all active:scale-90">
+                                <button onClick={logout} className="p-1.5 sm:p-2 text-institutional-600 hover:text-danger transition-all active:scale-90">
                                     <Power size={16} />
                                 </button>
                             </div>
@@ -518,7 +518,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                     <button 
                                         key={route.path}
                                         onClick={() => { enableAudio(); onNavigate(route.path); }}
-                                        className={`flex-shrink-0 flex flex-col items-center gap-1 p-2.5 rounded-[1.5rem] transition-all min-w-[60px] relative ${isActive ? 'text-primary bg-primary/5 scale-105' : 'text-institutional-400 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
+                                        className={`flex-shrink-0 flex flex-col items-center gap-1 p-2.5 rounded-[1.5rem] transition-all min-w-[60px] relative ${isActive ? 'text-primary bg-primary/5 scale-105' : 'text-institutional-600 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
                                     >
                                         <Icon size={18} strokeWidth={isActive ? 3 : 2} />
                                         <span className={`text-[7px] font-black uppercase tracking-[0.1em] transition-all ${isActive ? 'opacity-100' : 'opacity-60'}`}>{route.label}</span>

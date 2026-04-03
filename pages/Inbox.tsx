@@ -42,16 +42,16 @@ const MessageItem = React.memo(({ message, isMe, isMobile, onDelete, onEdit, onP
         <div className={`flex w-full ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300 ${!showMeta ? 'mt-1' : 'mt-4'}`}>
             <div className={`max-w-[85%] sm:max-w-[70%] md:max-w-[60%] group flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                 {isGroupChat && !isMe && showMeta && (
-                    <p className="text-[12px] font-semibold text-institutional-400 mb-1 px-3">{message.senderName}</p>
+                    <p className="text-[12px] font-semibold text-institutional-600 mb-1 px-3">{message.senderName}</p>
                 )}
                 
                 <div className={`flex items-center gap-2 group/msg relative ${isMe ? 'flex-row' : 'flex-row-reverse'}`}>
                     {/* Actions bar for desktop */}
                     {!isMobile && (
                         <div className={`opacity-0 group-hover/msg:opacity-100 flex items-center gap-1 transition-all p-1 bg-surface/80 backdrop-blur-md border border-institutional-100 dark:border-institutional-800 rounded-full shadow-sm ${isMe ? 'mr-2' : 'ml-2'}`}>
-                            {isMe && <button onClick={() => onEdit(message)} className="p-1.5 text-institutional-400 hover:text-primary hover:bg-primary/5 rounded-full transition-all"><Edit2 size={14} /></button>}
-                            <button onClick={() => onPin(message.id, !!message.isPinned)} className={`p-1.5 rounded-full transition-all ${message.isPinned ? 'text-primary bg-primary/10' : 'text-institutional-400 hover:text-primary hover:bg-primary/5'}`}>{message.isPinned ? <PinOff size={14} /> : <Pin size={14} />}</button>
-                            {isMe && <button onClick={() => onDelete(message.id)} className="p-1.5 text-institutional-400 hover:text-danger hover:bg-danger/5 rounded-full transition-all"><Trash2 size={14} /></button>}
+                            {isMe && <button onClick={() => onEdit(message)} className="p-1.5 text-institutional-600 hover:text-primary hover:bg-primary/5 rounded-full transition-all"><Edit2 size={14} /></button>}
+                            <button onClick={() => onPin(message.id, !!message.isPinned)} className={`p-1.5 rounded-full transition-all ${message.isPinned ? 'text-primary bg-primary/10' : 'text-institutional-600 hover:text-primary hover:bg-primary/5'}`}>{message.isPinned ? <PinOff size={14} /> : <Pin size={14} />}</button>
+                            {isMe && <button onClick={() => onDelete(message.id)} className="p-1.5 text-institutional-600 hover:text-danger hover:bg-danger/5 rounded-full transition-all"><Trash2 size={14} /></button>}
                         </div>
                     )}
                     
@@ -113,7 +113,7 @@ const MessageItem = React.memo(({ message, isMe, isMobile, onDelete, onEdit, onP
                 </div>
 
                 {showMeta && (
-                    <div className={`text-[11px] font-medium text-institutional-400 mt-1 flex items-center gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`text-[11px] font-medium text-institutional-600 mt-1 flex items-center gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
                         {message.editedAt && <span>{language === 'ar' ? 'معدل' : language === 'fr' ? 'modifié' : 'edited'}</span>}
                         {message.timestamp?.seconds ? new Date(message.timestamp.seconds * 1000).toLocaleTimeString(language, {hour: '2-digit', minute:'2-digit'}) : '...'}
                         {isMe && !isGroupChat && (
@@ -604,7 +604,7 @@ const Inbox: React.FC = () => {
                         )}
                     </div>
                     <div className="relative group">
-                        <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-400`} size={18} />
+                        <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600`} size={18} />
                         <input 
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
@@ -618,7 +618,7 @@ const Inbox: React.FC = () => {
                     {/* Groups Section */}
                     {filteredSidebar.groups.length > 0 && (
                         <div className="mb-4">
-                            <p className="text-[11px] font-bold uppercase text-institutional-400 px-6 mb-2">{t('inbox.broadcastChannels') || 'Broadcast Channels'}</p>
+                            <p className="text-[11px] font-bold uppercase text-institutional-600 px-6 mb-2">{t('inbox.broadcastChannels') || 'Broadcast Channels'}</p>
                             <div className="space-y-0.5">
                                 {filteredSidebar.groups.map(g => (
                                     <button 
@@ -636,7 +636,7 @@ const Inbox: React.FC = () => {
                                                     <span className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded-full">Live</span>
                                                 )}
                                             </div>
-                                            <p className="text-[13px] text-institutional-400 truncate font-medium">{g.participantIds?.length || 0} {t('inbox.participants')}</p>
+                                            <p className="text-[13px] text-institutional-600 truncate font-medium">{g.participantIds?.length || 0} {t('inbox.participants')}</p>
                                         </div>
                                     </button>
                                 ))}
@@ -647,7 +647,7 @@ const Inbox: React.FC = () => {
                     {/* DMs Section */}
                     {filteredSidebar.users.length > 0 && (
                         <div>
-                            <p className="text-[11px] font-bold uppercase text-institutional-400 px-6 mb-2">{t('inbox.dms')}</p>
+                            <p className="text-[11px] font-bold uppercase text-institutional-600 px-6 mb-2">{t('inbox.dms')}</p>
                             <div className="space-y-0.5">
                                 {filteredSidebar.users.map(u => {
                                     const chatId = [user?.id, u.id].sort().join('_');
@@ -674,7 +674,7 @@ const Inbox: React.FC = () => {
                                                         <span className="w-2.5 h-2.5 bg-primary rounded-full" />
                                                     )}
                                                 </div>
-                                                <p className="text-[13px] text-institutional-400 truncate uppercase tracking-wider font-medium">{u.role}</p>
+                                                <p className="text-[13px] text-institutional-600 truncate uppercase tracking-wider font-medium">{u.role}</p>
                                             </div>
                                         </button>
                                     );
@@ -707,7 +707,7 @@ const Inbox: React.FC = () => {
                                         {remoteTyping ? (
                                             <span className="text-[12px] text-primary animate-pulse font-medium">{t('inbox.typing')}...</span>
                                         ) : (
-                                            <span className={`text-[12px] font-medium ${activeTarget.type === 'dm' && getPresenceStatus(activeTarget as any).isOnline ? 'text-emerald-500' : 'text-institutional-400'}`}>
+                                            <span className={`text-[12px] font-medium ${activeTarget.type === 'dm' && getPresenceStatus(activeTarget as any).isOnline ? 'text-emerald-500' : 'text-institutional-600'}`}>
                                                 {activeTarget.type === 'dm' ? (
                                                     getPresenceStatus(activeTarget as any).isOnline 
                                                         ? t('common.online') 
@@ -722,14 +722,14 @@ const Inbox: React.FC = () => {
                                 {activeTarget.type === 'group' && user?.role === 'teacher' && (
                                     <button 
                                         onClick={deleteChannel}
-                                        className="p-2 text-institutional-400 hover:text-danger transition-all"
+                                        className="p-2 text-institutional-600 hover:text-danger transition-all"
                                         title={t('inbox.deleteChannel') || 'Delete Channel'}
                                     >
                                         <Trash2 size={20} />
                                     </button>
                                 )}
-                                <button className="p-2 text-institutional-400 hover:text-primary transition-all"><Info size={20} /></button>
-                                <button className="p-2 text-institutional-400 hover:text-primary transition-all"><MoreVertical size={20} /></button>
+                                <button className="p-2 text-institutional-600 hover:text-primary transition-all"><Info size={20} /></button>
+                                <button className="p-2 text-institutional-600 hover:text-primary transition-all"><MoreVertical size={20} /></button>
                             </div>
                         </div>
 
@@ -740,7 +740,7 @@ const Inbox: React.FC = () => {
                                     <div key={pm.id} className="bg-surface dark:bg-institutional-800 p-2 px-3 rounded-full border border-institutional-100 dark:border-institutional-700 shadow-sm flex items-center gap-2 min-w-[150px] max-w-[250px] shrink-0 group">
                                         <Pin size={12} className="text-primary shrink-0" />
                                         <p className="text-[12px] text-institutional-700 dark:text-institutional-200 truncate">{pm.text}</p>
-                                        <button onClick={() => handlePin(pm.id, true)} className="ml-auto p-0.5 text-institutional-300 hover:text-danger opacity-0 group-hover:opacity-100 transition-all"><X size={12} /></button>
+                                        <button onClick={() => handlePin(pm.id, true)} className="ml-auto p-0.5 text-institutional-600 hover:text-danger opacity-0 group-hover:opacity-100 transition-all"><X size={12} /></button>
                                     </div>
                                 ))}
                             </div>
@@ -754,8 +754,8 @@ const Inbox: React.FC = () => {
                         >
                             {messages.length === 0 && (
                                 <div className="h-full flex flex-col items-center justify-center opacity-20 select-none">
-                                    <ShieldCheck size={80} strokeWidth={1} className="text-institutional-300" />
-                                    <p className="mt-4 text-sm font-medium text-institutional-400 uppercase tracking-widest">{t('inbox.protocolInitiated')}</p>
+                                    <ShieldCheck size={80} strokeWidth={1} className="text-institutional-600" />
+                                    <p className="mt-4 text-sm font-medium text-institutional-600 uppercase tracking-widest">{t('inbox.protocolInitiated')}</p>
                                 </div>
                             )}
                             
@@ -810,13 +810,13 @@ const Inbox: React.FC = () => {
                                             <p className="text-sm text-institutional-600 dark:text-institutional-300 truncate">{editingMessage.text}</p>
                                         </div>
                                     </div>
-                                    <button onClick={() => { setEditingMessage(null); setInputText(''); }} className="p-1 text-institutional-400 hover:text-danger"><X size={18} /></button>
+                                    <button onClick={() => { setEditingMessage(null); setInputText(''); }} className="p-1 text-institutional-600 hover:text-danger"><X size={18} /></button>
                                 </div>
                             )}
                             
                             {(activeTarget.type === 'group' && activeTarget.isBroadcast && user?.role === 'student') ? (
                                 <div className="flex items-center justify-center p-4 bg-institutional-50 dark:bg-institutional-900/50 rounded-xl border border-dashed border-institutional-200 dark:border-institutional-800">
-                                    <p className="text-sm text-institutional-400 flex items-center gap-2">
+                                    <p className="text-sm text-institutional-600 flex items-center gap-2">
                                         <ShieldAlert size={16} />
                                         {t('inbox.broadcastOnly') || 'Only teachers can send messages here.'}
                                     </p>
@@ -828,9 +828,9 @@ const Inbox: React.FC = () => {
                                         <span className="text-sm font-mono font-bold text-danger">
                                             {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
                                         </span>
-                                        <span className="text-xs text-institutional-400 ml-2">/ 1:00</span>
+                                        <span className="text-xs text-institutional-600 ml-2">/ 1:00</span>
                                     </div>
-                                    <button type="button" onClick={cancelRecording} className="p-2 text-institutional-400 hover:text-danger transition-colors">
+                                    <button type="button" onClick={cancelRecording} className="p-2 text-institutional-600 hover:text-danger transition-colors">
                                         <Trash2 size={20} />
                                     </button>
                                     <button type="button" onClick={stopRecording} className="p-2 bg-primary text-institutional-50 rounded-full shadow-md hover:bg-primary-hover transition-all">
@@ -843,17 +843,17 @@ const Inbox: React.FC = () => {
                                         <div className="flex items-center gap-2 p-2 bg-institutional-100 dark:bg-institutional-800 rounded-xl w-fit">
                                             <Paperclip size={16} className="text-primary" />
                                             <span className="text-xs font-medium text-institutional-700 dark:text-institutional-200 truncate max-w-[200px]">{attachment.name}</span>
-                                            <button type="button" onClick={() => setAttachment(null)} className="p-1 hover:text-danger text-institutional-400"><X size={14} /></button>
+                                            <button type="button" onClick={() => setAttachment(null)} className="p-1 hover:text-danger text-institutional-600"><X size={14} /></button>
                                         </div>
                                     )}
                                     <div className="flex gap-2 items-center w-full">
                                         <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
-                                        <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="p-2 text-institutional-400 hover:text-primary transition-all disabled:opacity-50">
+                                        <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="p-2 text-institutional-600 hover:text-primary transition-all disabled:opacity-50">
                                             <Paperclip size={22} />
                                         </button>
                                         
                                         {user?.role === 'teacher' && !inputText && !attachment && (
-                                            <button type="button" onClick={startRecording} className="p-2 text-institutional-400 hover:text-danger transition-all">
+                                            <button type="button" onClick={startRecording} className="p-2 text-institutional-600 hover:text-danger transition-all">
                                                 <Mic size={22} />
                                             </button>
                                         )}
@@ -865,7 +865,7 @@ const Inbox: React.FC = () => {
                                                 placeholder={t('inbox.secureTrans')}
                                                 className="w-full bg-institutional-50 dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 focus:border-primary/50 p-2.5 px-4 rounded-full text-[15px] outline-none transition-all text-institutional-900 dark:text-institutional-50"
                                             />
-                                            <button type="button" className={`absolute ${isRTL ? 'left-3' : 'right-3'} p-1.5 text-institutional-400 hover:text-primary transition-all`}>
+                                            <button type="button" className={`absolute ${isRTL ? 'left-3' : 'right-3'} p-1.5 text-institutional-600 hover:text-primary transition-all`}>
                                                 <Smile size={20} />
                                             </button>
                                         </div>
@@ -884,10 +884,10 @@ const Inbox: React.FC = () => {
                 ) : (
                     <div className="flex-1 flex flex-col items-center justify-center p-12 text-center opacity-50">
                         <div className="w-20 h-20 bg-institutional-50 dark:bg-institutional-900 rounded-full flex items-center justify-center mb-4">
-                            <MessageSquare size={40} className="text-institutional-300" strokeWidth={1.5} />
+                            <MessageSquare size={40} className="text-institutional-600" strokeWidth={1.5} />
                         </div>
                         <h3 className="text-xl font-bold text-institutional-900 dark:text-institutional-50 mb-2">{t('inbox.terminalSession')}</h3>
-                        <p className="text-sm text-institutional-400 max-w-xs">{t('inbox.chooseContact')}</p>
+                        <p className="text-sm text-institutional-600 max-w-xs">{t('inbox.chooseContact')}</p>
                     </div>
                 )}
             </div>
@@ -896,28 +896,28 @@ const Inbox: React.FC = () => {
             {isCreateGroupOpen && (
                 <div className="fixed inset-0 z-[500] bg-institutional-950/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-300">
                     <div className="bg-surface dark:bg-institutional-900 rounded-2xl shadow-strong max-w-md w-full p-6 relative border border-institutional-200 dark:border-institutional-800 animate-in zoom-in-95 duration-200">
-                        <button onClick={() => setIsCreateGroupOpen(false)} className={`absolute top-6 ${isRTL ? 'left-6' : 'right-6'} p-2 text-institutional-400 hover:text-danger transition-colors`}><X size={20} /></button>
+                        <button onClick={() => setIsCreateGroupOpen(false)} className={`absolute top-6 ${isRTL ? 'left-6' : 'right-6'} p-2 text-institutional-600 hover:text-danger transition-colors`}><X size={20} /></button>
                         <div className="text-start mb-6">
                             <h3 className="text-xl font-bold text-institutional-900 dark:text-institutional-50">{t('inbox.createBroadcast') || 'Create Broadcast Channel'}</h3>
-                            <p className="text-xs text-institutional-400 mt-1">Select participants for the new channel.</p>
+                            <p className="text-xs text-institutional-600 mt-1">Select participants for the new channel.</p>
                         </div>
                         <form onSubmit={createGroup} className="space-y-6 text-start">
                             <div className="space-y-1.5">
-                                <label className="text-[11px] font-bold uppercase text-institutional-500 tracking-wider px-1">{t('inbox.channelName') || 'Channel Name'}</label>
+                                <label className="text-[11px] font-bold uppercase text-institutional-600 tracking-wider px-1">{t('inbox.channelName') || 'Channel Name'}</label>
                                 <div className="relative group">
-                                    <Hash className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 text-institutional-400`} size={16} />
+                                    <Hash className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 text-institutional-600`} size={16} />
                                     <input name="groupName" placeholder="Announcements..." className={`w-full bg-institutional-50 dark:bg-institutional-800 p-2.5 ${isRTL ? 'pr-10 pl-4' : 'pl-10 pr-4'} rounded-xl border border-institutional-200 dark:border-institutional-700 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-institutional-900 dark:text-institutional-50`} required />
                                 </div>
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[11px] font-bold uppercase text-institutional-500 tracking-wider px-1">{t('inbox.participants')}</label>
+                                <label className="text-[11px] font-bold uppercase text-institutional-600 tracking-wider px-1">{t('inbox.participants')}</label>
                                 <div className="max-h-[300px] overflow-y-auto p-1 bg-institutional-50 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 rounded-xl space-y-0.5 scroll-hide">
                                     {users.map(u => (
                                         <label key={u.id} className="flex items-center gap-3 p-3 hover:bg-surface dark:hover:bg-institutional-900 rounded-lg cursor-pointer transition-all group">
                                             <input type="checkbox" name="participants" value={u.id} className="w-4 h-4 rounded border-institutional-300 text-primary focus:ring-primary/20 transition-all cursor-pointer" />
                                             <div className="flex-1">
                                                 <p className="text-sm font-semibold text-institutional-800 dark:text-institutional-100 group-hover:text-primary transition-colors">{u.name}</p>
-                                                <p className="text-[10px] uppercase text-institutional-400 tracking-wider">{u.role}</p>
+                                                <p className="text-[10px] uppercase text-institutional-600 tracking-wider">{u.role}</p>
                                             </div>
                                         </label>
                                     ))}

@@ -39,8 +39,8 @@ const Subscription: React.FC = () => {
             case 'unpaid': case 'expired': return 'bg-rose-100 text-rose-700';
             case 'pending': return 'bg-amber-100 text-amber-700';
             case 'frozen': return 'bg-blue-100 text-blue-700';
-            case 'disabled': return 'bg-slate-200 text-slate-700';
-            default: return 'bg-slate-100 text-slate-700';
+            case 'disabled': return 'bg-institutional-200 text-institutional-700';
+            default: return 'bg-institutional-100 text-institutional-700';
         }
     };
 
@@ -53,40 +53,40 @@ const Subscription: React.FC = () => {
             <h1 className="text-3xl font-bold mb-6">{t('nav.subscription')}</h1>
             {subscription ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="md:col-span-1 bg-institutional-50 dark:bg-slate-800 p-6 rounded-lg shadow-sm">
+                    <div className="md:col-span-1 bg-institutional-50 dark:bg-institutional-800 p-6 rounded-lg shadow-sm">
                         <h2 className="text-xl font-bold mb-4">Current Plan</h2>
                         <div className="space-y-4">
                             <div>
-                                <p className="text-sm text-slate-500">{t('economic.plan')}</p>
+                                <p className="text-sm text-institutional-600">{t('economic.plan')}</p>
                                 <p className="font-bold text-lg">{subscription.plan}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-slate-500">{t('economic.duration')}</p>
+                                <p className="text-sm text-institutional-600">{t('economic.duration')}</p>
                                 <p className="font-bold text-lg">{subscription.duration} Months</p>
                             </div>
                             <div>
-                                <p className="text-sm text-slate-500">{t('economic.monthlyAmount')}</p>
+                                <p className="text-sm text-institutional-600">{t('economic.monthlyAmount')}</p>
                                 <p className="font-bold text-lg">{formatCurrencyDZD(subscription.monthlyAmount || 0)}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-slate-500">{t('economic.nextDueDate')}</p>
+                                <p className="text-sm text-institutional-600">{t('economic.nextDueDate')}</p>
                                 <p className="font-bold text-lg">{subscription.endDate}</p>
                             </div>
-                            <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
+                            <div className="pt-4 border-t border-institutional-100 dark:border-institutional-700">
                                 <div className="flex justify-between items-center mb-2">
-                                    <p className="text-sm text-slate-500">Subscription Status</p>
+                                    <p className="text-sm text-institutional-600">Subscription Status</p>
                                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${getStatusColor(subscription.status)}`}>
                                         {subscription.status}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center mb-2">
-                                    <p className="text-sm text-slate-500">{t('economic.paymentStatus')}</p>
+                                    <p className="text-sm text-institutional-600">{t('economic.paymentStatus')}</p>
                                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${getStatusColor(subscription.paymentStatus)}`}>
                                         {subscription.paymentStatus}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <p className="text-sm text-slate-500">Account Access</p>
+                                    <p className="text-sm text-institutional-600">Account Access</p>
                                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${getStatusColor(user?.accountStatus || 'active')}`}>
                                         {user?.accountStatus || 'active'}
                                     </span>
@@ -94,14 +94,14 @@ const Subscription: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="md:col-span-2 bg-institutional-50 dark:bg-slate-800 p-6 rounded-lg shadow-sm">
+                    <div className="md:col-span-2 bg-institutional-50 dark:bg-institutional-800 p-6 rounded-lg shadow-sm">
                         <h2 className="text-xl font-bold mb-4">Payment History</h2>
                         <div className="space-y-4">
                             {paymentHistory.map(payment => (
-                                <div key={payment.id} className="flex justify-between items-center p-4 rounded-lg bg-slate-50 dark:bg-slate-700">
+                                <div key={payment.id} className="flex justify-between items-center p-4 rounded-lg bg-institutional-50 dark:bg-institutional-700">
                                     <div>
                                         <p className="font-bold">{payment.date}</p>
-                                        <p className="text-sm text-slate-500">{payment.method}</p>
+                                        <p className="text-sm text-institutional-600">{payment.method}</p>
                                     </div>
                                     <div className="text-right">
                                         <p className={`font-bold ${payment.status === 'Paid' ? 'text-emerald-600' : 'text-rose-600'}`}>{formatCurrencyDZD(payment.amount)}</p>

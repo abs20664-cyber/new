@@ -61,22 +61,22 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                             </div>
                             <div>
                                 <p className="font-black text-base text-institutional-900 dark:text-institutional-50 leading-tight group-hover:text-primary transition-colors">{s.name}</p>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-institutional-400 mt-1">ID: {s.id}</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-institutional-600 mt-1">ID: {s.id}</p>
                             </div>
                         </div>
                         <div className="text-end">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400 mb-1">Monthly</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-institutional-600 mb-1">Monthly</p>
                             <p className="text-sm font-black text-primary">{formatCurrencyDZD(sub?.monthlyAmount || 0)}</p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 mb-6">
                         <div className="bg-institutional-50 dark:bg-institutional-800/50 p-3 rounded-2xl border border-institutional-100 dark:border-institutional-800">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-institutional-400 mb-1">Start Date</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-institutional-600 mb-1">Start Date</p>
                             <p className="text-xs font-bold text-institutional-700 dark:text-institutional-300">{sub?.startDate || '---'}</p>
                         </div>
                         <div className="bg-institutional-50 dark:bg-institutional-800/50 p-3 rounded-2xl border border-institutional-100 dark:border-institutional-800">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-institutional-400 mb-1">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-institutional-600 mb-1">
                                 {sub?.subscriptionType === 'session' ? 'Sessions' : 'End Date'}
                             </p>
                             <p className="text-xs font-bold text-institutional-700 dark:text-institutional-300">
@@ -91,7 +91,7 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                     <div className="space-y-3">
                         <div className="flex items-center justify-between p-4 bg-institutional-50 dark:bg-institutional-800/50 rounded-2xl border border-institutional-100 dark:border-institutional-800">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-institutional-400 mb-1">Payment Status</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-institutional-600 mb-1">Payment Status</p>
                                 <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg ${sub?.paymentStatus === 'Paid' ? 'bg-emerald-500 text-institutional-50' : sub?.paymentStatus === 'Unpaid' ? 'bg-rose-500 text-institutional-50' : 'bg-amber-500 text-institutional-50'}`}>
                                     {sub?.paymentStatus || 'Pending'}
                                 </span>
@@ -106,7 +106,7 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
 
                         <button 
                             onClick={() => setSelectedStudentId(selectedStudentId === s.id ? null : s.id)}
-                            className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${selectedStudentId === s.id ? 'bg-primary/10 text-primary' : 'text-institutional-400 hover:bg-institutional-50 dark:hover:bg-institutional-800'}`}>
+                            className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${selectedStudentId === s.id ? 'bg-primary/10 text-primary' : 'text-institutional-600 hover:bg-institutional-50 dark:hover:bg-institutional-800'}`}>
                             <History size={14} /> {selectedStudentId === s.id ? 'Hide Timeline' : 'View Payment Timeline'}
                         </button>
                     </div>
@@ -120,14 +120,14 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                                             <div className={`w-1.5 h-1.5 rounded-full ${getStatusColor(r.status)}`} />
                                             <div>
                                                 <p className="text-[10px] font-bold text-institutional-900 dark:text-institutional-50">{r.date}</p>
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-institutional-400">{formatCurrencyDZD(r.amount)} • {r.method}</p>
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-institutional-600">{formatCurrencyDZD(r.amount)} • {r.method}</p>
                                             </div>
                                         </div>
                                         <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${getStatusColor(r.status)}`}>{r.status}</span>
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-center py-4 text-[10px] font-bold text-institutional-400 uppercase tracking-widest">No payment records found</p>
+                                <p className="text-center py-4 text-[10px] font-bold text-institutional-600 uppercase tracking-widest">No payment records found</p>
                             )}
                         </div>
                     )}
@@ -148,7 +148,7 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                     </div>
                     <div>
                         <p className="font-bold text-sm text-institutional-900 dark:text-institutional-50 group-hover:text-primary transition-colors">{s.name}</p>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400">ID: {s.id}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-institutional-600">ID: {s.id}</p>
                     </div>
                 </div>
             </td>
@@ -171,13 +171,13 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
             <td className="px-8 py-6">
                 <div className="flex flex-col gap-1">
                     <p className="text-[11px] font-bold text-institutional-900 dark:text-institutional-50">{sub?.startDate || '---'}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400">{sub?.endDate || '---'}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-600">{sub?.endDate || '---'}</p>
                 </div>
             </td>
             <td className="px-8 py-6">
                 <div className="flex flex-col">
                     <p className="font-bold text-sm text-institutional-900 dark:text-institutional-50">{formatCurrencyDZD(sub?.monthlyAmount || 0)}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400">Monthly Amount</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-600">Monthly Amount</p>
                 </div>
             </td>
             <td className="px-8 py-6">
@@ -188,7 +188,7 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                             : `${sub?.duration || 1} Months`
                         }
                     </p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400">Subscription Type</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-600">Subscription Type</p>
                 </div>
             </td>
             <td className="px-8 py-6">
@@ -203,7 +203,7 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                 <div className="flex justify-end gap-2">
                     <button 
                         onClick={() => setSelectedStudentId(selectedStudentId === s.id ? null : s.id)}
-                        className={`p-3 rounded-xl transition-all ${selectedStudentId === s.id ? 'bg-primary text-institutional-50' : 'text-institutional-400 hover:text-primary hover:bg-primary/5'}`}
+                        className={`p-3 rounded-xl transition-all ${selectedStudentId === s.id ? 'bg-primary text-institutional-50' : 'text-institutional-600 hover:text-primary hover:bg-primary/5'}`}
                         title="View History"
                     >
                         <History size={18} />

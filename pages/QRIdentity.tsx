@@ -48,7 +48,7 @@ const QRIdentity: React.FC = () => {
                                 </div>
                             </div>
                             <div className="flex flex-col items-end">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-institutional-400">Security Lev. 04</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-institutional-600">Security Lev. 04</span>
                                 <div className="flex gap-0.5 mt-1.5">
                                     {[1,2,3,4].map(i => <div key={i} className="w-4 h-1 bg-primary rounded-full"></div>)}
                                     <div className="w-4 h-1 bg-institutional-200 dark:border-institutional-700 rounded-full"></div>
@@ -106,14 +106,14 @@ const QRIdentity: React.FC = () => {
                     <div className="w-full space-y-5">
                         <div className="bg-institutional-50 dark:bg-institutional-800/40 p-6 rounded-3xl border border-institutional-200 dark:border-institutional-800 flex items-center justify-between group transition-all hover:border-primary/30">
                             <div className="text-start overflow-hidden">
-                                <p className="text-[9px] font-black uppercase text-institutional-400 tracking-[0.2em] mb-1">{t('dashboard.uniqueId')}</p>
+                                <p className="text-[9px] font-black uppercase text-institutional-600 tracking-[0.2em] mb-1">{t('dashboard.uniqueId')}</p>
                                 <p className="text-sm font-mono font-bold text-institutional-900 dark:text-institutional-50 truncate tracking-wider">
                                     {user?.id}
                                 </p>
                             </div>
                             <button 
                                 onClick={handleCopyId}
-                                className={`p-4 rounded-2xl transition-all active:scale-90 ${copied ? 'bg-success text-institutional-50 shadow-lg shadow-success/20' : 'bg-surface dark:bg-institutional-700 text-institutional-500 hover:text-primary shadow-sm hover:shadow-xl'}`}
+                                className={`p-4 rounded-2xl transition-all active:scale-90 ${copied ? 'bg-success text-institutional-50 shadow-lg shadow-success/20' : 'bg-surface dark:bg-institutional-700 text-institutional-600 hover:text-primary shadow-sm hover:shadow-xl'}`}
                             >
                                 {copied ? <Check size={20} /> : <Copy size={20} />}
                             </button>
@@ -123,7 +123,7 @@ const QRIdentity: React.FC = () => {
                             <div className="h-px flex-1 bg-gradient-to-r from-transparent to-institutional-200 dark:to-institutional-800"></div>
                             <div className="flex items-center gap-2.5">
                                 <div className="w-2.5 h-2.5 rounded-full bg-success shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse"></div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-institutional-500">{t('dashboard.validSession')}</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-institutional-600">{t('dashboard.validSession')}</span>
                             </div>
                             <div className="h-px flex-1 bg-gradient-to-l from-transparent to-institutional-200 dark:to-institutional-800"></div>
                         </div>
@@ -133,7 +133,7 @@ const QRIdentity: React.FC = () => {
                 <div className="bg-institutional-50 dark:bg-institutional-800/80 p-6 px-10 border-t border-institutional-200 dark:border-institutional-800 flex justify-between items-center">
                     <div className="flex flex-col">
                         <span className="text-[10px] font-black uppercase tracking-widest text-institutional-950 dark:text-institutional-50 leading-none">{t('appName')}</span>
-                        <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-institutional-400 mt-1">Central OS v3.1</span>
+                        <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-institutional-600 mt-1">Central OS v3.1</span>
                     </div>
                     <div className="px-4 py-2 bg-surface dark:bg-institutional-900 rounded-xl border border-institutional-200 dark:border-institutional-700">
                         <span className="text-[9px] font-black uppercase tracking-widest text-primary">Secure Channel Alpha</span>
@@ -143,7 +143,7 @@ const QRIdentity: React.FC = () => {
 
             {isMobile && (
                 <div className="mt-10 text-center max-w-sm animate-in fade-in duration-1000">
-                    <p className="text-[11px] font-bold text-institutional-400 uppercase leading-relaxed tracking-wider">
+                    <p className="text-[11px] font-bold text-institutional-600 uppercase leading-relaxed tracking-wider">
                         {t('dashboard.helperMsg')}
                     </p>
                 </div>

@@ -66,13 +66,13 @@ const Materials: React.FC = () => {
                     <h2 className="text-4xl lg:text-5xl font-black tracking-tighter uppercase text-text leading-none">{t('nav.cabinet')}</h2>
                     <div className="flex items-center gap-3 mt-4">
                         <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-                        <p className="text-[11px] font-black text-text-secondary/50 uppercase tracking-[0.3em]">{t('cabinet.title')}</p>
+                        <p className="text-[11px] font-black text-text-secondary uppercase tracking-[0.3em]">{t('cabinet.title')}</p>
                     </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative">
-                        <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-text-secondary/50`} size={16} />
+                        <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-text-secondary`} size={16} />
                         <input 
                             type="text" 
                             placeholder={t('cabinet.searchLedger')} 
@@ -102,7 +102,7 @@ const Materials: React.FC = () => {
                                         <UserIcon size={14} className="text-primary" />
                                         <span className="text-[10px] font-black uppercase tracking-widest">{m.teacherName}</span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-text-secondary/50">
+                                    <div className="flex items-center gap-2 text-text-secondary">
                                         <Calendar size={14} />
                                         <span className="text-[10px] font-black uppercase tracking-widest">
                                             {m.timestamp?.seconds ? new Date(m.timestamp.seconds * 1000).toLocaleDateString() : '---'}
@@ -120,7 +120,7 @@ const Materials: React.FC = () => {
                     </div>
                 ) : (
                     <div className="bg-sidebar rounded-[2.5rem] overflow-hidden border border-border shadow-xl">
-                         <div className="grid grid-cols-[1fr_1.5fr_1fr_120px] p-8 border-b border-border bg-background font-black text-[10px] uppercase tracking-[0.3em] text-text-secondary/50">
+                         <div className="grid grid-cols-[1fr_1.5fr_1fr_120px] p-8 border-b border-border bg-background font-black text-[10px] uppercase tracking-[0.3em] text-text-secondary">
                             <div className="text-start">Resource</div>
                             <div className="text-start">{t('cabinet.facultyAttributed')}</div>
                             <div className="text-start">{t('cabinet.date')}</div>
@@ -136,7 +136,7 @@ const Materials: React.FC = () => {
                                     <div className="w-8 h-8 rounded-xl bg-background border border-border flex items-center justify-center text-[11px] font-black text-primary">{m.teacherName.charAt(0)}</div>
                                     <span className="text-xs font-black uppercase tracking-widest text-text-secondary">{m.teacherName}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-text-secondary/50 text-start">
+                                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-text-secondary text-start">
                                     <Clock size={16} />
                                     <span>{m.timestamp?.seconds ? new Date(m.timestamp.seconds * 1000).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : '---'}</span>
                                 </div>
@@ -156,10 +156,10 @@ const Materials: React.FC = () => {
             ) : (
                 <div className="flex flex-col items-center justify-center py-40 text-center animate-in fade-in duration-700">
                     <div className="w-24 h-24 bg-sidebar rounded-[2.5rem] flex items-center justify-center mb-8 border border-border shadow-inner">
-                        <FolderOpen size={48} className="text-text-secondary/20" />
+                        <FolderOpen size={48} className="text-text-secondary" />
                     </div>
                     <h3 className="text-2xl font-black uppercase tracking-[0.2em] text-text">{t('cabinet.empty')}</h3>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-secondary/50 mt-4 max-w-xs leading-relaxed">{t('cabinet.attendToReceive')}</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-secondary mt-4 max-w-xs leading-relaxed">{t('cabinet.attendToReceive')}</p>
                 </div>
             )}
         </div>
