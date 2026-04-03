@@ -258,7 +258,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">{toast.title}</p>
                                 <span className="text-[9px] font-bold text-institutional-400">{t('common.justNow')}</span>
                             </div>
-                            <p className="text-sm font-semibold text-institutional-900 dark:text-white line-clamp-2 leading-tight">{toast.message}</p>
+                            <p className="text-sm font-semibold text-institutional-900 dark:text-institutional-50 line-clamp-2 leading-tight">{toast.message}</p>
                         </div>
                         <button 
                             onClick={(e) => {
@@ -280,7 +280,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     <aside className={`fixed top-0 bottom-0 w-full sm:w-[450px] bg-surface dark:bg-institutional-950 z-[120] border-institutional-300 dark:border-institutional-800 shadow-strong animate-in slide-in-from-right duration-500 flex flex-col ${isRTL ? 'start-0 border-e' : 'end-0 border-s'}`}>
                         <div className="p-8 flex justify-between items-center border-b border-institutional-200 dark:border-institutional-800">
                             <div>
-                                <h3 className="text-2xl font-black tracking-tight text-institutional-900 dark:text-white uppercase">Activity Ledger</h3>
+                                <h3 className="text-2xl font-black tracking-tight text-institutional-900 dark:text-institutional-50 uppercase">Activity Ledger</h3>
                                 <p className="text-xs font-bold text-institutional-400 uppercase tracking-widest mt-1">Institutional Records</p>
                             </div>
                             <button onClick={() => setIsNotifOpen(false)} className="p-3 bg-institutional-100 dark:bg-institutional-800 rounded-2xl text-institutional-500 hover:text-danger transition-all"><X size={20} /></button>
@@ -310,7 +310,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                             </p>
                                         </div>
                                     </div>
-                                    <p className="text-sm text-institutional-800 dark:text-white font-semibold leading-relaxed">{n.message}</p>
+                                    <p className="text-sm text-institutional-800 dark:text-institutional-50 font-semibold leading-relaxed">{n.message}</p>
                                 </div>
                             ))}
                         </div>
@@ -319,7 +319,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             <button 
                                 onClick={markAllRead} 
                                 disabled={unreadCount === 0}
-                                className="w-full bg-primary text-white p-5 rounded-3xl font-black text-xs uppercase tracking-[0.2em] hover:bg-primary-hover disabled:opacity-30 disabled:hover:bg-primary shadow-lg shadow-primary/20 transition-all"
+                                className="w-full bg-primary text-institutional-50 p-5 rounded-3xl font-black text-xs uppercase tracking-[0.2em] hover:bg-primary-hover disabled:opacity-30 disabled:hover:bg-primary shadow-lg shadow-primary/20 transition-all"
                             >
                                 Acknowledge All Entries
                             </button>
@@ -333,7 +333,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                 <div className="p-10 flex items-center gap-4">
                     <Logo size="md" />
                     <div>
-                        <h1 className="text-2xl font-black tracking-tighter text-institutional-950 dark:text-white uppercase">{t('appName')}</h1>
+                        <h1 className="text-2xl font-black tracking-tighter text-institutional-950 dark:text-institutional-50 uppercase">{t('appName')}</h1>
                         <p className="text-[9px] font-black tracking-[0.3em] text-primary uppercase">{t('appSubName')}</p>
                     </div>
                 </div>
@@ -358,7 +358,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             <button 
                                 key={route.path}
                                 onClick={() => { enableAudio(); onNavigate(route.path); }}
-                                className={`group w-full flex items-center justify-between px-5 py-4 rounded-[1.25rem] font-bold transition-all duration-300 ${isActive ? 'bg-primary text-white shadow-strong shadow-primary/20' : 'text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-900 dark:text-institutional-400 hover:text-primary'}`}
+                                className={`group w-full flex items-center justify-between px-5 py-4 rounded-[1.25rem] font-bold transition-all duration-300 ${isActive ? 'bg-primary text-institutional-50 shadow-strong shadow-primary/20' : 'text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-900 dark:text-institutional-400 hover:text-primary'}`}
                             >
                                 <div className="flex items-center gap-4">
                                     <Icon size={20} className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
@@ -429,7 +429,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     {!isMobile && (
                         <>
                             <div className="flex items-center gap-4">
-                                <h2 className="text-2xl font-black tracking-tight text-institutional-950 dark:text-white uppercase leading-none">{getPageTitle()}</h2>
+                                <h2 className="text-2xl font-black tracking-tight text-institutional-950 dark:text-institutional-50 uppercase leading-none">{getPageTitle()}</h2>
                             </div>
 
                             <div className="flex items-center gap-6">
@@ -445,7 +445,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                     <button onClick={() => { enableAudio(); setIsNotifOpen(true); }} className="relative p-2.5 text-institutional-500 hover:text-primary transition-all active:scale-90">
                                         <Bell size={20} />
                                         {unreadCount > 0 && (
-                                            <span className={`absolute top-2 ${isRTL ? 'start-2' : 'end-2'} w-4.5 h-4.5 bg-danger text-white text-[9px] font-black flex items-center justify-center rounded-full border-2 border-surface dark:border-institutional-950 animate-bounce`}>
+                                            <span className={`absolute top-2 ${isRTL ? 'start-2' : 'end-2'} w-4.5 h-4.5 bg-danger text-institutional-50 text-[9px] font-black flex items-center justify-center rounded-full border-2 border-surface dark:border-institutional-950 animate-bounce`}>
                                                 {unreadCount}
                                             </span>
                                         )}
@@ -460,11 +460,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                     onClick={() => onNavigate(`/profile/${user?.id}`)}
                                     className="flex items-center gap-3 bg-institutional-100 dark:bg-institutional-900 p-2 pr-4 rounded-2xl border border-institutional-200 dark:border-institutional-800 cursor-pointer hover:bg-institutional-200 dark:hover:bg-institutional-800 transition-colors"
                                 >
-                                    <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white font-black text-[11px] uppercase shadow-lg shadow-primary/20">
+                                    <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-institutional-50 font-black text-[11px] uppercase shadow-lg shadow-primary/20">
                                         {user?.name.charAt(0)}
                                     </div>
                                     <div className="text-start">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-institutional-900 dark:text-white">{user?.name.split(' ')[0]}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50">{user?.name.split(' ')[0]}</p>
                                         <p className="text-[8px] font-bold uppercase tracking-widest text-institutional-400 leading-none mt-0.5">{user?.role}</p>
                                     </div>
                                 </div>
@@ -479,7 +479,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                         <div className="flex items-center justify-between w-full">
                             <div className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 p-2 px-3 shadow-2xl rounded-2xl flex items-center gap-2 pointer-events-auto">
                                 <Logo size="sm" />
-                                <h2 className="text-[10px] sm:text-xs font-black tracking-tight text-institutional-950 dark:text-white uppercase truncate max-w-[100px] sm:max-w-[120px]">{getPageTitle()}</h2>
+                                <h2 className="text-[10px] sm:text-xs font-black tracking-tight text-institutional-950 dark:text-institutional-50 uppercase truncate max-w-[100px] sm:max-w-[120px]">{getPageTitle()}</h2>
                             </div>
 
                             <div className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 p-1.5 shadow-2xl rounded-2xl flex items-center gap-1 pointer-events-auto">
@@ -489,7 +489,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                 <button onClick={() => { enableAudio(); setIsNotifOpen(true); }} className="relative p-1.5 sm:p-2 text-institutional-500 hover:text-primary transition-all active:scale-90">
                                     <Bell size={16} />
                                     {unreadCount > 0 && (
-                                        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-danger text-white text-[7px] font-black flex items-center justify-center rounded-full border border-surface dark:border-institutional-950">
+                                        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-danger text-institutional-50 text-[7px] font-black flex items-center justify-center rounded-full border border-surface dark:border-institutional-950">
                                             {unreadCount}
                                         </span>
                                     )}

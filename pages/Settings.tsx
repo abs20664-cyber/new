@@ -139,7 +139,7 @@ const Settings: React.FC = () => {
 
                     <button 
                         type="submit"
-                        className="w-full bg-primary text-white p-4 rounded-xl font-bold uppercase tracking-wider shadow-lg shadow-primary/30 hover:bg-primary/90 transition-transform flex items-center justify-center gap-2 mt-4"
+                        className="w-full bg-primary text-institutional-50 p-4 rounded-xl font-bold uppercase tracking-wider shadow-lg shadow-primary/30 hover:bg-primary/90 transition-transform flex items-center justify-center gap-2 mt-4"
                     >
                         <Save size={18} /> {t('settings.updateCredentials')}
                     </button>

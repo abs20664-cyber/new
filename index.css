@@ -1,14 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  /* Light Theme - Refined Slate/Gray for ultimate clarity */
-  --bg-body: #f8fafc;
+  /* Light Theme - Clean & Professional */
+  --bg-body: #f8fafc; /* slate-50 */
   --bg-surface: #ffffff;
-  --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --border-color: #f1f5f9;
-  --muted: #94a3b8;
+  --text-primary: #0f172a; /* slate-900 */
+  --text-secondary: #475569; /* slate-600 */
+  --border-color: #e2e8f0; /* slate-200 */
+  --muted: #94a3b8; /* slate-400 */
 
+  /* Primary Brand Colors - Light Mode */
+  --primary: #006633;
+  --primary-hover: #00552b;
+  --primary-light: rgba(0, 102, 51, 0.1);
+  --primary-foreground: #ffffff;
+
+  /* Institutional Palette - Consistent Slate Scale */
   --inst-50: #f8fafc;
   --inst-100: #f1f5f9;
   --inst-200: #e2e8f0;
@@ -20,38 +27,53 @@
   --inst-800: #1e293b;
   --inst-900: #0f172a;
   --inst-950: #020617;
+
+  /* Shadows - Light Mode */
+  --shadow-soft-val: 0 2px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  --shadow-strong-val: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .dark {
-  /* Dark Theme - Deep Zinc/Neutral for professional depth */
-  --bg-body: #09090b;
-  --bg-surface: #121215;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --border-color: #1e1e24;
-  --muted: #52525b;
+  /* Dark Theme - Soft & Comfortable */
+  --bg-body: #020617; /* slate-950 */
+  --bg-surface: #0f172a; /* slate-900 */
+  --text-primary: #f8fafc; /* slate-50 */
+  --text-secondary: #94a3b8; /* slate-400 */
+  --border-color: #1e293b; /* slate-800 */
+  --muted: #64748b; /* slate-500 */
 
-  --inst-50: #09090b;
-  --inst-100: #121215;
-  --inst-200: #1e1e24;
-  --inst-300: #27272a;
-  --inst-400: #3f3f46;
-  --inst-500: #52525b;
-  --inst-600: #71717a;
-  --inst-700: #a1a1aa;
-  --inst-800: #d4d4d8;
-  --inst-900: #e4e4e7;
-  --inst-950: #f8fafc;
+  /* Primary Brand Colors - Dark Mode (Brighter for contrast) */
+  --primary: #10b981; /* emerald-500 */
+  --primary-hover: #059669; /* emerald-600 */
+  --primary-light: rgba(16, 185, 129, 0.15);
+  --primary-foreground: #ffffff;
+
+  /* Institutional Palette - Keep consistent so dark:* classes work correctly */
+  --inst-50: #f8fafc;
+  --inst-100: #f1f5f9;
+  --inst-200: #e2e8f0;
+  --inst-300: #cbd5e1;
+  --inst-400: #94a3b8;
+  --inst-500: #64748b;
+  --inst-600: #475569;
+  --inst-700: #334155;
+  --inst-800: #1e293b;
+  --inst-900: #0f172a;
+  --inst-950: #020617;
+
+  /* Shadows - Dark Mode (Deeper and softer) */
+  --shadow-soft-val: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+  --shadow-strong-val: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
 }
 
 @theme {
   --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-arabic: "IBM Plex Sans Arabic", sans-serif;
 
-  --color-primary: #006633;
-  --color-primary-hover: #00552b;
-  --color-primary-light: rgba(0, 102, 51, 0.1);
-  --color-primary-foreground: #ffffff;
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+  --color-primary-foreground: var(--primary-foreground);
 
   --color-algeria-green: #006633;
   --color-algeria-red: #D21034;
@@ -71,8 +93,8 @@
   --color-border: var(--border-color);
   --color-muted: var(--muted);
 
-  --shadow-soft: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-strong: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-soft: var(--shadow-soft-val);
+  --shadow-strong: var(--shadow-strong-val);
 
   /* Institutional Palette */
   --color-institutional-50: var(--inst-50);

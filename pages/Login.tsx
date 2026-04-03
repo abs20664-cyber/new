@@ -129,11 +129,11 @@ const Login: React.FC = () => {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative z-10 flex flex-col justify-end p-16 w-full h-full text-white"
+                    className="relative z-10 flex flex-col justify-end p-16 w-full h-full text-institutional-50"
                 >
                     <div className="mb-auto">
-                        <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-                            <GraduationCap className="text-white" size={18} />
+                        <div className="inline-flex items-center gap-3 px-4 py-2 bg-institutional-50/10 backdrop-blur-md rounded-full border border-white/20">
+                            <GraduationCap className="text-institutional-50" size={18} />
                             <span className="text-xs font-medium tracking-wide">وزارة التعليم العالي والبحث العلمي</span>
                         </div>
                     </div>
@@ -143,7 +143,7 @@ const Login: React.FC = () => {
                             "اطلبوا العلم من المهد إلى اللحد"
                         </h1>
                         
-                        <div className="flex items-center gap-4 text-white/80">
+                        <div className="flex items-center gap-4 text-institutional-50/80">
                             <div className="w-12 h-px bg-algeria-red" />
                             <p className="text-sm font-medium tracking-widest uppercase">
                                 Algerian Academic Excellence
@@ -154,7 +154,7 @@ const Login: React.FC = () => {
             </div>
 
             {/* Right Side - Login Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-white dark:bg-slate-950 relative">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-institutional-50 dark:bg-slate-950 relative">
                 {/* Subtle Background Detail for Right Side */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.02] dark:opacity-[0.05]">
                     <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_100%_0%,#000_0%,transparent_50%)]" />
@@ -176,7 +176,7 @@ const Login: React.FC = () => {
                                     <button
                                         key={lang.code}
                                         onClick={() => setLanguage(lang.code)}
-                                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${language === lang.code ? 'bg-white dark:bg-institutional-800 text-primary shadow-sm' : 'text-institutional-400 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
+                                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${language === lang.code ? 'bg-institutional-50 dark:bg-institutional-800 text-primary shadow-sm' : 'text-institutional-400 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
                                     >
                                         {lang.code}
                                     </button>
@@ -184,7 +184,7 @@ const Login: React.FC = () => {
                             </div>
                         </div>
                         
-                        <h2 className="text-4xl font-serif text-slate-900 dark:text-white tracking-tight leading-tight mb-3">
+                        <h2 className="text-4xl font-serif text-slate-900 dark:text-institutional-50 tracking-tight leading-tight mb-3">
                             {pendingUser ? t('economic.changePassword') : t('login.welcome')}
                         </h2>
                         <p className="text-slate-500 text-sm font-medium">
@@ -223,7 +223,7 @@ const Login: React.FC = () => {
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder={t('login.minCharacters')} 
-                                            className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 font-bold focus:border-primary focus:bg-white dark:focus:bg-slate-900 outline-none text-sm transition-all`}
+                                            className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 font-bold focus:border-primary focus:bg-institutional-50 dark:focus:bg-slate-900 outline-none text-sm transition-all`}
                                             required 
                                         />
                                     </div>
@@ -237,7 +237,7 @@ const Login: React.FC = () => {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder={t('login.repeatPassword')} 
-                                            className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 font-bold focus:border-primary focus:bg-white dark:focus:bg-slate-900 outline-none text-sm transition-all`}
+                                            className={`w-full bg-slate-50 dark:bg-slate-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 font-bold focus:border-primary focus:bg-institutional-50 dark:focus:bg-slate-900 outline-none text-sm transition-all`}
                                             required 
                                         />
                                     </div>
@@ -245,7 +245,7 @@ const Login: React.FC = () => {
                                 <button 
                                     type="submit" 
                                     disabled={isSubmitting}
-                                    className="w-full bg-primary text-white p-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-70"
+                                    className="w-full bg-primary text-institutional-50 p-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-70"
                                 >
                                     {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <ShieldCheck size={20} />}
                                     <span>{t('login.updateAndLogin')}</span>
@@ -338,7 +338,7 @@ const Login: React.FC = () => {
                                 <button 
                                     type="submit" 
                                     disabled={isSubmitting}
-                                    className="w-full bg-primary text-white p-4 rounded-xl font-semibold shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70 mt-2"
+                                    className="w-full bg-primary text-institutional-50 p-4 rounded-xl font-semibold shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70 mt-2"
                                 >
                                     {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : (isSignUp ? <UserPlus size={18} /> : <LogIn size={18} />)}
                                     <span>{isSubmitting ? t('login.verifying') : (isSignUp ? 'Sign Up' : t('login.authenticate'))}</span>
@@ -383,15 +383,15 @@ const Login: React.FC = () => {
                                     <button 
                                         key={u.id}
                                         onClick={() => fillCredentials(u)}
-                                        className="w-full text-left bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-800 transition-all group active:scale-[0.98] shadow-sm"
+                                        className="w-full text-left bg-institutional-50 dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-800 transition-all group active:scale-[0.98] shadow-sm"
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-sm ${u.role === 'admin' ? 'bg-rose-500' : u.role === 'teacher' ? 'bg-primary' : 'bg-emerald-500'}`}>
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-institutional-50 shadow-sm ${u.role === 'admin' ? 'bg-rose-500' : u.role === 'teacher' ? 'bg-primary' : 'bg-emerald-500'}`}>
                                                     {u.role.charAt(0).toUpperCase()}
                                                 </div>
                                                 <div>
-                                                    <p className="text-slate-900 dark:text-white font-semibold text-sm">{u.name}</p>
+                                                    <p className="text-slate-900 dark:text-institutional-50 font-semibold text-sm">{u.name}</p>
                                                     <p className="text-xs text-slate-500 capitalize">{u.role}</p>
                                                 </div>
                                             </div>

@@ -157,7 +157,7 @@ const Profile: React.FC = () => {
           >
             <ChevronLeft size={20} className={isRTL ? 'rotate-180' : ''} />
           </button>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tighter uppercase text-institutional-950 dark:text-white">
+          <h1 className="text-2xl md:text-3xl font-black tracking-tighter uppercase text-institutional-950 dark:text-institutional-50">
             {t('profile.title')}
           </h1>
         </div>
@@ -165,7 +165,7 @@ const Profile: React.FC = () => {
         {isOwnProfile && !isEditing && (
           <button 
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-bold hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-institutional-50 rounded-xl font-bold hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20"
           >
             <Edit3 size={18} />
             <span className="hidden sm:inline">{t('profile.editProfile')}</span>
@@ -193,14 +193,14 @@ const Profile: React.FC = () => {
                     const url = prompt('Enter image URL:', editData.avatar || '');
                     if (url !== null) setEditData({ ...editData, avatar: url });
                   }}
-                  className="absolute bottom-0 right-0 w-10 h-10 bg-primary text-white rounded-full border-4 border-white dark:border-institutional-900 flex items-center justify-center hover:scale-110 transition-transform"
+                  className="absolute bottom-0 right-0 w-10 h-10 bg-primary text-institutional-50 rounded-full border-4 border-white dark:border-institutional-900 flex items-center justify-center hover:scale-110 transition-transform"
                 >
                   <Camera size={18} />
                 </button>
               )}
             </div>
             
-            <h2 className="text-xl font-black text-institutional-950 dark:text-white mb-1">
+            <h2 className="text-xl font-black text-institutional-950 dark:text-institutional-50 mb-1">
               {profileUser.name}
             </h2>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-institutional-100 dark:bg-institutional-800 text-institutional-500 text-xs font-black uppercase tracking-widest mb-4">
@@ -227,7 +227,7 @@ const Profile: React.FC = () => {
             </h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white dark:bg-institutional-800 flex items-center justify-center text-primary shadow-sm">
+                <div className="w-8 h-8 rounded-lg bg-institutional-50 dark:bg-institutional-800 flex items-center justify-center text-primary shadow-sm">
                   <Calendar size={16} />
                 </div>
                 <div>
@@ -236,7 +236,7 @@ const Profile: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white dark:bg-institutional-800 flex items-center justify-center text-primary shadow-sm">
+                <div className="w-8 h-8 rounded-lg bg-institutional-50 dark:bg-institutional-800 flex items-center justify-center text-primary shadow-sm">
                   <Clock size={16} />
                 </div>
                 <div>
@@ -256,7 +256,7 @@ const Profile: React.FC = () => {
               <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                 <BookOpen size={20} />
               </div>
-              <h3 className="text-lg font-black text-institutional-950 dark:text-white uppercase tracking-tight">
+              <h3 className="text-lg font-black text-institutional-950 dark:text-institutional-50 uppercase tracking-tight">
                 {t('profile.academicInfo')}
               </h3>
             </div>
@@ -326,7 +326,7 @@ const Profile: React.FC = () => {
               <div className="w-10 h-10 rounded-xl bg-institutional-100 dark:bg-institutional-800 text-institutional-600 dark:text-institutional-300 flex items-center justify-center">
                 <Briefcase size={20} />
               </div>
-              <h3 className="text-lg font-black text-institutional-950 dark:text-white uppercase tracking-tight">
+              <h3 className="text-lg font-black text-institutional-950 dark:text-institutional-50 uppercase tracking-tight">
                 {t('profile.personalInfo')}
               </h3>
             </div>
@@ -377,7 +377,7 @@ const Profile: React.FC = () => {
               <button 
                 onClick={handleSave}
                 disabled={saving}
-                className="flex-1 flex items-center justify-center gap-2 bg-primary text-white p-4 rounded-2xl font-black uppercase tracking-widest hover:bg-primary-hover transition-all disabled:opacity-50 shadow-lg shadow-primary/20 backdrop-blur-sm"
+                className="flex-1 flex items-center justify-center gap-2 bg-primary text-institutional-50 p-4 rounded-2xl font-black uppercase tracking-widest hover:bg-primary-hover transition-all disabled:opacity-50 shadow-lg shadow-primary/20 backdrop-blur-sm"
               >
                 {saving ? (
                   <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>

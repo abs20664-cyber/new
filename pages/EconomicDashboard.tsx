@@ -648,7 +648,7 @@ const EconomicDashboard: React.FC = () => {
             <div className="mb-10 flex flex-col gap-8 pb-6 border-b border-institutional-200 dark:border-institutional-800">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="text-start">
-                        <h2 className="text-3xl font-black uppercase tracking-tight text-institutional-900 dark:text-white">{t('economic.title')}</h2>
+                        <h2 className="text-3xl font-black uppercase tracking-tight text-institutional-900 dark:text-institutional-50">{t('economic.title')}</h2>
                         <p className="text-[10px] font-black text-institutional-500 uppercase tracking-[0.3em] mt-1">Institutional President Terminal v3.1</p>
                     </div>
                     
@@ -698,7 +698,7 @@ const EconomicDashboard: React.FC = () => {
                                     <ArrowRight size={14} className="text-institutional-300 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
                                 <p className="text-[10px] font-black uppercase text-institutional-400 tracking-widest mb-1">{kpi.label}</p>
-                                <h3 className="text-2xl font-black text-institutional-900 dark:text-white">{kpi.value}</h3>
+                                <h3 className="text-2xl font-black text-institutional-900 dark:text-institutional-50">{kpi.value}</h3>
                             </div>
                         ))}
                     </div>
@@ -708,7 +708,7 @@ const EconomicDashboard: React.FC = () => {
                         <div className="lg:col-span-2 bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-soft">
                             <div className="flex items-center justify-between mb-8">
                                 <div className="text-start">
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white">{t('economic.revenue')} Analysis</h3>
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50">{t('economic.revenue')} Analysis</h3>
                                     <p className="text-[10px] font-bold text-institutional-400 uppercase mt-1">Monthly Collected vs Expected</p>
                                 </div>
                                 <div className="flex gap-2">
@@ -737,7 +737,7 @@ const EconomicDashboard: React.FC = () => {
 
                         {/* Alerts Panel */}
                         <div className="bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-soft">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-8 text-start">{t('economic.alerts')}</h3>
+                            <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50 mb-8 text-start">{t('economic.alerts')}</h3>
                             <div className="space-y-4">
                                 {[
                                     { label: t('economic.expiredSubs'), count: alerts.expired, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50' },
@@ -761,7 +761,7 @@ const EconomicDashboard: React.FC = () => {
                                 ))}
                             </div>
                             <div className="mt-8 pt-8 border-t border-institutional-100 dark:border-institutional-800">
-                                <button className="w-full py-4 bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
+                                <button className="w-full py-4 bg-institutional-900 dark:bg-institutional-50 text-institutional-50 dark:text-institutional-900 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
                                     Generate Monthly Report
                                 </button>
                             </div>
@@ -817,14 +817,14 @@ const EconomicDashboard: React.FC = () => {
                                 {filteredTeachers.map(t_user => {
                                     const pay = payments[t_user.id];
                                     return (
-                                        <div key={t_user.id} className="bg-white dark:bg-slate-900 border-l-4 border-primary rounded-2xl p-6 text-start shadow-sm">
+                                        <div key={t_user.id} className="bg-institutional-50 dark:bg-slate-900 border-l-4 border-primary rounded-2xl p-6 text-start shadow-sm">
                                             <div className="flex items-center justify-between mb-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
                                                         {t_user.name.charAt(0)}
                                                     </div>
                                                     <div>
-                                                        <p className="font-black text-sm text-slate-900 dark:text-white">{t_user.name}</p>
+                                                        <p className="font-black text-sm text-slate-900 dark:text-institutional-50">{t_user.name}</p>
                                                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">ID: {t_user.id}</p>
                                                     </div>
                                                 </div>
@@ -843,7 +843,7 @@ const EconomicDashboard: React.FC = () => {
                                             <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 dark:border-slate-800">
                                                 <div>
                                                     <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">{t('economic.amountOwed')}</p>
-                                                    <p className="text-sm font-black text-slate-900 dark:text-white">{formatCurrencyDZD(pay?.amountOwed || 0)}</p>
+                                                    <p className="text-sm font-black text-slate-900 dark:text-institutional-50">{formatCurrencyDZD(pay?.amountOwed || 0)}</p>
                                                 </div>
                                                 <div>
                                                     <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">{t('economic.amountPaid')}</p>
@@ -859,7 +859,7 @@ const EconomicDashboard: React.FC = () => {
                                                             onChange={e => setNoteValue(e.target.value)}
                                                             className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-bold outline-none"
                                                         />
-                                                        <button onClick={() => handleSaveNote(t_user.id)} className="p-3 bg-primary text-white rounded-xl shadow-lg shadow-primary/20"><Save size={16} /></button>
+                                                        <button onClick={() => handleSaveNote(t_user.id)} className="p-3 bg-primary text-institutional-50 rounded-xl shadow-lg shadow-primary/20"><Save size={16} /></button>
                                                     </div>
                                                 ) : (
                                                     <div className="flex items-center justify-between gap-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
@@ -873,7 +873,7 @@ const EconomicDashboard: React.FC = () => {
                                 })}
                             </div>
                         ) : (
-                            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-xl">
+                            <div className="bg-institutional-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-xl">
                                 <table className="w-full text-start border-collapse">
                                     <thead>
                                         <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
@@ -898,7 +898,7 @@ const EconomicDashboard: React.FC = () => {
                                                                 {t_user.name.charAt(0)}
                                                             </div>
                                                             <div>
-                                                                <p className="font-bold text-sm text-slate-900 dark:text-white">{t_user.name}</p>
+                                                                <p className="font-bold text-sm text-slate-900 dark:text-institutional-50">{t_user.name}</p>
                                                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ID: {t_user.id}</p>
                                                             </div>
                                                         </div>
@@ -926,7 +926,7 @@ const EconomicDashboard: React.FC = () => {
                                                         {editingDate === t_user.id ? (
                                                             <div className="flex items-center gap-2">
                                                                 <input type="date" value={dateValue} onChange={(e) => setDateValue(e.target.value)} className="w-36 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg border-2 border-primary" />
-                                                                <button onClick={() => handleUpdateNextPaymentDate(t_user.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={16} /></button>
+                                                                <button onClick={() => handleUpdateNextPaymentDate(t_user.id)} className="p-2 bg-primary text-institutional-50 rounded-lg"><Save size={16} /></button>
                                                             </div>
                                                         ) : (
                                                             <div onClick={() => { setEditingDate(t_user.id); setDateValue(pay?.nextPaymentDate || ''); }} className="cursor-pointer">
@@ -938,11 +938,11 @@ const EconomicDashboard: React.FC = () => {
                                                         {editingAmount === t_user.id ? (
                                                             <div className="flex items-center gap-2">
                                                                 <input type="number" value={amountValue} onChange={(e) => setAmountValue(Number(e.target.value))} className="w-24 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg border-2 border-primary" />
-                                                                <button onClick={() => handleUpdateTeacherSalary(t_user.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={16} /></button>
+                                                                <button onClick={() => handleUpdateTeacherSalary(t_user.id)} className="p-2 bg-primary text-institutional-50 rounded-lg"><Save size={16} /></button>
                                                             </div>
                                                         ) : (
                                                             <div onClick={() => { setEditingAmount(t_user.id); setAmountValue(pay?.monthlySalary || 0); }} className="cursor-pointer">
-                                                                <p className="text-sm font-black text-slate-900 dark:text-white">{formatCurrencyDZD(pay?.monthlySalary || 0)}</p>
+                                                                <p className="text-sm font-black text-slate-900 dark:text-institutional-50">{formatCurrencyDZD(pay?.monthlySalary || 0)}</p>
                                                             </div>
                                                         )}
                                                     </td>
@@ -954,7 +954,7 @@ const EconomicDashboard: React.FC = () => {
                                                                     onChange={e => setNoteValue(e.target.value)}
                                                                     className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-bold outline-none"
                                                                 />
-                                                                <button onClick={() => handleSaveNote(t_user.id)} className="p-3 bg-primary text-white rounded-xl shadow-lg shadow-primary/20"><Save size={16} /></button>
+                                                                <button onClick={() => handleSaveNote(t_user.id)} className="p-3 bg-primary text-institutional-50 rounded-xl shadow-lg shadow-primary/20"><Save size={16} /></button>
                                                             </div>
                                                         ) : (
                                                             <div className="flex items-center justify-between gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 group">
@@ -967,13 +967,13 @@ const EconomicDashboard: React.FC = () => {
                                                         <div className="flex justify-end gap-3">
                                                             <button 
                                                                 onClick={() => handleUpdateTeacherPayment(t_user.id, 'Paid')}
-                                                                className={`p-3 rounded-2xl transition-all ${pay?.status === 'Paid' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-500'}`}
+                                                                className={`p-3 rounded-2xl transition-all ${pay?.status === 'Paid' ? 'bg-emerald-500 text-institutional-50 shadow-lg shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-500'}`}
                                                                 title={t('economic.markPaid')}>
                                                                 <CheckCircle size={20} />
                                                             </button>
                                                             <button 
                                                                 onClick={() => handleUpdateTeacherPayment(t_user.id, 'Unpaid')}
-                                                                className={`p-3 rounded-2xl transition-all ${pay?.status === 'Unpaid' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-500'}`}
+                                                                className={`p-3 rounded-2xl transition-all ${pay?.status === 'Unpaid' ? 'bg-rose-500 text-institutional-50 shadow-lg shadow-rose-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-500'}`}
                                                                 title={t('economic.markUnpaid')}>
                                                                 <XCircle size={20} />
                                                             </button>
@@ -993,11 +993,11 @@ const EconomicDashboard: React.FC = () => {
             {activeTab === 'sessions' && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl p-8">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-6">Scheduled Sessions</h3>
+                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50 mb-6">Scheduled Sessions</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {sessions.map(s => (
                                 <div key={s.id} className="p-6 bg-institutional-50 dark:bg-institutional-800 rounded-2xl border border-institutional-200 dark:border-institutional-700">
-                                    <h4 className="font-black text-lg text-institutional-900 dark:text-white mb-2">{s.name}</h4>
+                                    <h4 className="font-black text-lg text-institutional-900 dark:text-institutional-50 mb-2">{s.name}</h4>
                                     <p className="text-xs text-institutional-500 font-bold uppercase tracking-widest mb-4">{s.date} • {s.time} - {s.endTime}</p>
                                     <span className="px-3 py-1 rounded-full text-[9px] font-black uppercase bg-primary/10 text-primary">{s.type}</span>
                                 </div>
@@ -1010,7 +1010,7 @@ const EconomicDashboard: React.FC = () => {
             {activeTab === 'timetable' && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl p-8">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-6">Fixed Timetable</h3>
+                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50 mb-6">Fixed Timetable</h3>
                         <div className="overflow-x-auto">
                             <table className="w-full text-start border-collapse">
                                 <thead>
@@ -1041,7 +1041,7 @@ const EconomicDashboard: React.FC = () => {
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl">
                         <div className="p-8 border-b border-institutional-100 dark:border-institutional-800 flex items-center justify-between">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white">{t('economic.auditLog')}</h3>
+                            <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50">{t('economic.auditLog')}</h3>
                             <button onClick={() => exportCSV(auditLogs, 'financial_audit_log')} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:underline">
                                 <Download size={14} /> {t('economic.export')}
                             </button>
@@ -1054,13 +1054,13 @@ const EconomicDashboard: React.FC = () => {
                                             <History size={18} />
                                         </div>
                                         <div className="text-start">
-                                            <p className="text-sm font-bold text-institutional-900 dark:text-white">{log.action}</p>
+                                            <p className="text-sm font-bold text-institutional-900 dark:text-institutional-50">{log.action}</p>
                                             <p className="text-[10px] font-bold text-institutional-400 uppercase tracking-widest">{log.details}</p>
                                             {log.targetName && <p className="text-[9px] font-black text-primary uppercase mt-1">Target: {log.targetName}</p>}
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        <p className="text-[10px] font-black text-institutional-900 dark:text-white uppercase tracking-widest">{log.userName}</p>
+                                        <p className="text-[10px] font-black text-institutional-900 dark:text-institutional-50 uppercase tracking-widest">{log.userName}</p>
                                         <p className="text-[9px] font-bold text-institutional-400 mt-1">
                                             {log.timestamp?.seconds ? new Date(log.timestamp.seconds * 1000).toLocaleString() : '---'}
                                         </p>
@@ -1087,7 +1087,7 @@ const EconomicDashboard: React.FC = () => {
                                     {studentToEdit.name.charAt(0)}
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-black text-institutional-900 dark:text-white">{studentToEdit.name}</h3>
+                                    <h3 className="text-lg font-black text-institutional-900 dark:text-institutional-50">{studentToEdit.name}</h3>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400">Edit Student Subscription</p>
                                 </div>
                             </div>
@@ -1124,7 +1124,7 @@ const EconomicDashboard: React.FC = () => {
                                             type="number"
                                             value={amountValue}
                                             onChange={(e) => setAmountValue(Number(e.target.value))}
-                                            className="w-full bg-institutional-50 dark:bg-institutional-800 border-2 border-institutional-200 dark:border-institutional-700 pl-12 pr-4 py-4 rounded-2xl text-sm font-bold text-institutional-900 dark:text-white focus:border-primary outline-none transition-all"
+                                            className="w-full bg-institutional-50 dark:bg-institutional-800 border-2 border-institutional-200 dark:border-institutional-700 pl-12 pr-4 py-4 rounded-2xl text-sm font-bold text-institutional-900 dark:text-institutional-50 focus:border-primary outline-none transition-all"
                                         />
                                     </div>
                                 </div>
@@ -1141,7 +1141,7 @@ const EconomicDashboard: React.FC = () => {
                                         type="number"
                                         value={subscriptionType === 'time' ? durationValue : sessionsValue}
                                         onChange={(e) => subscriptionType === 'time' ? setDurationValue(Number(e.target.value)) : setSessionsValue(Number(e.target.value))}
-                                        className="w-full bg-institutional-50 dark:bg-institutional-800 border-2 border-institutional-200 dark:border-institutional-700 pl-12 pr-4 py-4 rounded-2xl text-sm font-bold text-institutional-900 dark:text-white focus:border-primary outline-none transition-all"
+                                        className="w-full bg-institutional-50 dark:bg-institutional-800 border-2 border-institutional-200 dark:border-institutional-700 pl-12 pr-4 py-4 rounded-2xl text-sm font-bold text-institutional-900 dark:text-institutional-50 focus:border-primary outline-none transition-all"
                                         placeholder={subscriptionType === 'time' ? 'Enter months' : 'Enter sessions'}
                                     />
                                 </div>
@@ -1160,7 +1160,7 @@ const EconomicDashboard: React.FC = () => {
                                             <button 
                                                 key={item.status}
                                                 onClick={() => handleUpdateStudentPayment(studentToEdit.id, item.status as any)}
-                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-1 transition-all ${subscriptions[studentToEdit.id]?.paymentStatus === item.status ? `${item.color} text-white shadow-lg` : 'bg-institutional-50 dark:bg-institutional-800 text-institutional-400 border border-institutional-200 dark:border-institutional-700'}`}
+                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-1 transition-all ${subscriptions[studentToEdit.id]?.paymentStatus === item.status ? `${item.color} text-institutional-50 shadow-lg` : 'bg-institutional-50 dark:bg-institutional-800 text-institutional-400 border border-institutional-200 dark:border-institutional-700'}`}
                                             >
                                                 <item.icon size={14} /> {item.status}
                                             </button>
@@ -1178,7 +1178,7 @@ const EconomicDashboard: React.FC = () => {
                                             <button 
                                                 key={item.status}
                                                 onClick={() => handleUpdateAccountStatus(studentToEdit.id, item.status)}
-                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-1 transition-all ${studentToEdit.accountStatus === item.status ? `${item.color} text-white shadow-lg` : 'bg-institutional-50 dark:bg-institutional-800 text-institutional-400 border border-institutional-200 dark:border-institutional-700'}`}
+                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-1 transition-all ${studentToEdit.accountStatus === item.status ? `${item.color} text-institutional-50 shadow-lg` : 'bg-institutional-50 dark:bg-institutional-800 text-institutional-400 border border-institutional-200 dark:border-institutional-700'}`}
                                             >
                                                 <item.icon size={14} /> {item.status}
                                             </button>
@@ -1201,7 +1201,7 @@ const EconomicDashboard: React.FC = () => {
                                     await handleUpdateSubscriptionDuration(studentToEdit.id);
                                     setStudentToEdit(null);
                                 }}
-                                className="flex-[2] py-4 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                className="flex-[2] py-4 bg-primary text-institutional-50 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                             >
                                 <Save size={18} /> Save All Changes
                             </button>

@@ -63,10 +63,10 @@ const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ src, duration: 
     };
 
     return (
-        <div className={`flex items-center gap-3 p-3 rounded-2xl min-w-[240px] max-w-[320px] transition-all ${isMe ? 'bg-white/20 backdrop-blur-sm border border-white/10' : 'bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700'}`}>
+        <div className={`flex items-center gap-3 p-3 rounded-2xl min-w-[240px] max-w-[320px] transition-all ${isMe ? 'bg-institutional-50/20 backdrop-blur-sm border border-white/10' : 'bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700'}`}>
             <button 
                 onClick={togglePlay}
-                className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all shadow-sm active:scale-95 ${isMe ? 'bg-white text-primary hover:bg-white/90' : 'bg-primary text-white hover:bg-primary-hover'}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all shadow-sm active:scale-95 ${isMe ? 'bg-institutional-50 text-primary hover:bg-institutional-50/90' : 'bg-primary text-institutional-50 hover:bg-primary-hover'}`}
             >
                 {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className="ml-1" />}
             </button>
@@ -79,7 +79,7 @@ const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ src, duration: 
                     max={duration || 100}
                     value={currentTime}
                     onChange={handleSeek}
-                    className={`w-full h-1.5 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20 ${isMe ? 'bg-white/30' : 'bg-institutional-300 dark:bg-institutional-600'}`}
+                    className={`w-full h-1.5 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20 ${isMe ? 'bg-institutional-50/30' : 'bg-institutional-300 dark:bg-institutional-600'}`}
                     style={{
                         backgroundSize: `${(currentTime / (duration || 1)) * 100}% 100%`,
                         backgroundImage: isMe 
@@ -88,7 +88,7 @@ const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ src, duration: 
                         backgroundRepeat: 'no-repeat'
                     }}
                 />
-                <div className={`flex justify-between text-[10px] font-bold tracking-wider uppercase ${isMe ? 'text-white/90' : 'text-institutional-500 dark:text-institutional-400'}`}>
+                <div className={`flex justify-between text-[10px] font-bold tracking-wider uppercase ${isMe ? 'text-institutional-50/90' : 'text-institutional-500 dark:text-institutional-400'}`}>
                     <span>{formatTime(currentTime)}</span>
                     <span>{formatTime(duration)}</span>
                 </div>

@@ -38,7 +38,7 @@ const Logo: React.FC<LogoProps> = ({ size = 'md', className = '' }) => {
             }}
         >
             <motion.div 
-                className="absolute top-0 right-0 w-full h-full bg-white/10 rounded-bl-full"
+                className="absolute top-0 right-0 w-full h-full bg-institutional-50/10 rounded-bl-full"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 style={{ transformOrigin: 'top right' }}

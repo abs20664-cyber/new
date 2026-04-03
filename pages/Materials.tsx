@@ -82,8 +82,8 @@ const Materials: React.FC = () => {
                         />
                     </div>
                     <div className="flex bg-sidebar border border-border rounded-2xl p-1.5">
-                        <button onClick={() => setViewMode('grid')} className={`p-2.5 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:text-primary'}`}><Grid size={18} /></button>
-                        <button onClick={() => setViewMode('list')} className={`p-2.5 rounded-xl transition-all ${viewMode === 'list' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-secondary hover:text-primary'}`}><List size={18} /></button>
+                        <button onClick={() => setViewMode('grid')} className={`p-2.5 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-primary text-institutional-50 shadow-lg shadow-primary/20' : 'text-text-secondary hover:text-primary'}`}><Grid size={18} /></button>
+                        <button onClick={() => setViewMode('list')} className={`p-2.5 rounded-xl transition-all ${viewMode === 'list' ? 'bg-primary text-institutional-50 shadow-lg shadow-primary/20' : 'text-text-secondary hover:text-primary'}`}><List size={18} /></button>
                     </div>
                 </div>
             </div>
@@ -111,7 +111,7 @@ const Materials: React.FC = () => {
                                 </div>
                                 <button 
                                     onClick={() => downloadFile(m.fileData, m.fileName)}
-                                    className="w-full bg-background text-text p-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-primary hover:text-white transition-all shadow-sm border border-border group-hover:border-primary/20"
+                                    className="w-full bg-background text-text p-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-primary hover:text-institutional-50 transition-all shadow-sm border border-border group-hover:border-primary/20"
                                 >
                                     <Download size={16} /> {t('cabinet.downloadArchive')}
                                 </button>
@@ -143,7 +143,7 @@ const Materials: React.FC = () => {
                                 <div className="flex justify-end">
                                     <button 
                                         onClick={() => downloadFile(m.fileData, m.fileName)}
-                                        className="p-3 bg-background text-text-secondary rounded-xl hover:bg-primary hover:text-white transition-all border border-border hover:border-primary shadow-sm"
+                                        className="p-3 bg-background text-text-secondary rounded-xl hover:bg-primary hover:text-institutional-50 transition-all border border-border hover:border-primary shadow-sm"
                                         title={t('cabinet.downloadArchive')}
                                     >
                                         <Download size={20} />

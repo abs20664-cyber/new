@@ -243,9 +243,9 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                 <div className="w-20 h-20 bg-danger/10 text-danger rounded-3xl flex items-center justify-center mb-6 shadow-xl border border-danger/20">
                     <AlertTriangle size={40} />
                 </div>
-                <h3 className="text-xl font-black uppercase text-institutional-950 dark:text-white mb-2">{errorMsg}</h3>
+                <h3 className="text-xl font-black uppercase text-institutional-950 dark:text-institutional-50 mb-2">{errorMsg}</h3>
                 <p className="text-sm font-bold text-institutional-500 mb-8 uppercase tracking-widest">{t('scanner.protocolError')}</p>
-                <button onClick={onBack} className="bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 px-10 py-4 rounded-xl font-black uppercase text-xs tracking-[0.2em] shadow-2xl transition-transform hover:scale-105">{t('scanner.returnHub')}</button>
+                <button onClick={onBack} className="bg-institutional-900 dark:bg-institutional-50 text-institutional-50 dark:text-institutional-900 px-10 py-4 rounded-xl font-black uppercase text-xs tracking-[0.2em] shadow-2xl transition-transform hover:scale-105">{t('scanner.returnHub')}</button>
             </div>
         );
     }
@@ -254,10 +254,10 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
         <div className={`fade-in max-w-2xl mx-auto flex flex-col ${isMobile ? 'h-[calc(100vh-180px)]' : 'h-[calc(100vh-140px)]'}`}>
              <div className="mb-6 flex justify-between items-center shrink-0">
                 <div>
-                    <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-institutional-950 dark:text-white">{t('scanner.title')}</h2>
+                    <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-institutional-950 dark:text-institutional-50">{t('scanner.title')}</h2>
                     <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{sessionData?.name}</p>
                 </div>
-                <button onClick={onBack} className="w-12 h-12 flex items-center justify-center bg-institutional-200 dark:bg-institutional-800 text-institutional-500 hover:bg-danger hover:text-white rounded-xl transition-all shadow-lg"><X size={24} /></button>
+                <button onClick={onBack} className="w-12 h-12 flex items-center justify-center bg-institutional-200 dark:bg-institutional-800 text-institutional-500 hover:bg-danger hover:text-institutional-50 rounded-xl transition-all shadow-lg"><X size={24} /></button>
             </div>
             
             <div className={`flex-1 card-edu rounded-[2.5rem] bg-black overflow-hidden relative flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)] border-4 border-black`}>
@@ -266,7 +266,7 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                 <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-between p-10">
                     <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
                         <ShieldCheck size={14} className="text-primary" />
-                        <span className="text-[9px] font-black uppercase text-white tracking-[0.2em]">{t('scanner.authActive')}</span>
+                        <span className="text-[9px] font-black uppercase text-institutional-50 tracking-[0.2em]">{t('scanner.authActive')}</span>
                     </div>
 
                     <div className="w-64 h-64 border-2 border-white/10 rounded-3xl relative">
@@ -277,7 +277,7 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                         <div className="w-full h-[2px] bg-primary/60 absolute top-0 animate-[scan-line_2.5s_infinite] shadow-[0_0_20px_rgba(79,70,229,0.9)]"></div>
                     </div>
 
-                    <div className="bg-black/60 backdrop-blur-xl border border-white/10 text-white px-8 py-4 rounded-2xl flex items-center gap-3 shadow-2xl w-full max-w-xs justify-center transition-all">
+                    <div className="bg-black/60 backdrop-blur-xl border border-white/10 text-institutional-50 px-8 py-4 rounded-2xl flex items-center gap-3 shadow-2xl w-full max-w-xs justify-center transition-all">
                         {status.includes(t('scanner.verified')) || status.includes(t('scanner.alreadyVerified')) ? <CheckCircle size={20} className="text-success animate-pulse" /> : status.includes(t('scanner.delivering')) ? <FileUp size={20} className="text-primary animate-bounce" /> : <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />}
                         <span className="text-[10px] font-black uppercase tracking-widest">{status}</span>
                     </div>
@@ -286,7 +286,7 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                 {isPaused && (
                     <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-50 pointer-events-auto">
                         <CheckCircle size={64} className="text-success mb-6" />
-                        <h3 className="text-2xl font-black text-white uppercase mb-8 text-center px-4">{status}</h3>
+                        <h3 className="text-2xl font-black text-institutional-50 uppercase mb-8 text-center px-4">{status}</h3>
                         <button 
                             onClick={() => {
                                 if (scannerRef.current?.resume) scannerRef.current.resume();
@@ -294,7 +294,7 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                                 setStatus(t('scanner.scanningActive'));
                                 isProcessing.current = false;
                             }}
-                            className="bg-primary text-white px-12 py-4 rounded-2xl font-black uppercase tracking-[0.2em] hover:scale-105 transition-transform shadow-[0_10px_30px_rgba(99,102,241,0.4)]"
+                            className="bg-primary text-institutional-50 px-12 py-4 rounded-2xl font-black uppercase tracking-[0.2em] hover:scale-105 transition-transform shadow-[0_10px_30px_rgba(99,102,241,0.4)]"
                         >
                             Scan Next Student
                         </button>

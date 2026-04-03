@@ -111,12 +111,12 @@ const Schedule: React.FC = () => {
         const weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
         return (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm w-full max-w-sm mx-auto">
+            <div className="bg-institutional-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm w-full max-w-sm mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <button onClick={() => navigateMonth(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                         <ChevronLeft size={18} className="text-slate-600 dark:text-slate-400" />
                     </button>
-                    <h3 className="font-semibold text-slate-900 dark:text-white text-base">
+                    <h3 className="font-semibold text-slate-900 dark:text-institutional-50 text-base">
                         {currentDate.toLocaleDateString(language, { month: 'long', year: 'numeric' })}
                     </h3>
                     <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
@@ -144,14 +144,14 @@ const Schedule: React.FC = () => {
                                 key={i} 
                                 onClick={() => setCurrentDate(d)}
                                 className={`h-10 w-10 mx-auto rounded-full flex flex-col items-center justify-center text-sm relative transition-all
-                                    ${isSelected ? 'bg-primary text-white font-semibold shadow-md' : 
+                                    ${isSelected ? 'bg-primary text-institutional-50 font-semibold shadow-md' : 
                                       isToday ? 'bg-primary/10 text-primary font-semibold' : 
                                       'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}
                                 `}
                             >
                                 <span>{d.getDate()}</span>
                                 {hasClass && (
-                                    <div className={`absolute bottom-1.5 w-1 h-1 rounded-full ${isSelected ? 'bg-white' : 'bg-primary'}`} />
+                                    <div className={`absolute bottom-1.5 w-1 h-1 rounded-full ${isSelected ? 'bg-institutional-50' : 'bg-primary'}`} />
                                 )}
                             </button>
                         );
@@ -172,7 +172,7 @@ const Schedule: React.FC = () => {
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 pb-24">
             <div className="text-center mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">{t('schedule.title')}</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-institutional-50 mb-2">{t('schedule.title')}</h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400">Manage your academic timeline and sessions</p>
             </div>
 
@@ -185,7 +185,7 @@ const Schedule: React.FC = () => {
                 {/* Schedule List Section */}
                 <div className="w-full max-w-lg flex-1">
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-institutional-50 flex items-center gap-2">
                             <CalendarDays size={18} className="text-primary" />
                             {currentDate.toLocaleDateString(language, { weekday: 'long', month: 'long', day: 'numeric' })}
                         </h3>
@@ -214,7 +214,7 @@ const Schedule: React.FC = () => {
                                         <div 
                                             key={s.id} 
                                             onClick={() => user?.role !== 'student' && setExpandedSession(isExpanded ? null : s.id)}
-                                            className={`bg-white dark:bg-slate-900 p-5 rounded-2xl border transition-all relative overflow-hidden ${isLive ? 'border-primary shadow-md ring-1 ring-primary/20' : 'border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md'} ${user?.role !== 'student' ? 'cursor-pointer' : ''}`}
+                                            className={`bg-institutional-50 dark:bg-slate-900 p-5 rounded-2xl border transition-all relative overflow-hidden ${isLive ? 'border-primary shadow-md ring-1 ring-primary/20' : 'border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md'} ${user?.role !== 'student' ? 'cursor-pointer' : ''}`}
                                         >
                                             {isLive && (
                                                 <div className="absolute top-0 right-0 p-3">
@@ -230,7 +230,7 @@ const Schedule: React.FC = () => {
                                                     <span className="inline-block px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
                                                         {s.type}
                                                     </span>
-                                                    <h4 className="font-bold text-base text-slate-900 dark:text-white leading-tight">{s.name}</h4>
+                                                    <h4 className="font-bold text-base text-slate-900 dark:text-institutional-50 leading-tight">{s.name}</h4>
                                                 </div>
                                                 
                                                 <div className="shrink-0 mt-1">
@@ -240,7 +240,7 @@ const Schedule: React.FC = () => {
                                                             {t(`schedule.${status}`)}
                                                         </div>
                                                     ) : (
-                                                        <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-xl flex flex-col items-center group-hover:bg-primary group-hover:text-white transition-colors">
+                                                        <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-xl flex flex-col items-center group-hover:bg-primary group-hover:text-institutional-50 transition-colors">
                                                             <span className="text-[9px] font-bold uppercase tracking-wider">{(user?.role === 'economic' || user?.role === 'admin') ? 'Attendees' : t('schedule.present')}</span>
                                                             <span className="text-sm font-bold">{status}</span>
                                                         </div>
@@ -268,12 +268,12 @@ const Schedule: React.FC = () => {
                                                     {attendees.length > 0 ? (
                                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-1 scroll-hide">
                                                             {attendees.map((a: any) => (
-                                                                <div key={a.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 transition-colors shadow-sm">
+                                                                <div key={a.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-institutional-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
                                                                     <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center text-success shrink-0 font-bold text-xs">
                                                                         {a.studentName.charAt(0)}
                                                                     </div>
                                                                     <div className="min-w-0 flex-1">
-                                                                        <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{a.studentName}</p>
+                                                                        <p className="text-xs font-bold text-slate-900 dark:text-institutional-50 truncate">{a.studentName}</p>
                                                                         <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider flex items-center gap-1">
                                                                             <CheckCircle2 size={10} className="text-success" />
                                                                             {a.timestamp?.seconds ? new Date(a.timestamp.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Verified'}
@@ -292,11 +292,11 @@ const Schedule: React.FC = () => {
                                         </div>
                                     );
                                 }) : (
-                                    <div className="py-16 text-center bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center px-6">
+                                    <div className="py-16 text-center bg-institutional-50 dark:bg-slate-900 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center px-6">
                                         <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-300 mb-4">
                                             <CalendarIcon size={24} />
                                         </div>
-                                        <h4 className="font-semibold text-sm text-slate-900 dark:text-white mb-1">No sessions scheduled</h4>
+                                        <h4 className="font-semibold text-sm text-slate-900 dark:text-institutional-50 mb-1">No sessions scheduled</h4>
                                         <p className="text-xs text-slate-500">You have no classes on this date.</p>
                                     </div>
                                 )}

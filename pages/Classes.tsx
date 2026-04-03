@@ -57,7 +57,7 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, t, isRTL, openModal
 
             <div className="mb-10 text-start">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isLive ? 'bg-success text-white' : hasEnded ? 'bg-background text-text-secondary' : 'bg-primary/10 text-primary'}`}>
+                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isLive ? 'bg-success text-institutional-50' : hasEnded ? 'bg-background text-text-secondary' : 'bg-primary/10 text-primary'}`}>
                         {isLive ? t('hub.liveNow') : hasEnded ? t('hub.ended') : cl.type}
                     </div>
                     <div className="text-[10px] font-black text-text-secondary/50 uppercase tracking-widest">{cl.date}</div>
@@ -86,7 +86,7 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, t, isRTL, openModal
             <button 
                 onClick={() => !hasEnded && navigate('/scanner', { state: { classId: cl.id } })}
                 disabled={hasEnded}
-                className={`w-full py-5 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-xl flex items-center justify-center gap-3 transition-all ${hasEnded ? 'bg-background text-text-secondary/30 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90 shadow-primary/20 hover:scale-[1.02] active:scale-95'}`}
+                className={`w-full py-5 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-xl flex items-center justify-center gap-3 transition-all ${hasEnded ? 'bg-background text-text-secondary/30 cursor-not-allowed' : 'bg-primary text-institutional-50 hover:bg-primary/90 shadow-primary/20 hover:scale-[1.02] active:scale-95'}`}
             >
                 {hasEnded ? <CalendarOff size={20} /> : <Scan size={20} />}
                 {hasEnded ? t('hub.ended') : t('hub.marks')}
@@ -182,7 +182,7 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                 </div>
                 <button 
                     onClick={() => openModal()}
-                    className="group bg-primary text-white px-8 py-5 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 hover:bg-primary/90 hover:scale-[1.03] transition-all"
+                    className="group bg-primary text-institutional-50 px-8 py-5 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 hover:bg-primary/90 hover:scale-[1.03] transition-all"
                 >
                     <Plus size={20} className="transition-transform group-hover:rotate-90" /> {t('hub.newSession')}
                 </button>
@@ -270,7 +270,7 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                                     ))}
                                     <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-3xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group min-h-[100px]">
                                         <div className="flex items-center gap-3">
-                                            <div className="p-3 bg-background rounded-2xl group-hover:bg-primary group-hover:text-white transition-all border border-border"><Plus size={20} /></div>
+                                            <div className="p-3 bg-background rounded-2xl group-hover:bg-primary group-hover:text-institutional-50 transition-all border border-border"><Plus size={20} /></div>
                                             <span className="text-[11px] font-black uppercase tracking-widest text-text-secondary/50 group-hover:text-primary">{t('hub.clickToAdd')}</span>
                                         </div>
                                         <input type="file" multiple className="hidden" onChange={handleFileChange} />
@@ -292,7 +292,7 @@ const Classes: React.FC<ClassesProps> = ({ onNavigate }) => {
                                 </div>
                             </div>
 
-                            <button type="submit" disabled={isSaving} className="w-full bg-primary text-white py-6 rounded-3xl font-black text-xs uppercase tracking-[0.3em] shadow-[0_20px_40px_rgba(99,102,241,0.3)] hover:bg-primary/90 hover:scale-[1.02] active:scale-95 transition-all mt-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3">
+                            <button type="submit" disabled={isSaving} className="w-full bg-primary text-institutional-50 py-6 rounded-3xl font-black text-xs uppercase tracking-[0.3em] shadow-[0_20px_40px_rgba(99,102,241,0.3)] hover:bg-primary/90 hover:scale-[1.02] active:scale-95 transition-all mt-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3">
                                 {isSaving && <Loader2 size={18} className="animate-spin" />}
                                 {isSaving ? 'SYNCING...' : t('hub.sync')}
                             </button>

@@ -33,11 +33,11 @@ const UserRow = memo(({ index, style, data }: { index: number, style: React.CSSP
             <div style={style} className="px-1 py-2">
                 <div className="p-5 academic-card rounded-2xl text-start">
                     <div className="flex items-center gap-4 mb-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white shadow-sm ${u.role === 'admin' ? 'bg-danger' : 'bg-primary'}`}>
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-institutional-50 shadow-sm ${u.role === 'admin' ? 'bg-danger' : 'bg-primary'}`}>
                             {u.name.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="font-black text-sm text-institutional-950 dark:text-white truncate">{u.name}</p>
+                            <p className="font-black text-sm text-institutional-950 dark:text-institutional-50 truncate">{u.name}</p>
                             <p className="text-[10px] font-bold text-institutional-500 truncate">{u.email}</p>
                         </div>
                         <div className="flex items-center gap-1 bg-institutional-100 dark:bg-institutional-800 p-1 px-2 rounded-lg shrink-0">
@@ -60,10 +60,10 @@ const UserRow = memo(({ index, style, data }: { index: number, style: React.CSSP
     return (
         <div style={style} className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] px-6 border-b border-institutional-100 dark:border-institutional-800 items-center hover:bg-institutional-50 dark:hover:bg-institutional-800/50 transition-colors text-start`}>
             <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-sm ${u.role === 'admin' ? 'bg-danger' : 'bg-institutional-300 dark:bg-institutional-700'}`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-institutional-50 shadow-sm ${u.role === 'admin' ? 'bg-danger' : 'bg-institutional-300 dark:bg-institutional-700'}`}>
                     {u.name.charAt(0)}
                 </div>
-                <span className="font-bold text-sm text-institutional-950 dark:text-white">{u.name}</span>
+                <span className="font-bold text-sm text-institutional-950 dark:text-institutional-50">{u.name}</span>
             </div>
             <div className="text-xs font-bold text-institutional-600 dark:text-institutional-400 truncate pr-4">{u.email}</div>
             <div className="flex items-center gap-2">
@@ -74,7 +74,7 @@ const UserRow = memo(({ index, style, data }: { index: number, style: React.CSSP
             <div className="flex items-center justify-end gap-2">
                 <button onClick={() => navigate(`/profile/${u.id}`)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-institutional-100 dark:bg-institutional-800 text-institutional-500 hover:text-primary transition-colors" title={t('admin.profile')}><UserIcon size={14} /></button>
                 <button onClick={() => { setEditingUser(u); setIsModalOpen(true); }} className="w-8 h-8 flex items-center justify-center rounded-lg bg-institutional-100 dark:bg-institutional-800 text-institutional-500 hover:text-primary transition-colors"><Settings size={14} /></button>
-                <button onClick={() => handleDeleteClick(u.id)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-institutional-100 dark:bg-institutional-800 text-institutional-500 hover:bg-danger hover:text-white transition-colors">
+                <button onClick={() => handleDeleteClick(u.id)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-institutional-100 dark:bg-institutional-800 text-institutional-500 hover:bg-danger hover:text-institutional-50 transition-colors">
                     {processingId === u.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                 </button>
             </div>
@@ -296,7 +296,7 @@ const AdminRegistry: React.FC = () => {
                                     <Users size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.total}</p>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-institutional-50">{stats.total}</p>
                         </div>
                         <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
@@ -305,7 +305,7 @@ const AdminRegistry: React.FC = () => {
                                     <GraduationCap size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.students}</p>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-institutional-50">{stats.students}</p>
                         </div>
                         <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
@@ -314,7 +314,7 @@ const AdminRegistry: React.FC = () => {
                                     <Shield size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.teachers}</p>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-institutional-50">{stats.teachers}</p>
                         </div>
                         <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
@@ -323,7 +323,7 @@ const AdminRegistry: React.FC = () => {
                                     <ShieldAlert size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.staff}</p>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-institutional-50">{stats.staff}</p>
                         </div>
                     </div>
                     <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft flex flex-col">
@@ -364,7 +364,7 @@ const AdminRegistry: React.FC = () => {
                             placeholder="Search by name, email, or ID..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-institutional-50 dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 rounded-xl py-3 pl-12 pr-4 text-sm font-bold text-institutional-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
+                            className="w-full bg-institutional-50 dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 rounded-xl py-3 pl-12 pr-4 text-sm font-bold text-institutional-900 dark:text-institutional-50 focus:outline-none focus:border-primary transition-colors"
                         />
                     </div>
                     <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
@@ -376,7 +376,7 @@ const AdminRegistry: React.FC = () => {
                                     onClick={() => setRoleFilter(role)}
                                     className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-colors ${
                                         roleFilter === role 
-                                            ? 'bg-institutional-900 dark:bg-white text-white dark:text-institutional-900' 
+                                            ? 'bg-institutional-900 dark:bg-institutional-50 text-institutional-50 dark:text-institutional-900' 
                                             : 'bg-institutional-50 dark:bg-institutional-950 text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-800'
                                     }`}
                                 >
@@ -396,9 +396,9 @@ const AdminRegistry: React.FC = () => {
                             value={newSubject}
                             onChange={(e) => setNewSubject(e.target.value)}
                             placeholder="New subject name..."
-                            className="flex-1 bg-institutional-50 dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 rounded-xl py-3 px-4 text-sm font-bold text-institutional-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
+                            className="flex-1 bg-institutional-50 dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 rounded-xl py-3 px-4 text-sm font-bold text-institutional-900 dark:text-institutional-50 focus:outline-none focus:border-primary transition-colors"
                         />
-                        <button onClick={addSubject} className="bg-primary text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest"><Plus size={16} /></button>
+                        <button onClick={addSubject} className="bg-primary text-institutional-50 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest"><Plus size={16} /></button>
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {subjects.map(s => (
@@ -456,12 +456,12 @@ const AdminRegistry: React.FC = () => {
         <div className="fade-in max-w-7xl mx-auto">
             <div className={`mb-8 flex ${isMobile ? 'flex-col gap-4' : 'justify-between items-center'}`}>
                 <div className="text-start">
-                    <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-institutional-950 dark:text-white">{t('nav.registry')} Dashboard</h2>
+                    <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-institutional-950 dark:text-institutional-50">{t('nav.registry')} Dashboard</h2>
                     <p className="text-[10px] font-bold text-danger uppercase tracking-widest mt-1">{t('admin.systemManagement')}</p>
                 </div>
                 <button 
                     onClick={() => { setEditingUser(null); setIsModalOpen(true); }}
-                    className={`bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 rounded-xl font-black text-xs uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 ${isMobile ? 'w-full py-4' : 'px-6 py-3 hover:scale-105 transition-transform'}`}
+                    className={`bg-institutional-900 dark:bg-institutional-50 text-institutional-50 dark:text-institutional-900 rounded-xl font-black text-xs uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 ${isMobile ? 'w-full py-4' : 'px-6 py-3 hover:scale-105 transition-transform'}`}
                 >
                     <Plus size={16} /> {t('admin.addUser')}
                 </button>
@@ -473,7 +473,7 @@ const AdminRegistry: React.FC = () => {
                 <div className={`fixed inset-0 z-[100] bg-black/70 backdrop-blur-md flex items-center justify-center ${isMobile ? 'p-0 items-end' : 'p-4'}`}>
                     <div className={`bg-surface dark:bg-institutional-900 shadow-2xl relative border border-institutional-200 dark:border-institutional-800 max-h-[90vh] overflow-y-auto ${isMobile ? 'w-full rounded-t-[2.5rem] p-6 pb-10' : 'max-w-lg w-full p-10 rounded-[2rem] card-edu'}`}>
                         <button onClick={() => setIsModalOpen(false)} className={`absolute top-6 ${isRTL ? 'left-6' : 'right-6'} text-institutional-500`}><X size={24} /></button>
-                        <h3 className="text-xl font-black mb-8 uppercase tracking-tight text-institutional-950 dark:text-white">
+                        <h3 className="text-xl font-black mb-8 uppercase tracking-tight text-institutional-950 dark:text-institutional-50">
                             {editingUser ? t('admin.updateProfile') : t('admin.newAccount')}
                         </h3>
                         {tempPassword ? (
@@ -483,7 +483,7 @@ const AdminRegistry: React.FC = () => {
                                 <p className="text-[9px] font-bold text-amber-500 mt-4 uppercase">Copy this password now. It will not be shown again.</p>
                                 <button 
                                     onClick={() => { setTempPassword(null); setIsModalOpen(false); }}
-                                    className="mt-6 w-full bg-amber-600 text-white py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-amber-700 transition-colors"
+                                    className="mt-6 w-full bg-amber-600 text-institutional-50 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-amber-700 transition-colors"
                                 >
                                     {t('common.confirm')}
                                 </button>
@@ -537,7 +537,7 @@ const AdminRegistry: React.FC = () => {
                                     <input name="id" defaultValue={editingUser?.id} placeholder="ID_000" className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold outline-none opacity-50" readOnly required />
                                 </div>
                             )}
-                            <button type="submit" className="w-full bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 p-4 rounded-xl font-black uppercase tracking-widest shadow-xl mt-4">{t('admin.confirmChanges')}</button>
+                            <button type="submit" className="w-full bg-institutional-900 dark:bg-institutional-50 text-institutional-50 dark:text-institutional-900 p-4 rounded-xl font-black uppercase tracking-widest shadow-xl mt-4">{t('admin.confirmChanges')}</button>
                         </form>
                         )}
                     </div>

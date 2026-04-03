@@ -124,7 +124,7 @@ const AssignmentItem = React.memo(({ hw, user, t, isRTL, isTeacher, studentCount
                     <button 
                         onClick={() => !isExpired && !mySubmission && setIsSubmitModalOpen(hw.id)} 
                         disabled={isExpired || !!mySubmission} 
-                        className={`w-full inline-flex items-center justify-center gap-3 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all ${isExpired || mySubmission ? 'bg-background text-text-secondary/30 cursor-not-allowed border border-border' : 'bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/20 hover:scale-[1.02]'}`}
+                        className={`w-full inline-flex items-center justify-center gap-3 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all ${isExpired || mySubmission ? 'bg-background text-text-secondary/30 cursor-not-allowed border border-border' : 'bg-primary text-institutional-50 hover:bg-primary/90 shadow-xl shadow-primary/20 hover:scale-[1.02]'}`}
                     >
                         {mySubmission ? <CheckCircle size={20} /> : isExpired ? <AlertCircle size={20} /> : <UploadCloud size={20} />}
                         {mySubmission ? t('common.success') : isExpired ? t('dropbox.closed') : t('dropbox.submit')}
@@ -268,7 +268,7 @@ const Assignments: React.FC = () => {
                 {isTeacher && (
                     <button 
                         onClick={() => setIsCreateModalOpen(true)} 
-                        className="bg-primary text-white rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 hover:bg-primary/90 hover:scale-[1.03] transition-all px-8 py-5"
+                        className="bg-primary text-institutional-50 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 hover:bg-primary/90 hover:scale-[1.03] transition-all px-8 py-5"
                     >
                         <Plus size={20} /> {t('dropbox.issueTask')}
                     </button>
@@ -362,7 +362,7 @@ const Assignments: React.FC = () => {
                                     <button 
                                         onClick={() => !isExpired && !mySubmission && setIsSubmitModalOpen(hw.id)} 
                                         disabled={isExpired || !!mySubmission} 
-                                        className={`w-full inline-flex items-center justify-center gap-3 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all ${isExpired || mySubmission ? 'bg-background text-text-secondary/30 cursor-not-allowed border border-border' : 'bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/20 hover:scale-[1.02]'}`}
+                                        className={`w-full inline-flex items-center justify-center gap-3 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all ${isExpired || mySubmission ? 'bg-background text-text-secondary/30 cursor-not-allowed border border-border' : 'bg-primary text-institutional-50 hover:bg-primary/90 shadow-xl shadow-primary/20 hover:scale-[1.02]'}`}
                                     >
                                         {mySubmission ? <CheckCircle size={20} /> : isExpired ? <AlertCircle size={20} /> : <UploadCloud size={20} />}
                                         {mySubmission ? t('common.success') : isExpired ? t('dropbox.closed') : t('dropbox.submit')}
@@ -410,7 +410,7 @@ const Assignments: React.FC = () => {
                                     <p className="text-[10px] text-text-secondary/50 uppercase font-black tracking-widest mt-2">Max 10MB (Optional)</p>
                                 </label>
                             </div>
-                            <button type="submit" className="w-full py-5 bg-primary text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] transition-all mt-4 text-[11px]">
+                            <button type="submit" className="w-full py-5 bg-primary text-institutional-50 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] transition-all mt-4 text-[11px]">
                                 {t('dropbox.issueTask')}
                             </button>
                         </form>
@@ -436,7 +436,7 @@ const Assignments: React.FC = () => {
                                     <p className="text-[10px] text-text-secondary/50 font-black uppercase tracking-widest mt-2">{t('dropbox.prefFiles')}</p>
                                 </label>
                             </div>
-                            <button type="submit" className="w-full py-5 bg-primary text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 text-[11px]">
+                            <button type="submit" className="w-full py-5 bg-primary text-institutional-50 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 text-[11px]">
                                 <CheckCircle size={20} /> {t('dropbox.deploy')}
                             </button>
                          </form>
@@ -530,7 +530,7 @@ const Assignments: React.FC = () => {
                                                     <div className="flex justify-end">
                                                         <button 
                                                             onClick={() => setIsGrading(sub.id)}
-                                                            className={`p-4 rounded-2xl transition-all ${isBeingGraded ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-background text-text-secondary hover:text-primary border border-border hover:border-primary/30'}`}
+                                                            className={`p-4 rounded-2xl transition-all ${isBeingGraded ? 'bg-primary text-institutional-50 shadow-xl shadow-primary/20' : 'bg-background text-text-secondary hover:text-primary border border-border hover:border-primary/30'}`}
                                                         >
                                                             <Star size={24} fill={sub.grade !== undefined ? "currentColor" : "none"} />
                                                         </button>
@@ -579,7 +579,7 @@ const Assignments: React.FC = () => {
                                                             </div>
                                                             <div className="flex gap-6 justify-end">
                                                                 <button type="button" onClick={() => setIsGrading(null)} className="px-8 py-4 text-[11px] font-black text-text-secondary hover:text-text transition-all uppercase tracking-[0.2em]">{t('common.cancel')}</button>
-                                                                <button type="submit" className="px-12 py-5 bg-primary text-white text-[11px] font-black rounded-2xl transition-all shadow-xl shadow-primary/20 uppercase tracking-[0.2em] hover:bg-primary/90 hover:scale-[1.02]">{t('dropbox.saveGrade')}</button>
+                                                                <button type="submit" className="px-12 py-5 bg-primary text-institutional-50 text-[11px] font-black rounded-2xl transition-all shadow-xl shadow-primary/20 uppercase tracking-[0.2em] hover:bg-primary/90 hover:scale-[1.02]">{t('dropbox.saveGrade')}</button>
                                                             </div>
                                                         </form>
                                                     </div>
