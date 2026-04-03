@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { usePlatform } from '../contexts/PlatformContext';
@@ -281,37 +282,26 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                 <header className={`shrink-0 z-40 sticky top-0 transition-all duration-500 ${isMobile ? 'h-0' : 'h-24 bg-surface/80 dark:bg-institutional-950/80 backdrop-blur-xl border-b border-institutional-200 dark:border-institutional-800 flex items-center justify-between px-16'}`}>
                     {!isMobile && (
                         <>
-                            <div className="flex items-center gap-4">
-                                <h2 className="text-2xl font-black tracking-tight text-institutional-950 dark:text-institutional-50 uppercase leading-none">{getPageTitle()}</h2>
-                            </div>
+                            <motion.div 
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.5 }}
+                                className="flex items-center gap-4"
+                            >
+                                <Logo size="sm" />
+                                <h1 className="text-xl font-black tracking-tighter text-institutional-950 dark:text-institutional-50 uppercase">{t('appName')}</h1>
+                            </motion.div>
 
-                            <div className="flex items-center gap-6">
-                                <div className={`flex items-center justify-center w-10 h-10 rounded-xl border transition-all ${audioEnabled ? 'border-success/20 text-success bg-success/5' : 'border-danger/20 text-danger bg-danger/5 animate-pulse'}`}>
-                                    {audioEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                            <div 
+                                onClick={() => onNavigate(`/profile/${user?.id}`)}
+                                className="flex items-center gap-3 bg-institutional-100 dark:bg-institutional-900 p-2 pr-4 rounded-2xl border border-institutional-200 dark:border-institutional-800 cursor-pointer hover:bg-institutional-200 dark:hover:bg-institutional-800 transition-colors"
+                            >
+                                <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-institutional-50 font-black text-[11px] uppercase shadow-lg shadow-primary/20">
+                                    {user?.name.charAt(0)}
                                 </div>
-
-                                <div className="flex items-center gap-4 h-12 px-2.5 bg-institutional-100 dark:bg-institutional-900 rounded-2xl border border-institutional-200 dark:border-institutional-800">
-                                    <button onClick={toggleTheme} className="p-2.5 text-institutional-600 hover:text-primary transition-all active:scale-90" aria-label="Toggle Theme">
-                                        {isDarkMode ? <Sun size={20} className="text-warning" /> : <Moon size={20} className="text-primary" />}
-                                    </button>
-                                    <div className="w-px h-6 bg-institutional-200 dark:bg-institutional-800 mx-1" />
-                                    <div className="w-px h-6 bg-institutional-200 dark:bg-institutional-800 mx-1" />
-                                    <button onClick={logout} className="p-2.5 text-institutional-600 hover:text-danger transition-all active:scale-90">
-                                        <Power size={20} />
-                                    </button>
-                                </div>
-                                
-                                <div 
-                                    onClick={() => onNavigate(`/profile/${user?.id}`)}
-                                    className="flex items-center gap-3 bg-institutional-100 dark:bg-institutional-900 p-2 pr-4 rounded-2xl border border-institutional-200 dark:border-institutional-800 cursor-pointer hover:bg-institutional-200 dark:hover:bg-institutional-800 transition-colors"
-                                >
-                                    <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-institutional-50 font-black text-[11px] uppercase shadow-lg shadow-primary/20">
-                                        {user?.name.charAt(0)}
-                                    </div>
-                                    <div className="text-start">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50">{user?.name.split(' ')[0]}</p>
-                                        <p className="text-[8px] font-bold uppercase tracking-widest text-institutional-600 leading-none mt-0.5">{user?.role}</p>
-                                    </div>
+                                <div className="text-start">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50">{user?.name.split(' ')[0]}</p>
+                                    <p className="text-[8px] font-bold uppercase tracking-widest text-institutional-600 leading-none mt-0.5">{user?.role}</p>
                                 </div>
                             </div>
                         </>
