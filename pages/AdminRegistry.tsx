@@ -1,9 +1,8 @@
 import React, { useEffect, useState, memo, useMemo } from 'react';
-import { safeStringify } from '../utils';
+import { initializeApp, deleteApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, onSnapshot, doc, setDoc, updateDoc, getDocs, Timestamp } from 'firebase/firestore';
 import { db, collections, firebaseConfig } from '../services/firebase';
-import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { User, UserRole, Subject } from '../types';
 import { Trash2, Plus, Settings, Shield, GraduationCap, X, Loader2, ShieldAlert, AlertTriangle, User as UserIcon, DollarSign, Users, Search, Filter } from 'lucide-react';
 import { superAdminHardDelete } from '../services/adminTools';
@@ -32,24 +31,24 @@ const UserRow = memo(({ index, style, data }: { index: number, style: React.CSSP
     if (isMobile) {
         return (
             <div style={style} className="px-1 py-2">
-                <div className="p-5 bg-surface border-2 border-border-dark rounded-2xl shadow-pop-sm text-start">
+                <div className="p-5 academic-card rounded-2xl text-start">
                     <div className="flex items-center gap-4 mb-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white border-2 border-border-dark shadow-pop-sm ${u.role === 'admin' ? 'bg-danger' : 'bg-primary'}`}>
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white shadow-sm ${u.role === 'admin' ? 'bg-danger' : 'bg-primary'}`}>
                             {u.name.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="font-display font-bold text-sm text-text truncate">{u.name}</p>
-                            <p className="text-[10px] font-bold text-text-secondary truncate">{u.email}</p>
+                            <p className="font-black text-sm text-institutional-950 dark:text-white truncate">{u.name}</p>
+                            <p className="text-[10px] font-bold text-institutional-500 truncate">{u.email}</p>
                         </div>
-                        <div className="flex items-center gap-1 bg-surface border-2 border-border-dark shadow-pop-sm p-1 px-2 rounded-lg shrink-0">
+                        <div className="flex items-center gap-1 bg-institutional-100 dark:bg-institutional-800 p-1 px-2 rounded-lg shrink-0">
                             {getRoleIcon(u.role)}
-                            <span className="text-[9px] font-bold uppercase text-text-secondary">{u.role}</span>
+                            <span className="text-[9px] font-black uppercase text-institutional-600 dark:text-institutional-400">{u.role}</span>
                         </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-3 pt-4 border-t-2 border-border-dark">
-                        <button onClick={() => { setEditingUser(u); setIsModalOpen(true); }} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-surface border-2 border-border-dark shadow-pop-sm text-text-secondary font-bold text-[10px] uppercase hover:bg-muted transition-colors"><Settings size={14} /> {t('admin.manage')}</button>
-                        <button onClick={() => navigate(`/profile/${u.id}`)} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-surface border-2 border-border-dark shadow-pop-sm text-primary font-bold text-[10px] uppercase hover:bg-primary/10 transition-colors"><UserIcon size={14} /> {t('admin.profile')}</button>
-                        <button onClick={() => handleDeleteClick(u.id)} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-surface border-2 border-border-dark shadow-pop-sm text-danger font-bold text-[10px] uppercase hover:bg-danger/10 transition-colors">
+                    <div className="grid grid-cols-3 gap-3 pt-4 border-t border-institutional-200 dark:border-institutional-800">
+                        <button onClick={() => { setEditingUser(u); setIsModalOpen(true); }} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-institutional-100 dark:bg-institutional-800 text-institutional-600 font-black text-[10px] uppercase"><Settings size={14} /> {t('admin.manage')}</button>
+                        <button onClick={() => navigate(`/profile/${u.id}`)} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/10 text-primary font-black text-[10px] uppercase"><UserIcon size={14} /> {t('admin.profile')}</button>
+                        <button onClick={() => handleDeleteClick(u.id)} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-danger/10 text-danger font-black text-[10px] uppercase">
                             {processingId === u.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />} {t('common.delete')}
                         </button>
                     </div>
@@ -59,23 +58,23 @@ const UserRow = memo(({ index, style, data }: { index: number, style: React.CSSP
     }
 
     return (
-        <div style={style} className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] px-6 border-b-2 border-border-dark items-center hover:bg-muted transition-colors text-start`}>
+        <div style={style} className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] px-6 border-b border-institutional-100 dark:border-institutional-800 items-center hover:bg-institutional-50 dark:hover:bg-institutional-800/50 transition-colors text-start`}>
             <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white border-2 border-border-dark shadow-pop-sm ${u.role === 'admin' ? 'bg-danger' : 'bg-primary'}`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-sm ${u.role === 'admin' ? 'bg-danger' : 'bg-institutional-300 dark:bg-institutional-700'}`}>
                     {u.name.charAt(0)}
                 </div>
-                <span className="font-display font-bold text-sm text-text">{u.name}</span>
+                <span className="font-bold text-sm text-institutional-950 dark:text-white">{u.name}</span>
             </div>
-            <div className="text-xs font-bold text-text-secondary truncate pr-4">{u.email}</div>
+            <div className="text-xs font-bold text-institutional-600 dark:text-institutional-400 truncate pr-4">{u.email}</div>
             <div className="flex items-center gap-2">
                 {getRoleIcon(u.role)}
-                <span className="text-xs font-bold uppercase text-text-secondary">{u.role}</span>
+                <span className="text-xs font-bold uppercase text-institutional-600 dark:text-institutional-300">{u.role}</span>
             </div>
-            <div className="text-xs font-mono text-text-muted">{u.id}</div>
+            <div className="text-xs font-mono text-institutional-400">{u.id}</div>
             <div className="flex items-center justify-end gap-2">
-                <button onClick={() => navigate(`/profile/${u.id}`)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface border-2 border-border-dark shadow-pop-sm text-text-secondary hover:text-primary transition-colors" title={t('admin.profile')}><UserIcon size={14} /></button>
-                <button onClick={() => { setEditingUser(u); setIsModalOpen(true); }} className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface border-2 border-border-dark shadow-pop-sm text-text-secondary hover:text-primary transition-colors"><Settings size={14} /></button>
-                <button onClick={() => handleDeleteClick(u.id)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface border-2 border-border-dark shadow-pop-sm text-text-secondary hover:bg-danger hover:text-white transition-colors">
+                <button onClick={() => navigate(`/profile/${u.id}`)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-institutional-100 dark:bg-institutional-800 text-institutional-500 hover:text-primary transition-colors" title={t('admin.profile')}><UserIcon size={14} /></button>
+                <button onClick={() => { setEditingUser(u); setIsModalOpen(true); }} className="w-8 h-8 flex items-center justify-center rounded-lg bg-institutional-100 dark:bg-institutional-800 text-institutional-500 hover:text-primary transition-colors"><Settings size={14} /></button>
+                <button onClick={() => handleDeleteClick(u.id)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-institutional-100 dark:bg-institutional-800 text-institutional-500 hover:bg-danger hover:text-white transition-colors">
                     {processingId === u.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                 </button>
             </div>
@@ -172,14 +171,14 @@ const AdminRegistry: React.FC = () => {
         const password = formData.get('password') as string;
         const role = formData.get('role') as UserRole;
         const subjectsTaughtIds = editData.subjectsTaughtIds || [];
+        const id = editingUser ? editingUser.id : (formData.get('id') as string);
 
         try {
             if (editingUser) {
-                const id = editingUser.id;
                 const updates: any = {};
                 if (name !== editingUser.name) updates.name = name;
                 if (role !== editingUser.role) updates.role = role;
-                if (safeStringify(subjectsTaughtIds) !== safeStringify(editingUser.subjectsTaughtIds || [])) updates.subjectsTaughtIds = subjectsTaughtIds;
+                if (JSON.stringify(subjectsTaughtIds) !== JSON.stringify(editingUser.subjectsTaughtIds || [])) updates.subjectsTaughtIds = subjectsTaughtIds;
                 
                 // Credential Safeguards: Only update if explicitly changed
                 if (email && email !== editingUser.email) {
@@ -197,37 +196,44 @@ const AdminRegistry: React.FC = () => {
             } else {
                 if (!password) throw new Error("Password required");
                 
-                // Create user in Firebase Auth using secondary app to avoid logging out admin
-                const apps = getApps();
-                const secondaryApp = apps.find(app => app.name === 'SecondaryApp') || initializeApp(firebaseConfig, 'SecondaryApp');
+                // Create user in Firebase Auth using a secondary app instance to avoid logging out the admin
+                const secondaryAppName = `SecondaryApp_${Date.now()}`;
+                const secondaryApp = initializeApp(firebaseConfig, secondaryAppName);
                 const secondaryAuth = getAuth(secondaryApp);
                 
-                const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-                const uid = userCredential.user.uid;
-                
-                // Sign out of secondary app to clear its state
-                await secondaryAuth.signOut();
-
-                const newUser = {
-                    id: uid,
-                    name,
-                    email,
-                    password,
-                    role,
-                    subjectsTaughtIds,
-                    lastSeen: null,
-                    createdAt: Timestamp.now(),
-                    accountStatus: 'active',
-                    mustChangePassword: role === 'economic'
-                };
-                await setDoc(doc(db, collections.users, uid), newUser);
-                if (role === 'economic') setTempPassword(password);
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+                    const uid = userCredential.user.uid;
+                    
+                    const newUser = {
+                        id: uid, // Use the actual Firebase Auth UID
+                        name,
+                        email,
+                        password, // Storing for demo purposes, though not recommended in production
+                        role,
+                        subjectsTaughtIds,
+                        lastSeen: null,
+                        createdAt: Timestamp.now(),
+                        accountStatus: 'active',
+                        mustChangePassword: role === 'economic'
+                    };
+                    
+                    await setDoc(doc(db, collections.users, uid), newUser);
+                    if (role === 'economic') setTempPassword(password);
+                    
+                    // Cleanup secondary app
+                    await signOut(secondaryAuth);
+                    await deleteApp(secondaryApp);
+                } catch (authError: any) {
+                    await deleteApp(secondaryApp);
+                    throw authError;
+                }
             }
             if (role !== 'economic' || editingUser) setIsModalOpen(false);
             setEditingUser(null);
         } catch (error: any) {
             console.error("Save failed", error);
-            alert(t('common.error') + ": " + error.message);
+            alert(error.message || t('common.error'));
         }
     };
 
@@ -265,8 +271,8 @@ const AdminRegistry: React.FC = () => {
                     {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-[150px] w-full rounded-2xl" />)}
                 </div>
             ) : (
-                <div className="bg-surface border-4 border-border-dark rounded-3xl overflow-hidden shadow-pop">
-                     <div className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] p-6 border-b-4 border-border-dark bg-muted font-bold text-[10px] uppercase tracking-widest text-text-secondary text-start`}>
+                <div className="card-edu bg-surface dark:bg-institutional-900 border border-institutional-300 dark:border-institutional-800 rounded-[1.5rem] overflow-hidden shadow-2xl">
+                     <div className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] p-6 border-b border-institutional-200 dark:border-institutional-800 bg-institutional-50 dark:bg-institutional-950 font-black text-[10px] uppercase tracking-widest text-institutional-500 text-start`}>
                         <div>{t('admin.legalName')}</div>
                         <div>{t('admin.email')}</div>
                         <div>{t('admin.permissions')}</div>
@@ -283,45 +289,45 @@ const AdminRegistry: React.FC = () => {
                 {/* Dashboard Stats */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 grid grid-cols-2 gap-4">
-                        <div className="bg-surface border-2 border-border-dark p-6 rounded-3xl shadow-pop-sm flex flex-col justify-between">
+                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Total Users</h3>
-                                <div className="w-8 h-8 rounded-full bg-muted border-2 border-border-dark shadow-pop-sm flex items-center justify-center text-text-secondary">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500">Total Users</h3>
+                                <div className="w-8 h-8 rounded-full bg-institutional-100 dark:bg-institutional-800 flex items-center justify-center text-institutional-600">
                                     <Users size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-display font-bold text-text">{stats.total}</p>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.total}</p>
                         </div>
-                        <div className="bg-surface border-2 border-border-dark p-6 rounded-3xl shadow-pop-sm flex flex-col justify-between">
+                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Students</h3>
-                                <div className="w-8 h-8 rounded-full bg-success/10 border-2 border-success shadow-pop-sm flex items-center justify-center text-success">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500">Students</h3>
+                                <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center text-success">
                                     <GraduationCap size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-display font-bold text-text">{stats.students}</p>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.students}</p>
                         </div>
-                        <div className="bg-surface border-2 border-border-dark p-6 rounded-3xl shadow-pop-sm flex flex-col justify-between">
+                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Teachers</h3>
-                                <div className="w-8 h-8 rounded-full bg-primary/10 border-2 border-primary shadow-pop-sm flex items-center justify-center text-primary">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500">Teachers</h3>
+                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                                     <Shield size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-display font-bold text-text">{stats.teachers}</p>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.teachers}</p>
                         </div>
-                        <div className="bg-surface border-2 border-border-dark p-6 rounded-3xl shadow-pop-sm flex flex-col justify-between">
+                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Staff</h3>
-                                <div className="w-8 h-8 rounded-full bg-danger/10 border-2 border-danger shadow-pop-sm flex items-center justify-center text-danger">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500">Staff</h3>
+                                <div className="w-8 h-8 rounded-full bg-danger/10 flex items-center justify-center text-danger">
                                     <ShieldAlert size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-display font-bold text-text">{stats.staff}</p>
+                            <p className="text-3xl font-black text-institutional-950 dark:text-white">{stats.staff}</p>
                         </div>
                     </div>
-                    <div className="bg-surface border-2 border-border-dark p-6 rounded-3xl shadow-pop-sm flex flex-col">
-                        <h3 className="text-[10px] font-bold uppercase tracking-widest text-text-secondary mb-4">Role Distribution</h3>
+                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft flex flex-col">
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-500 mb-4">Role Distribution</h3>
                         <div className="flex-1 min-h-[200px]">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
@@ -350,28 +356,28 @@ const AdminRegistry: React.FC = () => {
                 </div>
 
                 {/* Filters and Search */}
-                <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-surface border-2 border-border-dark p-4 rounded-3xl shadow-pop-sm">
+                <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-4 rounded-[1.5rem] shadow-soft">
                     <div className="relative w-full md:w-96">
-                        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-institutional-400" />
                         <input 
                             type="text" 
                             placeholder="Search by name, email, or ID..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="academic-input w-full pl-12"
+                            className="w-full bg-institutional-50 dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 rounded-xl py-3 pl-12 pr-4 text-sm font-bold text-institutional-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
                         />
                     </div>
                     <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                        <Filter size={16} className="text-text-muted shrink-0" />
+                        <Filter size={16} className="text-institutional-400 shrink-0" />
                         <div className="flex gap-2">
                             {(['all', 'student', 'teacher', 'admin', 'economic'] as const).map(role => (
                                 <button
                                     key={role}
                                     onClick={() => setRoleFilter(role)}
-                                    className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-colors border-2 border-border-dark shadow-pop-sm ${
+                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-colors ${
                                         roleFilter === role 
-                                            ? 'bg-primary text-white' 
-                                            : 'bg-surface text-text-secondary hover:bg-muted'
+                                            ? 'bg-institutional-900 dark:bg-white text-white dark:text-institutional-900' 
+                                            : 'bg-institutional-50 dark:bg-institutional-950 text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-800'
                                     }`}
                                 >
                                     {role === 'all' ? 'All Roles' : t(`roles.${role}`)}
@@ -382,23 +388,23 @@ const AdminRegistry: React.FC = () => {
                 </div>
 
                 {/* Subject Management */}
-                <div className="bg-surface border-2 border-border-dark p-6 rounded-3xl shadow-pop-sm">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-4">{t('admin.manageSubjects')}</h3>
+                <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-institutional-500 mb-4">{t('admin.manageSubjects')}</h3>
                     <div className="flex gap-2 mb-4">
                         <input 
                             type="text" 
                             value={newSubject}
                             onChange={(e) => setNewSubject(e.target.value)}
                             placeholder="New subject name..."
-                            className="academic-input flex-1"
+                            className="flex-1 bg-institutional-50 dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 rounded-xl py-3 px-4 text-sm font-bold text-institutional-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
                         />
-                        <button onClick={addSubject} className="academic-button academic-button-primary px-6 py-3"><Plus size={16} /></button>
+                        <button onClick={addSubject} className="bg-primary text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest"><Plus size={16} /></button>
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {subjects.map(s => (
-                            <div key={s.id} className="flex items-center gap-2 bg-muted border-2 border-border-dark shadow-pop-sm px-3 py-1 rounded-full text-xs font-bold text-text-secondary">
+                            <div key={s.id} className="flex items-center gap-2 bg-institutional-100 dark:bg-institutional-800 px-3 py-1 rounded-full text-xs font-bold">
                                 {s.name}
-                                <button onClick={() => deleteSubject(s.id)} className="text-danger hover:text-danger/80 transition-colors"><X size={14} /></button>
+                                <button onClick={() => deleteSubject(s.id)} className="text-danger"><X size={14} /></button>
                             </div>
                         ))}
                     </div>
@@ -416,8 +422,8 @@ const AdminRegistry: React.FC = () => {
                         {UserRow}
                     </List>
                 ) : (
-                    <div className="bg-surface border-4 border-border-dark rounded-3xl overflow-hidden shadow-pop">
-                        <div className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] p-6 border-b-4 border-border-dark bg-muted font-bold text-[10px] uppercase tracking-widest text-text-secondary text-start`}>
+                    <div className="academic-card rounded-[1.5rem] overflow-hidden shadow-strong">
+                        <div className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] p-6 border-b border-institutional-200 dark:border-institutional-800 bg-institutional-50 dark:bg-institutional-950 font-black text-[10px] uppercase tracking-widest text-institutional-500 text-start`}>
                             <div>{t('admin.legalName')}</div>
                             <div>{t('admin.email')}</div>
                             <div>{t('admin.permissions')}</div>
@@ -435,7 +441,7 @@ const AdminRegistry: React.FC = () => {
                                 {UserRow}
                             </List>
                         ) : (
-                            <div className="p-12 text-center text-text-muted text-xs font-bold uppercase tracking-widest flex flex-col items-center gap-4">
+                            <div className="p-12 text-center text-institutional-400 text-xs font-black uppercase tracking-widest flex flex-col items-center gap-4">
                                 <Search size={32} className="opacity-20" />
                                 {t('admin.registryEmpty')}
                             </div>
@@ -450,12 +456,12 @@ const AdminRegistry: React.FC = () => {
         <div className="fade-in max-w-7xl mx-auto">
             <div className={`mb-8 flex ${isMobile ? 'flex-col gap-4' : 'justify-between items-center'}`}>
                 <div className="text-start">
-                    <h2 className="text-2xl md:text-4xl font-display font-bold uppercase tracking-tight text-text">{t('nav.registry')} Dashboard</h2>
+                    <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-institutional-950 dark:text-white">{t('nav.registry')} Dashboard</h2>
                     <p className="text-[10px] font-bold text-danger uppercase tracking-widest mt-1">{t('admin.systemManagement')}</p>
                 </div>
                 <button 
                     onClick={() => { setEditingUser(null); setIsModalOpen(true); }}
-                    className={`academic-button academic-button-primary ${isMobile ? 'w-full py-4' : 'px-6 py-3 hover:scale-105 transition-transform'}`}
+                    className={`bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 rounded-xl font-black text-xs uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 ${isMobile ? 'w-full py-4' : 'px-6 py-3 hover:scale-105 transition-transform'}`}
                 >
                     <Plus size={16} /> {t('admin.addUser')}
                 </button>
@@ -465,19 +471,19 @@ const AdminRegistry: React.FC = () => {
 
             {isModalOpen && (
                 <div className={`fixed inset-0 z-[100] bg-black/70 backdrop-blur-md flex items-center justify-center ${isMobile ? 'p-0 items-end' : 'p-4'}`}>
-                    <div className={`bg-surface shadow-pop relative border-4 border-border-dark max-h-[90vh] overflow-y-auto ${isMobile ? 'w-full rounded-t-[2.5rem] p-6 pb-10' : 'max-w-lg w-full p-10 rounded-3xl'}`}>
-                        <button onClick={() => setIsModalOpen(false)} className={`absolute top-6 ${isRTL ? 'left-6' : 'right-6'} text-text-secondary hover:text-text transition-colors bg-surface border-2 border-border-dark rounded-2xl p-2 shadow-pop-sm`}><X size={24} /></button>
-                        <h3 className="text-xl font-display font-bold mb-8 uppercase tracking-tight text-text">
+                    <div className={`bg-surface dark:bg-institutional-900 shadow-2xl relative border border-institutional-200 dark:border-institutional-800 max-h-[90vh] overflow-y-auto ${isMobile ? 'w-full rounded-t-[2.5rem] p-6 pb-10' : 'max-w-lg w-full p-10 rounded-[2rem] card-edu'}`}>
+                        <button onClick={() => setIsModalOpen(false)} className={`absolute top-6 ${isRTL ? 'left-6' : 'right-6'} text-institutional-500`}><X size={24} /></button>
+                        <h3 className="text-xl font-black mb-8 uppercase tracking-tight text-institutional-950 dark:text-white">
                             {editingUser ? t('admin.updateProfile') : t('admin.newAccount')}
                         </h3>
                         {tempPassword ? (
-                            <div className="bg-amber-100 border-2 border-border-dark shadow-pop-sm p-6 rounded-2xl mb-8 text-center animate-in zoom-in-95 duration-300">
-                                <p className="text-[10px] font-bold uppercase text-amber-600 tracking-widest mb-2">{t('economic.tempPassword')}</p>
-                                <p className="text-2xl font-bold text-amber-700 font-mono tracking-wider">{tempPassword}</p>
+                            <div className="bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 p-6 rounded-2xl mb-8 text-center animate-in zoom-in-95 duration-300">
+                                <p className="text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 tracking-widest mb-2">{t('economic.tempPassword')}</p>
+                                <p className="text-2xl font-black text-amber-700 dark:text-amber-300 font-mono tracking-wider">{tempPassword}</p>
                                 <p className="text-[9px] font-bold text-amber-500 mt-4 uppercase">Copy this password now. It will not be shown again.</p>
                                 <button 
                                     onClick={() => { setTempPassword(null); setIsModalOpen(false); }}
-                                    className="mt-6 w-full bg-amber-500 text-white border-2 border-border-dark shadow-pop-sm py-3 rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-amber-600 transition-colors"
+                                    className="mt-6 w-full bg-amber-600 text-white py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-amber-700 transition-colors"
                                 >
                                     {t('common.confirm')}
                                 </button>
@@ -485,23 +491,23 @@ const AdminRegistry: React.FC = () => {
                         ) : (
                             <form onSubmit={handleSave} className="space-y-4 text-start">
                             <div className="space-y-1">
-                                <label className="text-[10px] font-bold uppercase text-text-secondary">{t('admin.legalName')}</label>
-                                <input name="name" defaultValue={editingUser?.name} placeholder="..." className="academic-input p-4" required />
+                                <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.legalName')}</label>
+                                <input name="name" defaultValue={editingUser?.name} placeholder="..." className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none" required />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-bold uppercase text-text-secondary">{t('admin.email')}</label>
-                                    <input name="email" type="email" defaultValue={editingUser?.email} placeholder="name@edu.alg" className="academic-input p-4" required />
+                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.email')}</label>
+                                    <input name="email" type="email" defaultValue={editingUser?.email} placeholder="name@edu.alg" className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none" required />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-bold uppercase text-text-secondary">{t('admin.passcode')}</label>
-                                    <input name="password" type="password" placeholder={editingUser ? "---" : "***"} className="academic-input p-4" required={!editingUser} />
+                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.passcode')}</label>
+                                    <input name="password" type="password" placeholder={editingUser ? "---" : "***"} className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none" required={!editingUser} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-bold uppercase text-text-secondary">{t('admin.permissions')}</label>
-                                    <select name="role" defaultValue={editingUser?.role || 'student'} className="academic-input p-4">
+                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.permissions')}</label>
+                                    <select name="role" defaultValue={editingUser?.role || 'student'} className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none">
                                         <option value="student">{t('roles.student')}</option>
                                         <option value="teacher">{t('roles.teacher')}</option>
                                         <option value="admin">{t('roles.admin')}</option>
@@ -509,8 +515,8 @@ const AdminRegistry: React.FC = () => {
                                     </select>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-bold uppercase text-text-secondary">{t('admin.subjects')}</label>
-                                    <div className="academic-input p-4 max-h-40 overflow-y-auto">
+                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.subjects')}</label>
+                                    <div className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold focus:border-primary outline-none max-h-40 overflow-y-auto">
                                         {subjects.map(s => (
                                             <label key={s.id} className="flex items-center gap-2">
                                                 <input type="checkbox" name="subjects" value={s.id} checked={editData.subjectsTaughtIds?.includes(s.id) || false} onChange={(e) => {
@@ -527,11 +533,11 @@ const AdminRegistry: React.FC = () => {
                             </div>
                             {editingUser && (
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-bold uppercase text-text-secondary">{t('admin.systemId')}</label>
-                                    <input name="id" defaultValue={editingUser.id} className="academic-input p-4 opacity-50" readOnly />
+                                    <label className="text-[10px] font-black uppercase text-institutional-500">{t('admin.systemId')}</label>
+                                    <input name="id" defaultValue={editingUser?.id} placeholder="ID_000" className="w-full bg-institutional-100 dark:bg-institutional-800 p-4 rounded-xl border-2 border-institutional-200 dark:border-institutional-700 font-bold outline-none opacity-50" readOnly required />
                                 </div>
                             )}
-                            <button type="submit" className="academic-button academic-button-primary w-full p-4 mt-4">{t('admin.confirmChanges')}</button>
+                            <button type="submit" className="w-full bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 p-4 rounded-xl font-black uppercase tracking-widest shadow-xl mt-4">{t('admin.confirmChanges')}</button>
                         </form>
                         )}
                     </div>

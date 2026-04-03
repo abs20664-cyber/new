@@ -1,14 +1,15 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, memo } from 'react';
 import { collection, onSnapshot, doc, updateDoc, setDoc, query, where, addDoc, Timestamp, orderBy, limit } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
-import { safeStringify } from '../utils';
-import { User, StudentSubscription, TeacherPayment, FinancialAuditLog, FinancialSummary, StudentPaymentRecord, Subject } from '../types';
+import { User, StudentSubscription, TeacherPayment, FinancialAuditLog, FinancialSummary, StudentPaymentRecord, ClassSession, DAYS_OF_WEEK, HOURS_OF_DAY } from '../types';
 import { 
     Search, 
     Filter, 
     DollarSign, 
+    User as UserIcon, 
     Calendar, 
     CreditCard, 
+    FileText, 
     CheckCircle, 
     XCircle, 
     Clock, 
@@ -19,8 +20,9 @@ import {
     TrendingDown,
     AlertCircle,
     History,
-    Users,
+    BarChart3,
     ArrowRight,
+    Share2,
     FileSpreadsheet,
     FileJson,
     ShieldOff,
@@ -37,11 +39,15 @@ import {
     CartesianGrid, 
     Tooltip, 
     ResponsiveContainer, 
+    LineChart, 
+    Line,
     Legend,
+    Cell
 } from 'recharts';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import Papa from 'papaparse';
+import { FixedSizeList as List } from 'react-window';
 import { Skeleton } from '../components/Skeleton';
 import StudentRow from '../components/StudentRow';
 import TeacherRow from '../components/TeacherRow';
@@ -49,7 +55,7 @@ import TeacherRow from '../components/TeacherRow';
 const EconomicDashboard: React.FC = () => {
     const { user: currentUser } = useAuth();
     const { isMobile } = usePlatform();
-    const { t, isRTL } = useLanguage();
+    const { t, isRTL, language } = useLanguage();
     
     const [students, setStudents] = useState<User[]>([]);
     const [teachers, setTeachers] = useState<User[]>([]);
@@ -57,10 +63,10 @@ const EconomicDashboard: React.FC = () => {
     const [payments, setPayments] = useState<Record<string, TeacherPayment>>({});
     const [auditLogs, setAuditLogs] = useState<FinancialAuditLog[]>([]);
     const [paymentRecords, setPaymentRecords] = useState<StudentPaymentRecord[]>([]);
-    const [subjects, setSubjects] = useState<Subject[]>([]);
     
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'teachers' | 'audit'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'teachers' | 'audit' | 'sessions' | 'timetable'>('overview');
+    const [sessions, setSessions] = useState<ClassSession[]>([]);
     const [filterStatus, setFilterStatus] = useState<string>('all');
     const [editingNote, setEditingNote] = useState<string | null>(null);
     const [noteValue, setNoteValue] = useState('');
@@ -69,14 +75,13 @@ const EconomicDashboard: React.FC = () => {
     const [amountValue, setAmountValue] = useState<number>(0);
     const [editingDate, setEditingDate] = useState<string | null>(null);
     const [dateValue, setDateValue] = useState<string>('');
+    const [editingDuration, setEditingDuration] = useState<string | null>(null);
     const [durationValue, setDurationValue] = useState<number>(1);
     const [subscriptionType, setSubscriptionType] = useState<'time' | 'session'>('time');
     const [sessionsValue, setSessionsValue] = useState<number>(4);
-    const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [hasCheckedExpirations, setHasCheckedExpirations] = useState(false);
     const [studentToEdit, setStudentToEdit] = useState<User | null>(null);
-    const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
 
     const formatCurrencyDZD = (amount: number) => {
         return new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD' }).format(amount);
@@ -118,12 +123,12 @@ const EconomicDashboard: React.FC = () => {
             setPaymentRecords(snap.docs.map(d => ({ id: d.id, ...d.data() } as StudentPaymentRecord)));
         });
 
-        const unsubSubjects = onSnapshot(collection(db, collections.subjects), (snap) => {
-            setSubjects(snap.docs.map(d => ({ id: d.id, ...d.data() } as Subject)));
+        const unsubSessions = onSnapshot(collection(db, collections.classes), (snap) => {
+            setSessions(snap.docs.map(d => ({ id: d.id, ...d.data() } as ClassSession)));
         });
 
         return () => {
-            unsubStudents(); unsubTeachers(); unsubSubs(); unsubPayments(); unsubAudit(); unsubPaymentRecords(); unsubSubjects();
+            unsubStudents(); unsubTeachers(); unsubSubs(); unsubPayments(); unsubAudit(); unsubPaymentRecords(); unsubSessions();
         };
     }, []);
 
@@ -132,13 +137,14 @@ const EconomicDashboard: React.FC = () => {
 
         const checkExpiredSubscriptions = async () => {
             const today = new Date().toISOString().split('T')[0];
+            let updated = false;
             
             for (const student of students) {
                 const sub = subscriptions[student.id];
                 if (!sub || !sub.endDate) continue;
 
-                if (sub.endDate < today && sub.paymentStatus !== 'pending') {
-                    await updateDoc(doc(db, 'subscriptions', sub.id), { paymentStatus: 'pending' });
+                if (sub.endDate < today && sub.paymentStatus !== 'Pending') {
+                    await updateDoc(doc(db, 'subscriptions', sub.id), { paymentStatus: 'Pending' });
                     await updateDoc(doc(db, collections.users, student.id), { 
                         accountStatus: 'pending',
                         paymentStatus: 'pending'
@@ -149,6 +155,7 @@ const EconomicDashboard: React.FC = () => {
                         student.id,
                         student.name
                     );
+                    updated = true;
                 }
             }
             setHasCheckedExpirations(true);
@@ -183,10 +190,12 @@ const EconomicDashboard: React.FC = () => {
         const student = students.find(s => s.id === studentId);
         if (!sub || !student) return;
 
+        const oldPaymentStatus = student.paymentStatus || sub.paymentStatus;
+        const oldAccountStatus = student.accountStatus || 'active';
         const newAccountStatus = paymentStatus === 'Unpaid' ? 'suspended' : 'active';
         const newPaymentStatus = paymentStatus.toLowerCase() as 'paid' | 'unpaid' | 'pending';
 
-        await updateDoc(doc(db, 'subscriptions', sub.id), { paymentStatus: newPaymentStatus });
+        await updateDoc(doc(db, 'subscriptions', sub.id), { paymentStatus });
         await updateDoc(doc(db, collections.users, studentId), { 
             accountStatus: newAccountStatus,
             paymentStatus: newPaymentStatus
@@ -194,7 +203,7 @@ const EconomicDashboard: React.FC = () => {
 
         await logAction(
             'Student Payment Update',
-            `Status: ${sub.paymentStatus} -> ${paymentStatus}. Account: ${newAccountStatus}`,
+            `Status: ${oldPaymentStatus} -> ${paymentStatus}. Account: ${newAccountStatus}`,
             studentId,
             student.name
         );
@@ -250,17 +259,17 @@ const EconomicDashboard: React.FC = () => {
         const sub = subscriptions[studentId];
         
         if (sub) {
-            await updateDoc(doc(db, 'subscriptions', sub.id), { monthlyFee: amountValue });
+            await updateDoc(doc(db, 'subscriptions', sub.id), { monthlyAmount: amountValue });
         } else {
             await setDoc(doc(db, 'subscriptions', studentId), {
                 studentId,
                 studentName: student.name,
                 status: 'active',
-                paymentStatus: 'pending',
+                paymentStatus: 'Pending',
                 startDate: new Date().toISOString().split('T')[0],
                 endDate: '', // Will be calculated when duration is set or default
                 duration: 1,
-                monthlyFee: amountValue
+                monthlyAmount: amountValue
             });
         }
 
@@ -321,14 +330,14 @@ const EconomicDashboard: React.FC = () => {
                 studentId,
                 studentName: student.name,
                 status: 'active',
-                paymentStatus: 'pending',
-                monthlyFee: 0,
+                paymentStatus: 'Pending',
+                monthlyAmount: 0,
                 ...updateData
             });
         }
 
         await logAction('Subscription Update', `Updated subscription to ${subscriptionType === 'time' ? durationValue + ' months' : sessionsValue + ' sessions'}`, studentId, student.name);
-        setEditingDate(null);
+        setEditingDuration(null);
     };
 
     const handleUpdateNextPaymentDate = async (teacherId: string) => {
@@ -340,25 +349,9 @@ const EconomicDashboard: React.FC = () => {
         setEditingDate(null);
     };
 
-    const handleUpdateStudentTeacher = async (studentId: string) => {
-        const student = students.find(s => s.id === studentId);
-        if (!student) return;
-
-        await updateDoc(doc(db, collections.users, studentId), { teacherId: selectedTeacherId });
-        await logAction('Student Teacher Update', `Updated assigned teacher to ${selectedTeacherId || 'None'}`, studentId, student.name);
-    };
-
-    const handleUpdateStudentSubjects = async (studentId: string) => {
-        const student = students.find(s => s.id === studentId);
-        if (!student) return;
-
-        await updateDoc(doc(db, collections.users, studentId), { subjectsStudied: selectedSubjects });
-        await logAction('Student Subjects Update', `Updated assigned subjects`, studentId, student.name);
-    };
-
     const financialSummary = useMemo<FinancialSummary>(() => {
         const totalExpected = Object.values(subscriptions).length * 12500; // Mock calculation in DZD
-        const totalCollected = Object.values(subscriptions).filter(s => s.paymentStatus === 'paid').length * 12500;
+        const totalCollected = Object.values(subscriptions).filter(s => s.paymentStatus === 'Paid').length * 12500;
         const outstanding = totalExpected - totalCollected;
         const payroll = Object.values(payments).reduce((acc, p) => acc + (p.amountOwed || 0), 0);
         
@@ -379,7 +372,7 @@ const EconomicDashboard: React.FC = () => {
     }, [subscriptions, payments]);
 
     const alerts = useMemo(() => {
-        const expired = Object.values(subscriptions).filter(s => s.status === 'expired').length;
+        const expired = Object.values(subscriptions).filter(s => s.status === 'Expired').length;
         const unpaidT = Object.values(payments).filter(p => p.status === 'Unpaid').length;
         const revenueDrop = financialSummary.revenueHistory[5].collected < financialSummary.revenueHistory[4].collected;
         
@@ -406,7 +399,11 @@ const EconomicDashboard: React.FC = () => {
                 }
                 
                 // Handle other objects - try to stringify, fallback to string representation
-                return safeStringify(value);
+                try {
+                    return JSON.stringify(value);
+                } catch (e) {
+                    return '[Complex Data]';
+                }
             }
             return value;
         };
@@ -498,9 +495,7 @@ const EconomicDashboard: React.FC = () => {
             setDurationValue,
             setSubscriptionType,
             setSessionsValue,
-            setStudentToEdit,
-            setSelectedSubjects,
-            setSelectedTeacherId
+            setStudentToEdit
         };
 
         if (isMobile) {
@@ -524,18 +519,18 @@ const EconomicDashboard: React.FC = () => {
         }
 
         return (
-            <div className="academic-table-container shadow-xl">
+            <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
-                    <table className="academic-table">
+                    <table className="w-full text-start border-collapse">
                         <thead>
-                            <tr>
-                                <th>{t('admin.legalName')}</th>
-                                <th>Account Status</th>
-                                <th>{t('economic.start')} / {t('economic.end')}</th>
-                                <th>Monthly Amount</th>
-                                <th>Duration</th>
-                                <th className="text-end">Timeline</th>
-                                <th className="text-end">Actions</th>
+                            <tr className="bg-institutional-50 dark:bg-institutional-950 border-b border-institutional-200 dark:border-institutional-800">
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('admin.legalName')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Account Status</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('economic.start')} / {t('economic.end')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Monthly Amount</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Duration</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-end">Timeline</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-institutional-100 dark:divide-institutional-800">
@@ -616,19 +611,19 @@ const EconomicDashboard: React.FC = () => {
         }
 
         return (
-            <div className="academic-table-container shadow-xl">
+            <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
-                    <table className="academic-table">
+                    <table className="w-full text-start border-collapse">
                         <thead>
-                            <tr>
-                                <th>{t('admin.legalName')}</th>
-                                <th>{t('economic.status')}</th>
-                                <th>{t('economic.amountOwed')}</th>
-                                <th>{t('economic.amountPaid')}</th>
-                                <th>Next Payment Date</th>
-                                <th>Monthly Salary</th>
-                                <th>{t('economic.notes')}</th>
-                                <th className="text-end">Actions</th>
+                            <tr className="bg-institutional-50 dark:bg-institutional-950 border-b border-institutional-200 dark:border-institutional-800">
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('admin.legalName')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('economic.status')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('economic.amountOwed')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('economic.amountPaid')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Next Payment Date</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Monthly Salary</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{t('economic.notes')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-institutional-100 dark:divide-institutional-800">
@@ -647,46 +642,38 @@ const EconomicDashboard: React.FC = () => {
         );
     };
 
-
     return (
-        <div className="min-h-screen bg-body dark:bg-institutional-950 pb-20">
-            {/* Header Section */}
-            <div className="max-w-7xl mx-auto px-6 pt-12 pb-10">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+        <div className="fade-in max-w-7xl mx-auto px-4 lg:px-0 pb-20">
+            {/* Header & Tabs */}
+            <div className="mb-10 flex flex-col gap-8 pb-6 border-b border-institutional-200 dark:border-institutional-800">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="text-start">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-lg shadow-primary/10">
-                                <TrendingUp size={24} />
-                            </div>
-                            <h1 className="text-4xl font-black text-institutional-900 dark:text-white tracking-tight">
-                                {t('economic.dashboard')}
-                            </h1>
-                        </div>
-                        <p className="text-[11px] font-black text-institutional-500 uppercase tracking-[0.4em] ml-1 opacity-70">Institutional President Terminal v3.1</p>
+                        <h2 className="text-3xl font-black uppercase tracking-tight text-institutional-900 dark:text-white">{t('economic.title')}</h2>
+                        <p className="text-[10px] font-black text-institutional-500 uppercase tracking-[0.3em] mt-1">Institutional President Terminal v3.1</p>
                     </div>
                     
                     {/* Desktop Tabs */}
-                    <div className="hidden md:flex bg-institutional-100/50 dark:bg-institutional-800/50 backdrop-blur-sm p-1.5 rounded-[1.5rem] border border-institutional-200/50 dark:border-institutional-700/50 shadow-inner">
-                        {(['overview', 'students', 'teachers', 'audit'] as const).map(tab => (
+                    <div className="hidden md:flex bg-institutional-100 dark:bg-institutional-800 p-1 rounded-2xl">
+                        {(['overview', 'students', 'teachers', 'audit', 'sessions', 'timetable'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-8 py-3 rounded-[1.2rem] text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-xl shadow-primary/10 scale-105' : 'text-institutional-500 hover:text-institutional-700 dark:hover:text-institutional-300'}`}>
-                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : 'Audit'}
+                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-500 hover:text-institutional-700'}`}>
+                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : tab === 'audit' ? 'Audit' : tab === 'sessions' ? 'Sessions' : 'Timetable'}
                             </button>
                         ))}
                     </div>
                 </div>
 
                 {/* Mobile Tabs - Centered & Polished */}
-                <div className="md:hidden flex justify-center mb-10">
-                    <div className="inline-flex bg-institutional-100 dark:bg-institutional-800 p-1.5 rounded-2xl shadow-inner overflow-x-auto scrollbar-hide max-w-[95vw]">
-                        {(['overview', 'students', 'teachers', 'audit'] as const).map(tab => (
+                <div className="md:hidden fixed bottom-4 left-0 right-0 z-50 flex justify-center">
+                    <div className="inline-flex bg-surface dark:bg-institutional-800 p-1.5 rounded-2xl shadow-xl border border-institutional-200 dark:border-institutional-700 overflow-x-auto scrollbar-hide max-w-[95vw]">
+                        {(['overview', 'students', 'teachers', 'audit', 'sessions', 'timetable'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-6 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-md scale-105' : 'text-institutional-500'}`}>
-                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs').split(' ')[0] : tab === 'teachers' ? t('economic.teacherPayments').split(' ')[0] : 'Audit'}
+                                className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-institutional-100 dark:bg-institutional-700 text-primary shadow-md scale-105' : 'text-institutional-500'}`}>
+                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs').split(' ')[0] : tab === 'teachers' ? t('economic.teacherPayments').split(' ')[0] : tab === 'audit' ? 'Audit' : tab === 'sessions' ? 'Sessions' : 'Timetable'}
                             </button>
                         ))}
                     </div>
@@ -694,184 +681,387 @@ const EconomicDashboard: React.FC = () => {
             </div>
 
             {activeTab === 'overview' && (
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                        {/* KPI Cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {[
-                                { label: t('economic.expected'), value: formatCurrencyDZD(financialSummary.totalExpectedRevenue), icon: TrendingUp, color: 'text-primary', bg: 'bg-primary/5', border: 'border-primary/10' },
-                                { label: t('economic.collected'), value: formatCurrencyDZD(financialSummary.totalCollectedRevenue), icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-500/5', border: 'border-emerald-500/10' },
-                                { label: t('economic.outstanding'), value: formatCurrencyDZD(financialSummary.outstandingPayments), icon: TrendingDown, color: 'text-rose-500', bg: 'bg-rose-50/50 dark:bg-rose-900/20', border: 'border-rose-500/10' },
-                                { label: t('economic.payroll'), value: formatCurrencyDZD(financialSummary.teacherPayrollTotal), icon: CreditCard, color: 'text-amber-500', bg: 'bg-amber-500/5', border: 'border-amber-500/10' },
-                            ].map((kpi, i) => (
-                                <div key={i} className="bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-xl shadow-institutional-900/5 group hover:scale-[1.02] transition-all duration-500">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <div className={`p-4 rounded-2xl ${kpi.bg} ${kpi.color} border ${kpi.border} group-hover:rotate-6 transition-transform duration-500`}>
-                                            <kpi.icon size={24} />
-                                        </div>
-                                        <ArrowRight size={16} className="text-institutional-300 opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0" />
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {/* KPI Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[
+                            { label: t('economic.expected'), value: formatCurrencyDZD(financialSummary.totalExpectedRevenue), icon: TrendingUp, color: 'text-primary' },
+                            { label: t('economic.collected'), value: formatCurrencyDZD(financialSummary.totalCollectedRevenue), icon: DollarSign, color: 'text-emerald-500' },
+                            { label: t('economic.outstanding'), value: formatCurrencyDZD(financialSummary.outstandingPayments), icon: TrendingDown, color: 'text-rose-500' },
+                            { label: t('economic.payroll'), value: formatCurrencyDZD(financialSummary.teacherPayrollTotal), icon: CreditCard, color: 'text-amber-500' },
+                        ].map((kpi, i) => (
+                            <div key={i} className="bg-surface dark:bg-institutional-900 p-6 rounded-[2rem] border border-institutional-200 dark:border-institutional-800 shadow-soft hover:shadow-strong transition-all group">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className={`p-3 rounded-2xl bg-institutional-50 dark:bg-institutional-800 ${kpi.color} group-hover:scale-110 transition-transform`}>
+                                        <kpi.icon size={20} />
                                     </div>
-                                    <p className="text-[11px] font-black uppercase text-institutional-400 tracking-[0.2em] mb-2">{kpi.label}</p>
-                                    <h3 className="text-3xl font-black text-institutional-900 dark:text-white tracking-tight">{kpi.value}</h3>
+                                    <ArrowRight size={14} className="text-institutional-300 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
-                            ))}
-                        </div>
+                                <p className="text-[10px] font-black uppercase text-institutional-400 tracking-widest mb-1">{kpi.label}</p>
+                                <h3 className="text-2xl font-black text-institutional-900 dark:text-white">{kpi.value}</h3>
+                            </div>
+                        ))}
+                    </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                            {/* Revenue Chart */}
-                            <div className="lg:col-span-2 bg-surface dark:bg-institutional-900 p-10 rounded-[3rem] border border-institutional-200 dark:border-institutional-800 shadow-2xl shadow-institutional-900/5">
-                                <div className="flex items-center justify-between mb-10">
-                                    <div className="text-start">
-                                        <h3 className="text-base font-black uppercase tracking-[0.2em] text-institutional-900 dark:text-white">{t('economic.revenue')} Analysis</h3>
-                                        <p className="text-[11px] font-bold text-institutional-400 uppercase mt-1 tracking-widest opacity-70">Monthly Collected vs Expected</p>
-                                    </div>
-                                    <div className="flex gap-3">
-                                        <button onClick={() => exportCSV(financialSummary.revenueHistory, 'revenue_report')} className="p-3 bg-institutional-50 dark:bg-institutional-800 text-institutional-400 hover:text-primary rounded-2xl transition-all hover:scale-110"><FileSpreadsheet size={20} /></button>
-                                        <button onClick={() => exportPDF('Revenue Report', ['Month', 'Collected', 'Expected'], financialSummary.revenueHistory.map(h => [h.month, h.collected, h.expected]), 'revenue_report')} className="p-3 bg-institutional-50 dark:bg-institutional-800 text-institutional-400 hover:text-primary rounded-2xl transition-all hover:scale-110"><FileJson size={20} /></button>
-                                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Revenue Chart */}
+                        <div className="lg:col-span-2 bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-soft">
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="text-start">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white">{t('economic.revenue')} Analysis</h3>
+                                    <p className="text-[10px] font-bold text-institutional-400 uppercase mt-1">Monthly Collected vs Expected</p>
                                 </div>
-                                <div className="h-[350px] w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={financialSummary.revenueHistory} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fontSize: 11, fontWeight: 800, fill: '#94a3b8'}} dy={15} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{fontSize: 11, fontWeight: 800, fill: '#94a3b8'}} tickFormatter={(value) => `${value / 1000}k`} dx={-10} />
-                                            <Tooltip 
-                                                contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', fontSize: '12px', fontWeight: '900', padding: '16px' }}
-                                                cursor={{ fill: '#f8fafc', radius: 8 }}
-                                                formatter={(value: any) => formatCurrencyDZD(Number(value || 0))}
-                                            />
-                                            <Legend wrapperStyle={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em', paddingTop: '30px' }} />
-                                            <Bar dataKey="expected" fill="#e2e8f0" radius={[8, 8, 0, 0]} name={t('economic.expected')} barSize={40} />
-                                            <Bar dataKey="collected" fill="#6366f1" radius={[8, 8, 0, 0]} name={t('economic.collected')} barSize={40} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
+                                <div className="flex gap-2">
+                                    <button onClick={() => exportCSV(financialSummary.revenueHistory, 'revenue_report')} className="p-2 text-institutional-400 hover:text-primary transition-colors"><FileSpreadsheet size={18} /></button>
+                                    <button onClick={() => exportPDF('Revenue Report', ['Month', 'Collected', 'Expected'], financialSummary.revenueHistory.map(h => [h.month, h.collected, h.expected]), 'revenue_report')} className="p-2 text-institutional-400 hover:text-primary transition-colors"><FileJson size={18} /></button>
                                 </div>
                             </div>
+                            <div className="h-[300px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={financialSummary.revenueHistory}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} tickFormatter={(value) => `${value / 1000}k`} />
+                                        <Tooltip 
+                                            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px', fontWeight: 'bold' }}
+                                            cursor={{ fill: '#f8fafc' }}
+                                            formatter={(value: number) => formatCurrencyDZD(value)}
+                                        />
+                                        <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', paddingTop: '20px' }} />
+                                        <Bar dataKey="expected" fill="#e2e8f0" radius={[4, 4, 0, 0]} name={t('economic.expected')} />
+                                        <Bar dataKey="collected" fill="#6366f1" radius={[4, 4, 0, 0]} name={t('economic.collected')} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
 
-                            {/* Alerts Panel */}
-                            <div className="bg-surface dark:bg-institutional-900 p-10 rounded-[3rem] border border-institutional-200 dark:border-institutional-800 shadow-2xl shadow-institutional-900/5">
-                                <h3 className="text-base font-black uppercase tracking-[0.2em] text-institutional-900 dark:text-white mb-10 text-start">{t('economic.alerts')}</h3>
-                                <div className="space-y-5">
-                                    {[
-                                        { label: t('economic.expiredSubs'), count: alerts.expired, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50/50 dark:bg-amber-900/20' },
-                                        { label: t('economic.unpaidTeachers'), count: alerts.unpaidT, icon: AlertCircle, color: 'text-rose-500', bg: 'bg-rose-50/50 dark:bg-rose-900/20' },
-                                        { label: t('economic.revenueDrop'), active: alerts.revenueDrop, icon: TrendingDown, color: alerts.revenueDrop ? 'text-rose-500' : 'text-emerald-500', bg: alerts.revenueDrop ? 'bg-rose-50/50 dark:bg-rose-900/20' : 'bg-emerald-50/50 dark:bg-emerald-900/20' },
-                                    ].map((alert, i) => (
-                                        <div key={i} className={`p-6 rounded-[1.5rem] border border-institutional-100 dark:border-institutional-800 flex items-center justify-between group hover:border-primary/30 transition-all duration-300 ${alert.bg}`}>
-                                            <div className="flex items-center gap-5">
-                                                <div className={`p-3.5 rounded-2xl bg-surface dark:bg-institutional-800 ${alert.color} shadow-lg shadow-black/5 group-hover:scale-110 transition-transform`}>
-                                                    <alert.icon size={20} />
-                                                </div>
-                                                <div className="text-start">
-                                                    <p className="text-sm font-black text-institutional-900 dark:text-white tracking-tight">{alert.label}</p>
-                                                    <p className="text-[10px] font-black uppercase text-institutional-400 tracking-[0.2em] mt-1 opacity-60">System Flag</p>
-                                                </div>
+                        {/* Alerts Panel */}
+                        <div className="bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-soft">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-8 text-start">{t('economic.alerts')}</h3>
+                            <div className="space-y-4">
+                                {[
+                                    { label: t('economic.expiredSubs'), count: alerts.expired, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50' },
+                                    { label: t('economic.unpaidTeachers'), count: alerts.unpaidT, icon: AlertCircle, color: 'text-rose-500', bg: 'bg-rose-50' },
+                                    { label: t('economic.revenueDrop'), active: alerts.revenueDrop, icon: TrendingDown, color: alerts.revenueDrop ? 'text-rose-500' : 'text-emerald-500', bg: alerts.revenueDrop ? 'bg-rose-50' : 'bg-emerald-50' },
+                                ].map((alert, i) => (
+                                    <div key={i} className={`p-5 rounded-2xl border border-institutional-100 dark:border-institutional-800 flex items-center justify-between group hover:border-primary/20 transition-all`}>
+                                        <div className="flex items-center gap-4">
+                                            <div className={`p-2.5 rounded-xl ${alert.bg} dark:bg-institutional-800 ${alert.color}`}>
+                                                <alert.icon size={18} />
                                             </div>
-                                            <span className={`text-lg font-black ${alert.color}`}>
-                                                {alert.count !== undefined ? alert.count : (alert.active ? 'YES' : 'NO')}
-                                            </span>
+                                            <div className="text-start">
+                                                <p className="text-xs font-bold text-institutional-700 dark:text-institutional-300">{alert.label}</p>
+                                                <p className="text-[9px] font-black uppercase text-institutional-400 tracking-widest mt-0.5">System Flag</p>
+                                            </div>
                                         </div>
-                                    ))}
-                                </div>
-                                <div className="mt-10 pt-10 border-t border-institutional-100 dark:border-institutional-800">
-                                    <button className="w-full py-5 bg-institutional-900 dark:bg-institutional-800 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] hover:bg-primary transition-all shadow-xl shadow-institutional-900/10 hover:scale-[1.02] active:scale-95">
-                                        Generate Monthly Report
-                                    </button>
-                                </div>
+                                        <span className={`text-sm font-black ${alert.color}`}>
+                                            {alert.count !== undefined ? alert.count : (alert.active ? 'YES' : 'NO')}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-8 pt-8 border-t border-institutional-100 dark:border-institutional-800">
+                                <button className="w-full py-4 bg-institutional-900 dark:bg-white text-white dark:text-institutional-900 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
+                                    Generate Monthly Report
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
-
             {(activeTab === 'students' || activeTab === 'teachers') && (
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                        {/* Filters & Search - Modern Floating Bar */}
-                        <div className="mb-12 flex flex-col md:flex-row gap-6 md:sticky md:top-4 z-30 bg-body/80 dark:bg-institutional-950/80 backdrop-blur-2xl py-6 px-8 rounded-[2rem] border border-institutional-200/50 dark:border-institutional-800/50 shadow-2xl shadow-black/5">
-                            <div className="relative flex-1 group">
-                                <Search className={`absolute ${isRTL ? 'right-6' : 'left-6'} top-1/2 -translate-y-1/2 text-institutional-400 group-focus-within:text-primary transition-all duration-300`} size={20} />
-                                <input 
-                                    value={searchTerm}
-                                    onChange={e => setSearchTerm(e.target.value)}
-                                    placeholder={t('inbox.searchPlaceholder')}
-                                    className="w-full bg-institutional-50 dark:bg-institutional-900/50 border-none rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-institutional-900 dark:text-white placeholder:text-institutional-400 focus:ring-2 focus:ring-primary/20 transition-all"
-                                />
-                            </div>
-                            <div className="flex gap-4">
-                                <div className="relative min-w-[180px]">
-                                    <Filter className={`absolute ${isRTL ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-institutional-400`} size={18} />
-                                    <select 
-                                        value={filterStatus}
-                                        onChange={e => setFilterStatus(e.target.value)}
-                                        className="w-full bg-institutional-50 dark:bg-institutional-900/50 border-none rounded-2xl py-4 pl-12 pr-10 text-[10px] font-black uppercase tracking-[0.15em] appearance-none cursor-pointer text-institutional-700 dark:text-institutional-300 focus:ring-2 focus:ring-primary/20 transition-all">
-                                        <option value="all">All Status</option>
-                                        <option value="active">{t('economic.active')}</option>
-                                        <option value="expired">{t('economic.expired')}</option>
-                                        <option value="pending">{t('economic.pending')}</option>
-                                        <option value="paid">{t('economic.paid')}</option>
-                                        <option value="unpaid">{t('economic.unpaid')}</option>
-                                    </select>
-                                    <ChevronDown className={`absolute ${isRTL ? 'left-5' : 'right-5'} top-1/2 -translate-y-1/2 text-institutional-400 pointer-events-none`} size={16} />
-                                </div>
-                                <button 
-                                    onClick={() => {
-                                        if (activeTab === 'students') {
-                                            exportCSV(filteredStudents.map(s => ({ ...s, ...subscriptions[s.id] })), 'student_subscriptions');
-                                        } else if (activeTab === 'teachers') {
-                                            exportCSV(filteredTeachers.map(t_user => ({ ...t_user, ...payments[t_user.id] })), 'teacher_payments');
-                                        }
-                                    }}
-                                    className="p-4 bg-primary text-white rounded-2xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 hover:scale-110 active:scale-95">
-                                    <Download size={22} />
-                                </button>
-                            </div>
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {/* Filters & Search */}
+                    <div className="mb-8 flex flex-col md:flex-row gap-4 sticky top-24 z-30 bg-body/80 backdrop-blur-md py-4">
+                        <div className="relative flex-1 group">
+                            <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-400 group-focus-within:text-primary transition-colors`} size={18} />
+                            <input 
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                                placeholder={t('inbox.searchPlaceholder')}
+                                className={`w-full bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12' : 'pl-12'} py-4 text-sm font-bold outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-soft`}
+                            />
                         </div>
+                        <div className="flex gap-4">
+                            <div className="relative">
+                                <Filter className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-400`} size={16} />
+                                <select 
+                                    value={filterStatus}
+                                    onChange={e => setFilterStatus(e.target.value)}
+                                    className={`bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12 pl-8' : 'pl-12 pr-8'} py-4 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all appearance-none cursor-pointer shadow-soft`}>
+                                    <option value="all">All Status</option>
+                                    <option value="active">{t('economic.active')}</option>
+                                    <option value="expired">{t('economic.expired')}</option>
+                                    <option value="pending">{t('economic.pending')}</option>
+                                    <option value="paid">{t('economic.paid')}</option>
+                                    <option value="unpaid">{t('economic.unpaid')}</option>
+                                </select>
+                                <ChevronDown className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 text-institutional-400 pointer-events-none`} size={14} />
+                            </div>
+                            <button 
+                                onClick={() => activeTab === 'students' 
+                                    ? exportCSV(filteredStudents.map(s => ({ ...s, ...subscriptions[s.id] })), 'student_subscriptions')
+                                    : exportCSV(filteredTeachers.map(t_user => ({ ...t_user, ...payments[t_user.id] })), 'teacher_payments')
+                                }
+                                className="p-4 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl text-institutional-400 hover:text-primary transition-all shadow-soft">
+                                <Download size={20} />
+                            </button>
+                        </div>
+                    </div>
 
-                        <div className="space-y-8">
-                            {activeTab === 'students' && <StudentList />}
-                            {activeTab === 'teachers' && <TeacherList />}
+                    {activeTab === 'students' && <StudentList />}
+                    {activeTab === 'teachers' && (
+                        isMobile ? (
+                            <div className="space-y-4">
+                                {filteredTeachers.map(t_user => {
+                                    const pay = payments[t_user.id];
+                                    return (
+                                        <div key={t_user.id} className="bg-white dark:bg-slate-900 border-l-4 border-primary rounded-2xl p-6 text-start shadow-sm">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
+                                                        {t_user.name.charAt(0)}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-black text-sm text-slate-900 dark:text-white">{t_user.name}</p>
+                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">ID: {t_user.id}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="relative">
+                                                    <select 
+                                                        value={pay?.status || 'Pending'}
+                                                        onChange={(e) => handleUpdateTeacherPayment(t_user.id, e.target.value as 'Paid' | 'Unpaid' | 'Pending')}
+                                                        className={`w-full appearance-none text-xs font-bold p-2 rounded-lg border-2 bg-transparent transition-all ${pay?.status === 'Paid' ? 'border-emerald-200 text-emerald-700' : pay?.status === 'Unpaid' ? 'border-rose-200 text-rose-700' : 'border-amber-200 text-amber-700'}`}>
+                                                        <option value="Paid">Paid</option>
+                                                        <option value="Unpaid">Unpaid</option>
+                                                        <option value="Pending">Pending</option>
+                                                    </select>
+                                                    <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 dark:border-slate-800">
+                                                <div>
+                                                    <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">{t('economic.amountOwed')}</p>
+                                                    <p className="text-sm font-black text-slate-900 dark:text-white">{formatCurrencyDZD(pay?.amountOwed || 0)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-1">{t('economic.amountPaid')}</p>
+                                                    <p className="text-sm font-black text-emerald-600 dark:text-emerald-400">{formatCurrencyDZD(pay?.amountPaid || 0)}</p>
+                                                </div>
+                                            </div>
+                                            <div className="pt-4">
+                                                <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-2">{t('economic.notes')}</p>
+                                                {editingNote === t_user.id ? (
+                                                    <div className="flex gap-2">
+                                                        <input 
+                                                            value={noteValue}
+                                                            onChange={e => setNoteValue(e.target.value)}
+                                                            className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-bold outline-none"
+                                                        />
+                                                        <button onClick={() => handleSaveNote(t_user.id)} className="p-3 bg-primary text-white rounded-xl shadow-lg shadow-primary/20"><Save size={16} /></button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center justify-between gap-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+                                                        <p className="text-xs font-medium text-slate-500 italic truncate">{pay?.notes || 'No notes added...'}</p>
+                                                        <button onClick={() => { setEditingNote(t_user.id); setNoteValue(pay?.notes || ''); }} className="text-primary"><FileText size={16} /></button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-xl">
+                                <table className="w-full text-start border-collapse">
+                                    <thead>
+                                        <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('admin.legalName')}</th>
+                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.status')}</th>
+                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.amountOwed')}</th>
+                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.amountPaid')}</th>
+                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">Next Payment Date</th>
+                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">Monthly Salary</th>
+                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-start">{t('economic.notes')}</th>
+                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                        {filteredTeachers.map(t_user => {
+                                            const pay = payments[t_user.id];
+                                            return (
+                                                <tr key={t_user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                                    <td className="px-8 py-6">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-sm">
+                                                                {t_user.name.charAt(0)}
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-bold text-sm text-slate-900 dark:text-white">{t_user.name}</p>
+                                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ID: {t_user.id}</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-8 py-6">
+                                                        <div className="relative w-36">
+                                                            <select 
+                                                                value={pay?.status || 'Pending'}
+                                                                onChange={(e) => handleUpdateTeacherPayment(t_user.id, e.target.value as 'Paid' | 'Unpaid' | 'Pending')}
+                                                                className={`w-full appearance-none text-xs font-bold p-2 rounded-lg border-2 bg-transparent transition-all ${pay?.status === 'Paid' ? 'border-emerald-200 text-emerald-700' : pay?.status === 'Unpaid' ? 'border-rose-200 text-rose-700' : 'border-amber-200 text-amber-700'}`}>
+                                                                <option value="Paid">Paid</option>
+                                                                <option value="Unpaid">Unpaid</option>
+                                                                <option value="Pending">Pending</option>
+                                                            </select>
+                                                            <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-8 py-6">
+                                                        <p className="text-sm font-black text-rose-600 dark:text-rose-400">{formatCurrencyDZD(pay?.amountOwed || 0)}</p>
+                                                    </td>
+                                                    <td className="px-8 py-6">
+                                                        <p className="text-sm font-black text-emerald-600 dark:text-emerald-400">{formatCurrencyDZD(pay?.amountPaid || 0)}</p>
+                                                    </td>
+                                                    <td className="px-8 py-6">
+                                                        {editingDate === t_user.id ? (
+                                                            <div className="flex items-center gap-2">
+                                                                <input type="date" value={dateValue} onChange={(e) => setDateValue(e.target.value)} className="w-36 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg border-2 border-primary" />
+                                                                <button onClick={() => handleUpdateNextPaymentDate(t_user.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={16} /></button>
+                                                            </div>
+                                                        ) : (
+                                                            <div onClick={() => { setEditingDate(t_user.id); setDateValue(pay?.nextPaymentDate || ''); }} className="cursor-pointer">
+                                                                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{pay?.nextPaymentDate || 'Not set'}</p>
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-8 py-6">
+                                                        {editingAmount === t_user.id ? (
+                                                            <div className="flex items-center gap-2">
+                                                                <input type="number" value={amountValue} onChange={(e) => setAmountValue(Number(e.target.value))} className="w-24 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg border-2 border-primary" />
+                                                                <button onClick={() => handleUpdateTeacherSalary(t_user.id)} className="p-2 bg-primary text-white rounded-lg"><Save size={16} /></button>
+                                                            </div>
+                                                        ) : (
+                                                            <div onClick={() => { setEditingAmount(t_user.id); setAmountValue(pay?.monthlySalary || 0); }} className="cursor-pointer">
+                                                                <p className="text-sm font-black text-slate-900 dark:text-white">{formatCurrencyDZD(pay?.monthlySalary || 0)}</p>
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-8 py-6 max-w-xs">
+                                                        {editingNote === t_user.id ? (
+                                                            <div className="flex gap-2">
+                                                                <input 
+                                                                    value={noteValue}
+                                                                    onChange={e => setNoteValue(e.target.value)}
+                                                                    className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-bold outline-none"
+                                                                />
+                                                                <button onClick={() => handleSaveNote(t_user.id)} className="p-3 bg-primary text-white rounded-xl shadow-lg shadow-primary/20"><Save size={16} /></button>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex items-center justify-between gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 group">
+                                                                <p className="text-xs font-medium text-slate-500 italic truncate">{pay?.notes || 'No notes added...'}</p>
+                                                                <button onClick={() => { setEditingNote(t_user.id); setNoteValue(pay?.notes || ''); }} className="text-primary opacity-0 group-hover:opacity-100 transition-all"><FileText size={16} /></button>
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-8 py-6 text-end">
+                                                        <div className="flex justify-end gap-3">
+                                                            <button 
+                                                                onClick={() => handleUpdateTeacherPayment(t_user.id, 'Paid')}
+                                                                className={`p-3 rounded-2xl transition-all ${pay?.status === 'Paid' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-500'}`}
+                                                                title={t('economic.markPaid')}>
+                                                                <CheckCircle size={20} />
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => handleUpdateTeacherPayment(t_user.id, 'Unpaid')}
+                                                                className={`p-3 rounded-2xl transition-all ${pay?.status === 'Unpaid' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-500'}`}
+                                                                title={t('economic.markUnpaid')}>
+                                                                <XCircle size={20} />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )
+                    )}
+                </div>
+            )}
+
+            {activeTab === 'sessions' && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl p-8">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-6">Scheduled Sessions</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {sessions.map(s => (
+                                <div key={s.id} className="p-6 bg-institutional-50 dark:bg-institutional-800 rounded-2xl border border-institutional-200 dark:border-institutional-700">
+                                    <h4 className="font-black text-lg text-institutional-900 dark:text-white mb-2">{s.name}</h4>
+                                    <p className="text-xs text-institutional-500 font-bold uppercase tracking-widest mb-4">{s.date} • {s.time} - {s.endTime}</p>
+                                    <span className="px-3 py-1 rounded-full text-[9px] font-black uppercase bg-primary/10 text-primary">{s.type}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'timetable' && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl p-8">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white mb-6">Fixed Timetable</h3>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-start border-collapse">
+                                <thead>
+                                    <tr className="bg-institutional-50 dark:bg-institutional-950 border-b border-institutional-200 dark:border-institutional-800">
+                                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">Time</th>
+                                        {DAYS_OF_WEEK.map(day => (
+                                            <th key={day} className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-center">{day}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-institutional-100 dark:divide-institutional-800">
+                                    {HOURS_OF_DAY.map(hour => (
+                                        <tr key={hour}>
+                                            <td className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-400 text-start">{hour}</td>
+                                            {DAYS_OF_WEEK.map(day => (
+                                                <td key={`${day}-${hour}`} className="px-4 py-3 border border-institutional-100 dark:border-institutional-800"></td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             )}
 
             {activeTab === 'audit' && (
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                        <div className="bg-surface dark:bg-institutional-900 rounded-[3rem] border border-institutional-200 dark:border-institutional-800 shadow-2xl shadow-institutional-900/5 overflow-hidden">
-                            <div className="p-10 border-b border-institutional-100 dark:border-institutional-800 flex items-center justify-between bg-institutional-50/30 dark:bg-institutional-950/30 backdrop-blur-sm">
-                                <div className="text-start">
-                                    <h3 className="text-base font-black uppercase tracking-[0.2em] text-institutional-900 dark:text-white">{t('economic.auditLog')}</h3>
-                                    <p className="text-[11px] font-bold text-institutional-400 uppercase mt-1 tracking-widest opacity-70">System Activity Records</p>
-                                </div>
-                                <button onClick={() => exportCSV(auditLogs, 'financial_audit_log')} className="flex items-center gap-3 px-6 py-3 bg-primary/10 text-primary rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all duration-300">
-                                    <Download size={16} /> {t('economic.export')}
-                                </button>
-                            </div>
-                            <div className="divide-y divide-institutional-100 dark:divide-institutional-800">
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl">
+                        <div className="p-8 border-b border-institutional-100 dark:border-institutional-800 flex items-center justify-between">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-white">{t('economic.auditLog')}</h3>
+                            <button onClick={() => exportCSV(auditLogs, 'financial_audit_log')} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:underline">
+                                <Download size={14} /> {t('economic.export')}
+                            </button>
+                        </div>
+                        <div className="divide-y divide-institutional-50 dark:divide-institutional-800">
                             {auditLogs.map(log => (
-                                <div key={log.id} className="p-8 flex items-center justify-between hover:bg-institutional-50/50 dark:hover:bg-institutional-800/30 transition-all duration-300 group">
-                                    <div className="flex items-center gap-8">
-                                        <div className="w-14 h-14 rounded-2xl bg-institutional-100 dark:bg-institutional-800 flex items-center justify-center text-institutional-400 group-hover:bg-primary/10 group-hover:text-primary transition-all duration-500">
-                                            <History size={24} />
+                                <div key={log.id} className="p-6 flex items-center justify-between hover:bg-institutional-50 dark:hover:bg-institutional-800/50 transition-colors">
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-10 h-10 rounded-xl bg-institutional-100 dark:bg-institutional-800 flex items-center justify-center text-institutional-400">
+                                            <History size={18} />
                                         </div>
                                         <div className="text-start">
-                                            <p className="text-base font-black text-institutional-900 dark:text-white tracking-tight">{log.action}</p>
-                                            <p className="text-[11px] font-bold text-institutional-400 uppercase tracking-[0.15em] mt-1">{log.details}</p>
-                                            {log.targetName && (
-                                                <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/5 rounded-lg mt-3">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                                                    <p className="text-[10px] font-black text-primary uppercase tracking-widest">Target: {log.targetName}</p>
-                                                </div>
-                                            )}
+                                            <p className="text-sm font-bold text-institutional-900 dark:text-white">{log.action}</p>
+                                            <p className="text-[10px] font-bold text-institutional-400 uppercase tracking-widest">{log.details}</p>
+                                            {log.targetName && <p className="text-[9px] font-black text-primary uppercase mt-1">Target: {log.targetName}</p>}
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        <p className="text-xs font-black text-institutional-900 dark:text-white uppercase tracking-[0.1em] mb-1">{log.userName}</p>
-                                        <p className="text-[10px] font-bold text-institutional-400 uppercase tracking-widest opacity-60">
+                                        <p className="text-[10px] font-black text-institutional-900 dark:text-white uppercase tracking-widest">{log.userName}</p>
+                                        <p className="text-[9px] font-bold text-institutional-400 mt-1">
                                             {log.timestamp?.seconds ? new Date(log.timestamp.seconds * 1000).toLocaleString() : '---'}
                                         </p>
                                     </div>
@@ -885,8 +1075,7 @@ const EconomicDashboard: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-        )}
+            )}
             {/* Student Settings Modal */}
             {studentToEdit && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
@@ -958,60 +1147,6 @@ const EconomicDashboard: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Assigned Teacher */}
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-institutional-500 ml-1">Assigned Teacher</label>
-                                <div className="relative">
-                                    <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-institutional-400" size={18} />
-                                    <select 
-                                        value={selectedTeacherId || ''}
-                                        onChange={(e) => setSelectedTeacherId(e.target.value || null)}
-                                        className="w-full bg-institutional-50 dark:bg-institutional-800 border-2 border-institutional-200 dark:border-institutional-700 pl-12 pr-4 py-4 rounded-2xl text-sm font-bold text-institutional-900 dark:text-white focus:border-primary outline-none transition-all appearance-none"
-                                    >
-                                        <option value="">Select a teacher</option>
-                                        {teachers.map(t => (
-                                            <option key={t.id} value={t.id}>{t.name}</option>
-                                        ))}
-                                    </select>
-                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-institutional-400 pointer-events-none" size={18} />
-                                </div>
-                            </div>
-
-                            {/* Assigned Subjects */}
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-institutional-500 ml-1">Assigned Subjects</label>
-                                <div className="bg-institutional-50 dark:bg-institutional-800 border-2 border-institutional-200 dark:border-institutional-700 p-4 rounded-2xl">
-                                    {subjects.length > 0 ? (
-                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                            {subjects.map(s => (
-                                                <label key={s.id} className="flex items-center gap-2 cursor-pointer group">
-                                                    <div className="relative flex items-center justify-center">
-                                                        <input 
-                                                            type="checkbox" 
-                                                            className="peer sr-only"
-                                                            checked={selectedSubjects.includes(s.id)}
-                                                            onChange={(e) => {
-                                                                if (e.target.checked) {
-                                                                    setSelectedSubjects([...selectedSubjects, s.id]);
-                                                                } else {
-                                                                    setSelectedSubjects(selectedSubjects.filter(id => id !== s.id));
-                                                                }
-                                                            }}
-                                                        />
-                                                        <div className="w-5 h-5 rounded border-2 border-institutional-300 dark:border-institutional-600 peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center">
-                                                            <CheckCircle size={14} className="text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
-                                                        </div>
-                                                    </div>
-                                                    <span className="text-xs font-bold text-institutional-700 dark:text-institutional-300 group-hover:text-institutional-900 dark:group-hover:text-white transition-colors">{s.name}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p className="text-xs font-bold text-institutional-400">No subjects available.</p>
-                                    )}
-                                </div>
-                            </div>
-
                             {/* Status Quick Actions */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-3">
@@ -1064,8 +1199,6 @@ const EconomicDashboard: React.FC = () => {
                                 onClick={async () => {
                                     await handleUpdateStudentAmount(studentToEdit.id);
                                     await handleUpdateSubscriptionDuration(studentToEdit.id);
-                                    await handleUpdateStudentSubjects(studentToEdit.id);
-                                    await handleUpdateStudentTeacher(studentToEdit.id);
                                     setStudentToEdit(null);
                                 }}
                                 className="flex-[2] py-4 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"

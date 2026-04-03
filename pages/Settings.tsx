@@ -65,11 +65,11 @@ const Settings: React.FC = () => {
     return (
         <div className="max-w-2xl mx-auto">
              <div className="mb-10 text-start">
-                <h2 className="text-3xl font-bold tracking-tighter uppercase text-institutional-950 dark:text-white">{t('nav.settings')}</h2>
-                <p className="text-xs font-bold text-institutional-500 uppercase tracking-wider mt-2">{t('settings.manageCredentials')}</p>
+                <h2 className="text-3xl font-black tracking-tighter uppercase text-text">{t('nav.settings')}</h2>
+                <p className="text-xs font-bold text-text-secondary uppercase tracking-wider mt-2">{t('settings.manageCredentials')}</p>
             </div>
 
-            <div className="academic-card p-8 md:p-10">
+            <div className="p-8 md:p-10 rounded-2xl bg-sidebar border border-border">
                 {status && (
                     <div className={`mb-6 p-4 rounded-xl flex items-center gap-3 text-xs font-bold uppercase tracking-wide ${status.type === 'success' ? 'bg-secondary/10 text-secondary' : 'bg-danger/10 text-danger'}`}>
                         {status.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
@@ -79,47 +79,47 @@ const Settings: React.FC = () => {
 
                 <form onSubmit={handleUpdate} className="space-y-6">
                     <div className="space-y-1 text-start">
-                        <label className="text-xs font-bold uppercase text-institutional-400 mx-2">{t('settings.displayName')}</label>
+                        <label className="text-xs font-bold uppercase text-text-secondary mx-2">{t('settings.displayName')}</label>
                         <div className="relative mt-2">
-                            <UserIcon className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-400`} size={18} />
+                            <UserIcon className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-text-secondary`} size={18} />
                             <input 
                                 value={name}
                                 onChange={e => setName(e.target.value)}
-                                className="academic-input py-4 pl-12 pr-4"
+                                className={`w-full bg-background ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border-2 border-border font-bold focus:border-primary outline-none transition-colors text-text`}
                             />
                         </div>
                     </div>
 
                     <div className="space-y-1 text-start">
-                        <label className="text-xs font-bold uppercase text-institutional-400 mx-2">{t('login.email')}</label>
+                        <label className="text-xs font-bold uppercase text-text-secondary mx-2">{t('login.email')}</label>
                         <div className="relative mt-2">
-                            <Mail className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-400`} size={18} />
+                            <Mail className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-text-secondary`} size={18} />
                             <input 
                                 type="email"
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                className="academic-input py-4 pl-12 pr-4"
+                                className={`w-full bg-background ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border-2 border-border font-bold focus:border-primary outline-none transition-colors text-text`}
                                 required
                             />
                         </div>
                     </div>
 
                     <div className="space-y-1 text-start">
-                        <label className="text-xs font-bold uppercase text-institutional-400 mx-2">{t('settings.newPassword')}</label>
+                        <label className="text-xs font-bold uppercase text-text-secondary mx-2">{t('settings.newPassword')}</label>
                         <div className="relative mt-2">
-                            <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-400`} size={18} />
+                            <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-text-secondary`} size={18} />
                             <input 
                                 type="password"
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="academic-input py-4 pl-12 pr-4"
+                                className={`w-full bg-background ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border-2 border-border font-bold focus:border-primary outline-none transition-colors text-text`}
                             />
                         </div>
                     </div>
 
                     <div className="space-y-3 text-start">
-                        <label className="text-xs font-bold uppercase text-institutional-400 mx-2 flex items-center gap-2">
+                        <label className="text-xs font-bold uppercase text-text-secondary mx-2 flex items-center gap-2">
                            <Languages size={12} /> {t('settings.language')}
                         </label>
                         <div className="grid grid-cols-3 gap-3 mt-2">
@@ -128,7 +128,7 @@ const Settings: React.FC = () => {
                                     key={l.code}
                                     type="button"
                                     onClick={() => setLanguage(l.code)}
-                                    className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all h-28 ${currentLang === l.code ? 'border-primary bg-primary/5 text-primary' : 'border-institutional-200 dark:border-institutional-800 hover:border-primary/30'}`}
+                                    className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all h-28 ${currentLang === l.code ? 'border-primary bg-primary/5 text-primary' : 'border-border hover:border-primary/30'}`}
                                 >
                                     <span className="text-2xl">{l.flag}</span>
                                     <span className="text-xs font-bold uppercase">{l.label}</span>
@@ -139,7 +139,7 @@ const Settings: React.FC = () => {
 
                     <button 
                         type="submit"
-                        className="academic-button academic-button-primary w-full p-4 shadow-lg shadow-primary/30 mt-4"
+                        className="w-full bg-primary text-white p-4 rounded-xl font-bold uppercase tracking-wider shadow-lg shadow-primary/30 hover:bg-primary/90 transition-transform flex items-center justify-center gap-2 mt-4"
                     >
                         <Save size={18} /> {t('settings.updateCredentials')}
                     </button>

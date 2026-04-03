@@ -15,6 +15,7 @@ import {
     QrCode, 
     Moon, 
     Sun, 
+    LogOut,
     Users,
     Settings,
     X,
@@ -27,17 +28,19 @@ import {
     Briefcase,
     ClipboardCheck,
     CalendarCheck,
+    CheckCircle2,
     Languages,
+    ChevronRight,
+    Search,
     UserCircle,
-    DollarSign
+    DollarSign,
+    CreditCard
 } from 'lucide-react';
-
-import { toast } from 'sonner';
 
 interface LayoutProps {
     children: React.ReactNode;
     currentPath: string;
-    onNavigate: (path: string, state?: any) => void;
+    onNavigate: (path: string) => void;
 }
 
 const NOTIFICATION_SOUND_URL = "https://cdn.freesound.org/previews/263/263133_2064400-lq.mp3";
@@ -49,8 +52,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isNotifOpen, setIsNotifOpen] = useState(false);
-    const [isHeaderLangOpen, setIsHeaderLangOpen] = useState(false);
-    const headerLangRef = useRef<HTMLDivElement>(null);
+    const [isLangOpen, setIsLangOpen] = useState(false);
     const [toasts, setToasts] = useState<Notification[]>([]);
     
     const [audioEnabled, setAudioEnabled] = useState(false);
@@ -58,35 +60,19 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
     const sessionStartTime = useRef(Date.now());
     const processedIds = useRef<Set<string>>(new Set());
 
-    // Initialize Theme from localStorage
+    // Initialize Theme
     useEffect(() => {
-        try {
-            const savedTheme = localStorage.getItem('edu_alg_theme');
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const shouldBeDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
-            setIsDarkMode(shouldBeDark);
-        } catch (error) {
-            console.error('Theme initialization error:', error);
+        const savedTheme = localStorage.getItem('edu_alg_theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            setIsDarkMode(true);
+            document.documentElement.classList.add('dark');
+        } else {
+            setIsDarkMode(false);
+            document.documentElement.classList.remove('dark');
         }
     }, []);
-
-    // Sync Theme State with DOM and localStorage
-    useEffect(() => {
-        try {
-            if (isDarkMode) {
-                document.documentElement.classList.add('dark');
-                document.body.classList.add('dark');
-                document.documentElement.style.colorScheme = 'dark';
-            } else {
-                document.documentElement.classList.remove('dark');
-                document.body.classList.remove('dark');
-                document.documentElement.style.colorScheme = 'light';
-            }
-            localStorage.setItem('edu_alg_theme', isDarkMode ? 'dark' : 'light');
-        } catch (error) {
-            console.error('Theme sync error:', error);
-        }
-    }, [isDarkMode]);
 
     useEffect(() => {
         const audio = new Audio(NOTIFICATION_SOUND_URL);
@@ -124,37 +110,14 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
         } catch (error) {}
     };
 
-    const toggleTheme = () => {
-        setIsDarkMode(prev => {
-            const next = !prev;
-            toast.info(`Switching to ${next ? 'Dark' : 'Light'} Mode...`);
-            return next;
-        });
+    const toggleTheme = (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
         enableAudio();
+        const nextMode = !isDarkMode;
+        setIsDarkMode(nextMode);
+        document.documentElement.classList.toggle('dark', nextMode);
+        localStorage.setItem('edu_alg_theme', nextMode ? 'dark' : 'light');
     };
-
-    const handleLogout = async () => {
-        try {
-            enableAudio();
-            toast.promise(logout(), {
-                loading: 'Logging out...',
-                success: 'Logged out successfully',
-                error: 'Logout failed'
-            });
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    };
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (headerLangRef.current && !headerLangRef.current.contains(event.target as Node)) {
-                setIsHeaderLangOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
 
     useEffect(() => {
         if (!user) return;
@@ -238,7 +201,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
         : user?.role === 'economic'
         ? [
             { path: '/', label: t('nav.economic'), icon: DollarSign },
-            { path: '/schedule', label: 'Timetable', icon: CalendarCheck },
+            { path: '/schedule', label: t('nav.schedule'), icon: CalendarDays },
+            { path: '/timetable', label: 'Timetable', icon: CalendarCheck },
             { path: `/profile/${user?.id}`, label: t('nav.myProfile'), icon: UserCircle },
             { path: '/settings', label: t('nav.settings'), icon: Settings }
         ]
@@ -278,12 +242,12 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
             onClick={enableAudio} 
         >
             {/* TOAST STACK */}
-            <div className={`fixed z-[500] flex flex-col gap-4 p-6 transition-all duration-300 pointer-events-none ${isMobile ? 'top-0 inset-x-0' : 'top-6 end-6 w-[400px]'}`}>
+            <div className={`fixed z-[500] flex flex-col gap-4 p-6 transition-all duration-300 ${isMobile ? 'top-0 inset-x-0' : 'top-6 end-6 w-[400px]'}`}>
                 {toasts.map((toast, idx) => (
                     <div 
                         key={toast.id} 
                         onClick={() => handleNotificationClick(toast)}
-                        className="glass p-5 rounded-2xl shadow-strong border border-white/20 dark:border-white/5 flex items-start gap-4 animate-in slide-in-from-right-10 fade-in duration-500 cursor-pointer group hover:scale-[1.02] active:scale-95 transition-all pointer-events-auto"
+                        className="glass p-5 rounded-2xl shadow-strong border border-white/20 dark:border-white/5 flex items-start gap-4 animate-in slide-in-from-right-10 fade-in duration-500 cursor-pointer group hover:scale-[1.02] active:scale-95 transition-all"
                         style={{ zIndex: 500 + idx }}
                     >
                         <div className={`p-3 rounded-xl shrink-0 ${getColorForType(toast.type)} shadow-sm`}>
@@ -316,7 +280,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     <aside className={`fixed top-0 bottom-0 w-full sm:w-[450px] bg-surface dark:bg-institutional-950 z-[120] border-institutional-300 dark:border-institutional-800 shadow-strong animate-in slide-in-from-right duration-500 flex flex-col ${isRTL ? 'start-0 border-e' : 'end-0 border-s'}`}>
                         <div className="p-8 flex justify-between items-center border-b border-institutional-200 dark:border-institutional-800">
                             <div>
-                                <h3 className="text-2xl font-bold tracking-tight text-institutional-900 dark:text-white uppercase">Activity Ledger</h3>
+                                <h3 className="text-2xl font-black tracking-tight text-institutional-900 dark:text-white uppercase">Activity Ledger</h3>
                                 <p className="text-xs font-bold text-institutional-400 uppercase tracking-widest mt-1">Institutional Records</p>
                             </div>
                             <button onClick={() => setIsNotifOpen(false)} className="p-3 bg-institutional-100 dark:bg-institutional-800 rounded-2xl text-institutional-500 hover:text-danger transition-all"><X size={20} /></button>
@@ -326,25 +290,25 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             {notifications.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center opacity-20 py-20 text-center">
                                     <Bell size={64} className="mb-6 text-institutional-300" />
-                                    <p className="font-bold text-xs uppercase tracking-[0.4em]">Vault is Empty</p>
+                                    <p className="font-black text-xs uppercase tracking-[0.4em]">Vault is Empty</p>
                                 </div>
                             ) : notifications.map(n => (
                                 <div 
                                     key={n.id} 
                                     onClick={() => handleNotificationClick(n)}
-                                    className={`p-6 rounded-3xl border transition-all cursor-pointer relative group ${n.read ? 'bg-transparent border-transparent opacity-60' : 'bg-surface dark:bg-institutional-900 border-institutional-200 dark:border-institutional-800 shadow-soft hover:shadow-modern hover:-translate-y-1'}`}
+                                    className={`p-6 rounded-3xl border transition-all cursor-pointer relative group ${n.read ? 'bg-transparent border-transparent opacity-60' : 'bg-surface dark:bg-institutional-900 border-institutional-200 dark:border-institutional-800 shadow-soft hover:shadow-strong hover:-translate-y-1'}`}
                                 >
                                     {!n.read && <div className={`absolute top-6 ${isRTL ? 'start-6' : 'end-6'} w-2.5 h-2.5 bg-primary rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]`} />}
                                     <div className="flex items-center gap-4 mb-4">
                                         <div className={`p-3 rounded-2xl ${getColorForType(n.type)} shadow-sm`}>
                                             {getIconForType(n.type)}
                                         </div>
-                        <div className="flex-1 min-w-0">
-                                    <p className="text-[10px] font-bold uppercase text-institutional-400 tracking-[0.1em]">{n.title}</p>
-                                    <p className="text-[9px] font-bold text-institutional-500 mt-0.5">
-                                        {n.timestamp ? new Date(n.timestamp.seconds * 1000).toLocaleString([], { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }) : '...'}
-                                    </p>
-                                </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[10px] font-black uppercase text-institutional-400 tracking-[0.1em]">{n.title}</p>
+                                            <p className="text-[9px] font-bold text-institutional-500 mt-0.5">
+                                                {n.timestamp ? new Date(n.timestamp.seconds * 1000).toLocaleString([], { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }) : '...'}
+                                            </p>
+                                        </div>
                                     </div>
                                     <p className="text-sm text-institutional-800 dark:text-white font-semibold leading-relaxed">{n.message}</p>
                                 </div>
@@ -355,7 +319,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             <button 
                                 onClick={markAllRead} 
                                 disabled={unreadCount === 0}
-                                className="flat-button flat-button-primary w-full p-5"
+                                className="w-full bg-primary text-white p-5 rounded-3xl font-black text-xs uppercase tracking-[0.2em] hover:bg-primary-hover disabled:opacity-30 disabled:hover:bg-primary shadow-lg shadow-primary/20 transition-all"
                             >
                                 Acknowledge All Entries
                             </button>
@@ -364,17 +328,108 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                 </>
             )}
 
-            {/* DESKTOP SIDEBAR (HIDDEN) */}
-            <aside className="hidden">
+            {/* DESKTOP SIDEBAR */}
+            <aside className={`hidden lg:flex fixed inset-y-0 ${isRTL ? 'end-0 border-s' : 'start-0 border-e'} w-[300px] bg-surface dark:bg-institutional-950 border-institutional-200 dark:border-institutional-800 z-50 flex-col transition-all duration-300`}>
+                <div className="p-10 flex items-center gap-4">
+                    <Logo size="md" />
+                    <div>
+                        <h1 className="text-2xl font-black tracking-tighter text-institutional-950 dark:text-white uppercase">{t('appName')}</h1>
+                        <p className="text-[9px] font-black tracking-[0.3em] text-primary uppercase">{t('appSubName')}</p>
+                    </div>
+                </div>
+
+                <div className="px-6 mb-8">
+                    <div className="relative group">
+                        <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-400 group-focus-within:text-primary transition-colors`} size={16} />
+                        <input 
+                            type="text" 
+                            placeholder="Global Search..." 
+                            className={`w-full bg-institutional-50 dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12' : 'pl-12'} py-3.5 text-xs font-bold outline-none focus:border-primary transition-all`} 
+                        />
+                    </div>
+                </div>
+
+                <nav className="flex-1 py-4 space-y-2 overflow-y-auto px-6 scroll-hide">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-institutional-400 mb-4 px-2">Navigation</p>
+                    {routes.map((route) => {
+                        const Icon = route.icon;
+                        const isActive = currentPath === route.path;
+                        return (
+                            <button 
+                                key={route.path}
+                                onClick={() => { enableAudio(); onNavigate(route.path); }}
+                                className={`group w-full flex items-center justify-between px-5 py-4 rounded-[1.25rem] font-bold transition-all duration-300 ${isActive ? 'bg-primary text-white shadow-strong shadow-primary/20' : 'text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-900 dark:text-institutional-400 hover:text-primary'}`}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <Icon size={20} className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
+                                    <span className="uppercase tracking-widest text-[11px] font-black">{route.label}</span>
+                                </div>
+                                {isActive && <ChevronRight size={14} className={`${isRTL ? 'rotate-180' : ''}`} />}
+                            </button>
+                        );
+                    })}
+                </nav>
+
+                <div className="p-8 mt-auto border-t border-institutional-200 dark:border-institutional-800 space-y-4">
+                    <div className="flex items-center gap-2 p-1.5 bg-institutional-100 dark:bg-institutional-900 rounded-2xl border border-institutional-200 dark:border-institutional-800">
+                        <button 
+                            onClick={toggleTheme} 
+                            className="flex-1 flex items-center justify-center py-3 rounded-xl hover:bg-surface dark:hover:bg-institutional-800 transition-all text-institutional-500 hover:text-primary"
+                            title="Toggle Theme"
+                        >
+                            {isDarkMode ? <Sun size={18} className="text-warning" /> : <Moon size={18} className="text-primary" />}
+                        </button>
+                        <div className="w-px h-6 bg-institutional-200 dark:bg-institutional-800" />
+                        <button 
+                            onClick={() => { enableAudio(); setIsNotifOpen(true); }} 
+                            className="flex-1 flex items-center justify-center py-3 rounded-xl hover:bg-surface dark:hover:bg-institutional-800 transition-all text-institutional-500 hover:text-primary relative"
+                            title="Notifications"
+                        >
+                            <Bell size={18} />
+                            {unreadCount > 0 && (
+                                <span className="absolute top-2 right-4 w-2 h-2 bg-danger rounded-full" />
+                            )}
+                        </button>
+                    </div>
+
+                    <button 
+                        onClick={() => setIsLangOpen(!isLangOpen)} 
+                        className="flex items-center justify-between w-full px-5 py-4 rounded-2xl border border-institutional-200 dark:border-institutional-800 hover:bg-institutional-100 dark:hover:bg-institutional-900 transition-all text-institutional-600 dark:text-institutional-300 relative"
+                    >
+                        <div className="flex items-center gap-4">
+                            <Languages size={18} className="text-primary" />
+                            <span className="text-xs font-black uppercase tracking-widest">{languages.find(l => l.code === language)?.label}</span>
+                        </div>
+                        {isLangOpen && (
+                            <div className={`absolute bottom-full mb-3 inset-x-0 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-50 p-2`}>
+                                {languages.map(l => (
+                                    <button 
+                                        key={l.code} 
+                                        onClick={(e) => { e.stopPropagation(); setLanguage(l.code); setIsLangOpen(false); }}
+                                        className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all text-xs font-black uppercase ${language === l.code ? 'text-primary bg-primary/5' : 'text-institutional-500'}`}
+                                    >
+                                        <span className="text-xl">{l.flag}</span>
+                                        <span>{l.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </button>
+
+                    <button onClick={logout} className="flex items-center gap-4 w-full px-5 py-4 rounded-2xl bg-danger/5 text-danger hover:bg-danger/10 transition-all group">
+                        <Power size={18} className={`transition-transform duration-300 ${isRTL ? 'rotate-180 group-hover:translate-x-1' : 'group-hover:-translate-x-1'}`} />
+                        <span className="text-xs font-black uppercase tracking-widest">{t('common.disconnect')}</span>
+                    </button>
+                </div>
             </aside>
 
             {/* MAIN CONTENT AREA */}
-            <main className="flex-1 flex flex-col h-full relative overflow-hidden bg-body transition-all duration-500">
-                <header className={`shrink-0 z-40 sticky top-0 transition-all duration-500 ${isMobile ? 'h-0' : 'h-20 glass dark:glass-dark border-b border-institutional-200 dark:border-institutional-800 flex items-center justify-between px-12'}`}>
+            <main className={`flex-1 flex flex-col h-full relative overflow-hidden ${!isMobile ? (isRTL ? 'lg:mr-[300px]' : 'lg:ml-[300px]') : ''} bg-body transition-all duration-500`}>
+                <header className={`shrink-0 z-40 sticky top-0 transition-all duration-500 ${isMobile ? 'h-0' : 'h-24 bg-surface/80 dark:bg-institutional-950/80 backdrop-blur-xl border-b border-institutional-200 dark:border-institutional-800 flex items-center justify-between px-16'}`}>
                     {!isMobile && (
                         <>
                             <div className="flex items-center gap-4">
-                                <h2 className="text-2xl font-bold tracking-tight text-institutional-950 dark:text-white uppercase leading-none">{getPageTitle()}</h2>
+                                <h2 className="text-2xl font-black tracking-tight text-institutional-950 dark:text-white uppercase leading-none">{getPageTitle()}</h2>
                             </div>
 
                             <div className="flex items-center gap-6">
@@ -383,22 +438,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                 </div>
 
                                 <div className="flex items-center gap-4 h-12 px-2.5 bg-institutional-100 dark:bg-institutional-900 rounded-2xl border border-institutional-200 dark:border-institutional-800">
-                                    <button 
-                                        type="button"
-                                        onClick={toggleTheme} 
-                                        className="p-2.5 text-institutional-500 hover:text-primary transition-all active:scale-90" 
-                                        aria-label="Toggle Theme"
-                                        title="Toggle Theme"
-                                    >
+                                    <button onClick={toggleTheme} className="p-2.5 text-institutional-500 hover:text-primary transition-all active:scale-90" aria-label="Toggle Theme">
                                         {isDarkMode ? <Sun size={20} className="text-warning" /> : <Moon size={20} className="text-primary" />}
                                     </button>
                                     <div className="w-px h-6 bg-institutional-200 dark:bg-institutional-800 mx-1" />
-                                    <button 
-                                        type="button"
-                                        onClick={() => { enableAudio(); setIsNotifOpen(true); }} 
-                                        className="relative p-2.5 text-institutional-500 hover:text-primary transition-all active:scale-90"
-                                        title="Notifications"
-                                    >
+                                    <button onClick={() => { enableAudio(); setIsNotifOpen(true); }} className="relative p-2.5 text-institutional-500 hover:text-primary transition-all active:scale-90">
                                         <Bell size={20} />
                                         {unreadCount > 0 && (
                                             <span className={`absolute top-2 ${isRTL ? 'start-2' : 'end-2'} w-4.5 h-4.5 bg-danger text-white text-[9px] font-black flex items-center justify-center rounded-full border-2 border-surface dark:border-institutional-950 animate-bounce`}>
@@ -407,38 +451,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                         )}
                                     </button>
                                     <div className="w-px h-6 bg-institutional-200 dark:bg-institutional-800 mx-1" />
-                                    <div className="relative" ref={headerLangRef}>
-                                        <button 
-                                            type="button"
-                                            onClick={() => setIsHeaderLangOpen(!isHeaderLangOpen)} 
-                                            className="p-2.5 text-institutional-500 hover:text-primary transition-all active:scale-90 relative"
-                                            title="Language"
-                                        >
-                                            <Languages size={20} />
-                                            {isHeaderLangOpen && (
-                                                <div className={`absolute top-full mt-3 ${isRTL ? 'left-0' : 'right-0'} w-48 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-50 p-2`}>
-                                                    {languages.map(l => (
-                                                        <button 
-                                                            key={l.code} 
-                                                            type="button"
-                                                            onClick={(e) => { e.stopPropagation(); setLanguage(l.code); setIsHeaderLangOpen(false); }}
-                                                            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all text-[10px] font-black uppercase tracking-widest ${language === l.code ? 'text-primary bg-primary/5' : 'text-institutional-500'}`}
-                                                        >
-                                                            <span className="text-lg">{l.flag}</span>
-                                                            <span>{l.label}</span>
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </button>
-                                    </div>
-                                    <div className="w-px h-6 bg-institutional-200 dark:bg-institutional-800 mx-1" />
-                                    <button 
-                                        type="button"
-                                        onClick={handleLogout} 
-                                        className="p-2.5 text-institutional-500 hover:text-danger transition-all active:scale-90"
-                                        title="Logout"
-                                    >
+                                    <button onClick={logout} className="p-2.5 text-institutional-500 hover:text-danger transition-all active:scale-90">
                                         <Power size={20} />
                                     </button>
                                 </div>
@@ -447,11 +460,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                     onClick={() => onNavigate(`/profile/${user?.id}`)}
                                     className="flex items-center gap-3 bg-institutional-100 dark:bg-institutional-900 p-2 pr-4 rounded-2xl border border-institutional-200 dark:border-institutional-800 cursor-pointer hover:bg-institutional-200 dark:hover:bg-institutional-800 transition-colors"
                                 >
-                                    <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-[11px] uppercase shadow-lg shadow-primary/20">
+                                    <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white font-black text-[11px] uppercase shadow-lg shadow-primary/20">
                                         {user?.name.charAt(0)}
                                     </div>
                                     <div className="text-start">
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-institutional-900 dark:text-white">{user?.name.split(' ')[0]}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-institutional-900 dark:text-white">{user?.name.split(' ')[0]}</p>
                                         <p className="text-[8px] font-bold uppercase tracking-widest text-institutional-400 leading-none mt-0.5">{user?.role}</p>
                                     </div>
                                 </div>
@@ -460,20 +473,20 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     )}
                 </header>
 
-                {/* MOBILE FLOATING TOP BAR (SIMPLIFIED) */}
+                {/* MOBILE FLOATING TOP BAR */}
                 {isMobile && (
                     <div className="fixed top-4 inset-x-0 z-[60] px-3 pointer-events-none">
                         <div className="flex items-center justify-between w-full">
-                            <div className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 p-2 px-4 shadow-2xl rounded-2xl flex items-center gap-3 pointer-events-auto">
+                            <div className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 p-2 px-3 shadow-2xl rounded-2xl flex items-center gap-2 pointer-events-auto">
                                 <Logo size="sm" />
-                                <h2 className="text-[10px] sm:text-xs font-black tracking-tight text-institutional-950 dark:text-white uppercase truncate max-w-[120px]">{getPageTitle()}</h2>
+                                <h2 className="text-[10px] sm:text-xs font-black tracking-tight text-institutional-950 dark:text-white uppercase truncate max-w-[100px] sm:max-w-[120px]">{getPageTitle()}</h2>
                             </div>
 
                             <div className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 p-1.5 shadow-2xl rounded-2xl flex items-center gap-1 pointer-events-auto">
-                                <button onClick={(e) => { e.stopPropagation(); toggleTheme(); }} className="p-1.5 sm:p-2 text-institutional-500 hover:text-primary transition-all active:scale-90">
+                                <button onClick={toggleTheme} className="p-1.5 sm:p-2 text-institutional-500 hover:text-primary transition-all active:scale-90">
                                     {isDarkMode ? <Sun size={16} className="text-warning" /> : <Moon size={16} className="text-primary" />}
                                 </button>
-                                <button onClick={(e) => { e.stopPropagation(); enableAudio(); setIsNotifOpen(true); }} className="relative p-1.5 sm:p-2 text-institutional-500 hover:text-primary transition-all active:scale-90">
+                                <button onClick={() => { enableAudio(); setIsNotifOpen(true); }} className="relative p-1.5 sm:p-2 text-institutional-500 hover:text-primary transition-all active:scale-90">
                                     <Bell size={16} />
                                     {unreadCount > 0 && (
                                         <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-danger text-white text-[7px] font-black flex items-center justify-center rounded-full border border-surface dark:border-institutional-950">
@@ -481,7 +494,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                         </span>
                                     )}
                                 </button>
-                                <button onClick={(e) => { e.stopPropagation(); handleLogout(); }} className="p-1.5 sm:p-2 text-institutional-500 hover:text-danger transition-all active:scale-90">
+                                <button onClick={logout} className="p-1.5 sm:p-2 text-institutional-500 hover:text-danger transition-all active:scale-90">
                                     <Power size={16} />
                                 </button>
                             </div>
@@ -489,31 +502,33 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     </div>
                 )}
 
-                {/* BOTTOM NAVIGATION BAR */}
-                <nav className="fixed bottom-0 inset-x-0 h-20 glass dark:glass-dark border-t border-institutional-200 dark:border-institutional-800 z-[100] flex items-center overflow-x-auto scroll-hide px-4 gap-2">
-                    <div className="flex items-center gap-2 mx-auto">
-                        {routes.map((route) => {
-                            const Icon = route.icon;
-                            const isActive = currentPath === route.path;
-                            return (
-                                <button 
-                                    key={route.path}
-                                    onClick={() => { enableAudio(); onNavigate(route.path); }}
-                                    className={`flex flex-col items-center justify-center min-w-[84px] h-16 rounded-2xl transition-all duration-300 shrink-0 ${isActive ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105' : 'text-institutional-500 hover:bg-institutional-100 dark:hover:bg-institutional-900'}`}
-                                >
-                                    <Icon size={20} />
-                                    <span className="uppercase tracking-widest text-[9px] font-black mt-1.5">{route.label}</span>
-                                </button>
-                            );
-                        })}
-                    </div>
-                </nav>
-
-                <div className={`flex-1 overflow-y-auto p-3 sm:p-6 lg:p-12 relative scroll-smooth pb-28 ${isMobile ? 'pt-20' : ''}`}>
+                <div className={`flex-1 overflow-y-auto p-3 sm:p-6 lg:p-12 relative scroll-smooth ${isMobile ? 'pb-28 pt-20' : ''}`}>
                     <div className="max-w-[1400px] mx-auto">
                         {children}
                     </div>
                 </div>
+
+                {isMobile && (
+                    <div className="fixed bottom-4 inset-x-0 flex justify-center z-50 px-2 pointer-events-none">
+                        <nav className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 flex items-center overflow-x-auto scroll-smooth scrollbar-hide p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] gap-1 pointer-events-auto max-w-full">
+                            {routes.map((route) => {
+                                const Icon = route.icon;
+                                const isActive = currentPath === route.path;
+                                return (
+                                    <button 
+                                        key={route.path}
+                                        onClick={() => { enableAudio(); onNavigate(route.path); }}
+                                        className={`flex-shrink-0 flex flex-col items-center gap-1 p-2.5 rounded-[1.5rem] transition-all min-w-[60px] relative ${isActive ? 'text-primary bg-primary/5 scale-105' : 'text-institutional-400 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
+                                    >
+                                        <Icon size={18} strokeWidth={isActive ? 3 : 2} />
+                                        <span className={`text-[7px] font-black uppercase tracking-[0.1em] transition-all ${isActive ? 'opacity-100' : 'opacity-60'}`}>{route.label}</span>
+                                        {isActive && <div className="absolute bottom-1 w-1 h-1 bg-primary rounded-full" />}
+                                    </button>
+                                );
+                            })}
+                        </nav>
+                    </div>
+                )}
             </main>
         </div>
     );

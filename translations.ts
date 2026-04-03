@@ -1,6 +1,6 @@
 export const translations = {
   en: {
-    appName: "Edu-Alg",
+    appName: "Edu-Alg OS",
     appSubName: "Algerian Academic OS",
     roles: { student: "Student", teacher: "Teacher", admin: "Admin", faculty: "Faculty", economic: "Economic" },
     common: {
@@ -13,7 +13,7 @@ export const translations = {
       encrypted: "End-to-End Encrypted", encryptedTerminal: "Encrypted Terminal Session"
     },
     nav: {
-      hub: "Hub", schedule: "Schedule", dropbox: "Homework", cabinet: "Cabinet",
+      hub: "Hub", schedule: "Schedule", dropbox: "Dropbox", cabinet: "Cabinet",
       inbox: "Inbox", identity: "ID", registry: "Registry", settings: "Settings",
       myProfile: "My Profile", economic: "Finance"
     },
@@ -37,7 +37,7 @@ export const translations = {
     },
     schedule: {
       title: "Institutional Time Allocation", cycleEntries: "No Cycle Entries",
-      present: "Present", absent: "Absent", pending: "Pending", paused: "Paused", room: "Room",
+      present: "Present", absent: "Absent", pending: "Pending", room: "Room",
       week: "Week", day: "Day"
     },
     hub: {
@@ -50,7 +50,7 @@ export const translations = {
       clickToAdd: "Add Files"
     },
     dropbox: {
-      title: "Homework Ledger", issueTask: "Issue Task",
+      title: "Institutional Task Ledger", issueTask: "Issue Task",
       taskIssued: "New Task Issued", taskRemoved: "Task Removed",
       audit: "Audit Ledger", deadline: "Deadline", resource: "Resource",
       getFile: "Get File", closed: "Closed", submit: "Submit Result",
@@ -170,7 +170,7 @@ export const translations = {
     }
   },
   fr: {
-    appName: "Edu-Alg",
+    appName: "Edu-Alg OS",
     appSubName: "OS Académique Algérien",
     roles: { student: "Étudiant", teacher: "Enseignant", admin: "Admin", faculty: "Faculté", economic: "Économique" },
     common: {
@@ -183,7 +183,7 @@ export const translations = {
       encrypted: "Chiffré de bout en bout", encryptedTerminal: "Session de terminal chiffrée"
     },
     nav: {
-      hub: "Hub", schedule: "Emploi du temps", dropbox: "Devoirs", cabinet: "Cabinet",
+      hub: "Hub", schedule: "Emploi du temps", dropbox: "Dropbox", cabinet: "Cabinet",
       inbox: "Messagerie", identity: "ID", registry: "Registre", settings: "Paramètres",
       myProfile: "Mon Profil", economic: "Finance"
     },
@@ -207,7 +207,7 @@ export const translations = {
     },
     schedule: {
       title: "Allocation du Temps Institutionnel", cycleEntries: "Aucune entrée",
-      present: "Présent", absent: "Absent", pending: "En attente", paused: "En pause", room: "Salle",
+      present: "Présent", absent: "Absent", pending: "En attente", room: "Salle",
       week: "Semaine", day: "Jour"
     },
     hub: {
@@ -220,7 +220,7 @@ export const translations = {
       clickToAdd: "Ajouter des fichiers"
     },
     dropbox: {
-      title: "Registre des Devoirs", issueTask: "Assigner Tâche",
+      title: "Registre des Tâches Institutionnelles", issueTask: "Assigner Tâche",
       taskIssued: "Nouvelle Tâche Publiée", taskRemoved: "Tâche Supprimée",
       audit: "Audit du Registre", deadline: "Échéance", resource: "Ressource",
       getFile: "Fichier", closed: "Fermé", submit: "Soumettre",
@@ -340,7 +340,7 @@ export const translations = {
     }
   },
   ar: {
-    appName: "Edu-Alg",
+    appName: "Edu-Alg OS",
     appSubName: "نظام الأكاديمية الجزائري",
     roles: { student: "طالب", teacher: "أستاذ", admin: "مدير", faculty: "الهيئة التدريسية", economic: "اقتصادي" },
     common: {
@@ -353,7 +353,7 @@ export const translations = {
       encrypted: "مشفر من طرف إلى طرف", encryptedTerminal: "جلسة تواصل مشفرة"
     },
     nav: {
-      hub: "المركز", schedule: "الجدول", dropbox: "الواجبات", cabinet: "الخزانة",
+      hub: "المركز", schedule: "الجدول", dropbox: "صندوق المهام", cabinet: "الخزانة",
       inbox: "البريد", identity: "الهوية", registry: "السجل", settings: "الإعدادات",
       myProfile: "ملفي الشخصي", economic: "المالية"
     },
@@ -377,7 +377,7 @@ export const translations = {
     },
     schedule: {
       title: "توزيع الوقت المؤسسي", cycleEntries: "لا توجد حصص",
-      present: "حاضر", absent: "غائب", pending: "قيد الانتظار", paused: "متوقف مؤقتاً", room: "قاعة",
+      present: "حاضر", absent: "غائب", pending: "قيد الانتظار", room: "قاعة",
       week: "أسبوع", day: "يوم"
     },
     hub: {
@@ -390,7 +390,7 @@ export const translations = {
       clickToAdd: "اضغط لإضافة ملفات"
     },
     dropbox: {
-      title: "سجل الواجبات", issueTask: "إصدار مهمة",
+      title: "سجل المهام المؤسسي", issueTask: "إصدار مهمة",
       taskIssued: "تم نشر مهمة جديدة", taskRemoved: "تم حذف المهمة",
       audit: "تدقيق السجل", deadline: "الموعد النهائي", resource: "المصدر",
       getFile: "تحميل الملف", closed: "مغلق", submit: "تقديم النتيجة",

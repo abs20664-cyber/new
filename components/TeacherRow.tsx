@@ -1,33 +1,11 @@
 import React from 'react';
 import { User, TeacherPayment } from '../types';
-import { Save, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { ChevronDown, Save, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
 
 interface TeacherRowProps {
     index: number;
     style: React.CSSProperties;
-    data: {
-        teachers: User[];
-        payments: Record<string, TeacherPayment>;
-        isMobile: boolean;
-        t: any;
-        handleUpdateTeacherPayment: (id: string, status: 'Paid' | 'Unpaid' | 'Pending') => void;
-        editingNote: string | null;
-        setEditingNote: (id: string | null) => void;
-        noteValue: string;
-        setNoteValue: (val: string) => void;
-        handleSaveNote: (id: string) => void;
-        formatCurrencyDZD: (amount: number) => string;
-        editingAmount: string | null;
-        setEditingAmount: (id: string | null) => void;
-        amountValue: number;
-        setAmountValue: (val: number) => void;
-        handleUpdateTeacherSalary: (id: string) => void;
-        editingDate: string | null;
-        setEditingDate: (id: string | null) => void;
-        dateValue: string;
-        setDateValue: (val: string) => void;
-        handleUpdateNextPaymentDate: (id: string) => void;
-    };
+    data: any;
 }
 
 const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
@@ -60,7 +38,7 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
     if (isMobile) {
         return (
             <div style={style} className="px-1 py-2">
-                <div className="academic-stat-card p-6 text-start space-y-4 shadow-soft">
+                <div className="academic-card p-6 text-start space-y-4 shadow-soft">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
@@ -71,7 +49,7 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
                                 <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400 truncate">ID: {t_user.id}</p>
                             </div>
                         </div>
-                        <span className={`academic-badge ${pay?.status === 'Paid' ? 'academic-badge-success' : pay?.status === 'Unpaid' ? 'academic-badge-danger' : 'academic-badge-primary'}`}>
+                        <span className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${pay?.status === 'Paid' ? 'bg-emerald-500/10 text-emerald-500' : pay?.status === 'Unpaid' ? 'bg-rose-500/10 text-rose-500' : 'bg-primary/10 text-primary'}`}>
                             {pay?.status || 'Pending'}
                         </span>
                     </div>
@@ -93,9 +71,9 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
                             </div>
                         </div>
                         <div className="flex gap-2">
-                            <button onClick={() => handleUpdateTeacherPayment(t_user.id, 'Paid')} className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${pay?.status === 'Paid' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-institutional-100 dark:bg-institutional-800 text-institutional-400'}`}>Paid</button>
-                            <button onClick={() => handleUpdateTeacherPayment(t_user.id, 'Pending')} className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${pay?.status === 'Pending' || !pay?.status ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-institutional-100 dark:bg-institutional-800 text-institutional-400'}`}>Pending</button>
-                            <button onClick={() => handleUpdateTeacherPayment(t_user.id, 'Unpaid')} className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${pay?.status === 'Unpaid' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'bg-institutional-100 dark:bg-institutional-800 text-institutional-400'}`}>Unpaid</button>
+                            <button onClick={() => handleUpdateTeacherPayment(t_user.id, 'Paid')} className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${pay?.status === 'Paid' ? 'bg-emerald-500 text-white' : 'bg-institutional-100 dark:bg-institutional-800 text-institutional-400'}`}>Paid</button>
+                            <button onClick={() => handleUpdateTeacherPayment(t_user.id, 'Pending')} className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${pay?.status === 'Pending' || !pay?.status ? 'bg-primary text-white' : 'bg-institutional-100 dark:bg-institutional-800 text-institutional-400'}`}>Pending</button>
+                            <button onClick={() => handleUpdateTeacherPayment(t_user.id, 'Unpaid')} className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${pay?.status === 'Unpaid' ? 'bg-rose-500 text-white' : 'bg-institutional-100 dark:bg-institutional-800 text-institutional-400'}`}>Unpaid</button>
                         </div>
                     </div>
 
@@ -104,15 +82,15 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
                             <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400 mb-1">Monthly Salary</p>
                             {editingAmount === t_user.id ? (
                                 <div className="flex items-center gap-2">
-                                    <input type="number" value={amountValue} onChange={(e) => setAmountValue(Number(e.target.value))} className="academic-input flex-1 py-2" />
-                                    <button onClick={() => handleUpdateTeacherSalary(t_user.id)} className="academic-button academic-button-primary py-2 px-3 flex items-center gap-2">
+                                    <input type="number" value={amountValue} onChange={(e) => setAmountValue(Number(e.target.value))} className="w-full bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 p-2 rounded-xl text-xs text-institutional-900 dark:text-white outline-none" />
+                                    <button onClick={() => handleUpdateTeacherSalary(t_user.id)} className="px-3 py-2 bg-primary text-white rounded-xl flex items-center gap-2">
                                         <Save size={14} />
                                         <span className="text-[10px] font-black uppercase tracking-widest">Save</span>
                                     </button>
-                                    <button onClick={() => setEditingAmount(null)} className="p-2 bg-rose-500/10 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-colors"><XCircle size={14} /></button>
+                                    <button onClick={() => setEditingAmount(null)} className="p-2 bg-rose-500/10 text-rose-500 rounded-xl"><XCircle size={14} /></button>
                                 </div>
                             ) : (
-                                <div onClick={() => { setEditingAmount(t_user.id); setAmountValue(pay?.monthlySalary || 0); }} className="cursor-pointer bg-institutional-50 dark:bg-institutional-900/50 border border-institutional-200 dark:border-institutional-800 p-3 rounded-xl hover:border-primary/30 transition-colors">
+                                <div onClick={() => { setEditingAmount(t_user.id); setAmountValue(pay?.monthlySalary || 0); }} className="cursor-pointer bg-institutional-50 dark:bg-institutional-900/50 border border-institutional-200 dark:border-institutional-800 p-3 rounded-xl">
                                     <p className="font-bold text-sm text-institutional-900 dark:text-white">{formatCurrencyDZD(pay?.monthlySalary || 0)}</p>
                                 </div>
                             )}
@@ -124,31 +102,32 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
                                     <input 
                                         value={noteValue}
                                         onChange={e => setNoteValue(e.target.value)}
-                                        className="academic-input flex-1 py-2"
+                                        className="flex-1 bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 rounded-xl p-3 text-xs font-bold text-institutional-900 dark:text-white outline-none"
                                     />
-                                    <button onClick={() => handleSaveNote(t_user.id)} className="academic-button academic-button-primary py-2 px-3 flex items-center gap-2">
+                                    <button onClick={() => handleSaveNote(t_user.id)} className="px-3 py-2 bg-primary text-white rounded-xl flex items-center gap-2">
                                         <Save size={16} />
                                         <span className="text-[10px] font-black uppercase tracking-widest">Save</span>
                                     </button>
                                 </div>
                             ) : (
-                                <div className="flex items-center justify-between gap-4 p-3 bg-institutional-50 dark:bg-institutional-900/50 rounded-xl border border-institutional-200 dark:border-institutional-800 hover:border-primary/30 transition-colors">
+                                <div className="flex items-center justify-between gap-4 p-3 bg-institutional-50 dark:bg-institutional-900/50 rounded-xl border border-institutional-200 dark:border-institutional-800">
                                     <p className="text-xs italic text-institutional-500 dark:text-institutional-400 truncate">{pay?.notes || 'No notes added...'}</p>
-                                    <button onClick={() => { setEditingNote(t_user.id); setNoteValue(pay?.notes || ''); }} className="text-primary hover:scale-110 transition-transform"><FileText size={16} /></button>
+                                    <button onClick={() => { setEditingNote(t_user.id); setNoteValue(pay?.notes || ''); }} className="text-primary"><FileText size={16} /></button>
                                 </div>
                             )}
                         </div>
                     </div>
+
                 </div>
             </div>
         );
     }
 
     return (
-        <tr style={style} className="hover:bg-institutional-50/50 dark:hover:bg-institutional-900/30 transition-colors border-b border-institutional-200 dark:border-institutional-800">
+        <tr style={style} className="hover:bg-institutional-50 dark:hover:bg-institutional-900/50 transition-colors border-b border-institutional-200 dark:border-institutional-800">
             <td className="px-8 py-6">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shadow-sm border border-primary/10">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
                         {t_user.name.charAt(0)}
                     </div>
                     <div>
@@ -158,7 +137,7 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
                 </div>
             </td>
             <td className="px-8 py-6">
-                <span className={`academic-badge ${pay?.status === 'Paid' ? 'academic-badge-success' : pay?.status === 'Unpaid' ? 'academic-badge-danger' : 'academic-badge-primary'}`}>
+                <span className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${pay?.status === 'Paid' ? 'bg-emerald-500/10 text-emerald-500' : pay?.status === 'Unpaid' ? 'bg-rose-500/10 text-rose-500' : 'bg-primary/10 text-primary'}`}>
                     {pay?.status || 'Pending'}
                 </span>
             </td>
@@ -171,11 +150,11 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
             <td className="px-8 py-6">
                 {editingDate === t_user.id ? (
                     <div className="flex items-center gap-2">
-                        <input type="date" value={dateValue} onChange={(e) => setDateValue(e.target.value)} className="academic-input w-36 py-2" />
-                        <button onClick={() => handleUpdateNextPaymentDate(t_user.id)} className="academic-button academic-button-primary p-2"><Save size={16} /></button>
+                        <input type="date" value={dateValue} onChange={(e) => setDateValue(e.target.value)} className="w-36 bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 p-2 rounded-xl text-xs text-institutional-900 dark:text-white outline-none" />
+                        <button onClick={() => handleUpdateNextPaymentDate(t_user.id)} className="p-2 bg-primary text-white rounded-xl"><Save size={16} /></button>
                     </div>
                 ) : (
-                    <div onClick={() => { setEditingDate(t_user.id); setDateValue(pay?.nextPaymentDate || ''); }} className="cursor-pointer bg-institutional-50 dark:bg-institutional-900/50 border border-institutional-200 dark:border-institutional-800 p-3 rounded-xl hover:border-primary/30 transition-colors">
+                    <div onClick={() => { setEditingDate(t_user.id); setDateValue(pay?.nextPaymentDate || ''); }} className="cursor-pointer bg-institutional-50 dark:bg-institutional-900/50 border border-institutional-200 dark:border-institutional-800 p-3 rounded-xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-colors">
                         <p className="text-sm font-bold text-institutional-900 dark:text-white">{pay?.nextPaymentDate || 'Not set'}</p>
                         <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400">Edit Date</p>
                     </div>
@@ -184,11 +163,11 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
             <td className="px-8 py-6">
                 {editingAmount === t_user.id ? (
                     <div className="flex items-center gap-2">
-                        <input type="number" value={amountValue} onChange={(e) => setAmountValue(Number(e.target.value))} className="academic-input w-24 py-2" />
-                        <button onClick={() => handleUpdateTeacherSalary(t_user.id)} className="academic-button academic-button-primary p-2"><Save size={16} /></button>
+                        <input type="number" value={amountValue} onChange={(e) => setAmountValue(Number(e.target.value))} className="w-24 bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 p-2 rounded-xl text-xs text-institutional-900 dark:text-white outline-none" />
+                        <button onClick={() => handleUpdateTeacherSalary(t_user.id)} className="p-2 bg-primary text-white rounded-xl"><Save size={16} /></button>
                     </div>
                 ) : (
-                    <div onClick={() => { setEditingAmount(t_user.id); setAmountValue(pay?.monthlySalary || 0); }} className="cursor-pointer bg-institutional-50 dark:bg-institutional-900/50 border border-institutional-200 dark:border-institutional-800 p-3 rounded-xl hover:border-primary/30 transition-colors">
+                    <div onClick={() => { setEditingAmount(t_user.id); setAmountValue(pay?.monthlySalary || 0); }} className="cursor-pointer bg-institutional-50 dark:bg-institutional-900/50 border border-institutional-200 dark:border-institutional-800 p-3 rounded-xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-colors">
                         <p className="font-bold text-sm text-institutional-900 dark:text-white">{formatCurrencyDZD(pay?.monthlySalary || 0)}</p>
                         <p className="text-[10px] font-black uppercase tracking-widest text-institutional-400">Edit Salary</p>
                     </div>
@@ -200,14 +179,14 @@ const TeacherRow: React.FC<TeacherRowProps> = ({ index, style, data }) => {
                         <input 
                             value={noteValue}
                             onChange={e => setNoteValue(e.target.value)}
-                            className="academic-input flex-1 py-2"
+                            className="flex-1 bg-institutional-100 dark:bg-institutional-800 border border-institutional-200 dark:border-institutional-700 rounded-xl p-3 text-xs font-bold text-institutional-900 dark:text-white outline-none"
                         />
-                        <button onClick={() => handleSaveNote(t_user.id)} className="academic-button academic-button-primary p-3"><Save size={16} /></button>
+                        <button onClick={() => handleSaveNote(t_user.id)} className="p-3 bg-primary text-white rounded-xl"><Save size={16} /></button>
                     </div>
                 ) : (
-                    <div className="flex items-center justify-between gap-4 p-3 bg-institutional-50 dark:bg-institutional-900/50 rounded-xl border border-institutional-200 dark:border-institutional-800 hover:border-primary/30 transition-colors">
+                    <div className="flex items-center justify-between gap-4 p-3 bg-institutional-50 dark:bg-institutional-900/50 rounded-xl border border-institutional-200 dark:border-institutional-800">
                         <p className="text-xs italic text-institutional-500 dark:text-institutional-400 truncate">{pay?.notes || 'No notes added...'}</p>
-                        <button onClick={() => { setEditingNote(t_user.id); setNoteValue(pay?.notes || ''); }} className="text-primary hover:scale-110 transition-transform"><FileText size={16} /></button>
+                        <button onClick={() => { setEditingNote(t_user.id); setNoteValue(pay?.notes || ''); }} className="text-primary"><FileText size={16} /></button>
                     </div>
                 )}
             </td>

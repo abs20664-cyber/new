@@ -1,11 +1,6 @@
 export type UserRole = 'teacher' | 'student' | 'admin' | 'economic';
 export type AppLanguage = 'en' | 'fr' | 'ar';
 
-export interface Subject {
-  id: string;
-  name: string;
-}
-
 export interface User {
   id: string;
   name: string;
@@ -19,8 +14,6 @@ export interface User {
   bio?: string;
   fieldOfStudy?: string;
   subjectsTaught?:string;
-  subjectsTaughtIds?: string[];
-  subjectsStudied?: string[];
   createdAt?: any;
   accountStatus?: 'active' | 'disabled' | 'suspended' | 'pending';
   paymentStatus?: 'paid' | 'unpaid' | 'pending';
@@ -28,9 +21,6 @@ export interface User {
   subscriptionDuration?: number; // in months
   subscriptionStartDate?: any;
   nextPaymentDate?: any;
-  mustChangePassword?: boolean;
-  customQrCodeUrl?: string;
-  teacherId?: string; // ID of the teacher this student is assigned to
 }
 
 export interface StudentSubscription {
@@ -43,9 +33,7 @@ export interface StudentSubscription {
   nextPaymentDate?: any;
   paymentStatus: 'paid' | 'unpaid' | 'pending';
   monthlyFee?: number;
-  monthlyAmount?: number;
   duration?: number; // in months
-  plan?: string;
   subscriptionType?: 'time' | 'session';
   totalSessions?: number;
   sessionsUsed?: number;
@@ -108,8 +96,6 @@ export interface ClassSession {
   room: string;
   type: 'Cours' | 'TD' | 'Exam';
   attachments?: Attachment[];
-  teacherId?: string;
-  subjectId?: string;
 }
 
 export interface Material {
@@ -194,17 +180,4 @@ export interface Notification {
 
 export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const HOURS_OF_DAY = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
-export interface RecurringSession {
-  id: string;
-  dayOfWeek: string;
-  startTime: string;
-  endTime: string;
-  teacherId: string;
-  name: string;
-  room: string;
-  type: 'Cours' | 'TD' | 'Exam';
-  subjectId?: string;
-  status?: 'active' | 'paused';
-}
-
 export const EMOJI_SET = ['👍', '❤️', '😂', '😮', '😢', '🔥', '✅', '🙏'];

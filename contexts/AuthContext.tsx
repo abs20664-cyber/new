@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, UserRole } from '../types';
+import { User } from '../types';
 import { db, collections, auth } from '../services/firebase';
-import { doc, getDoc, onSnapshot, updateDoc, setDoc, Timestamp } from 'firebase/firestore';
-import { onAuthStateChanged, signInAnonymously, signOut } from 'firebase/auth';
+import { doc, getDoc, onSnapshot, updateDoc, Timestamp } from 'firebase/firestore';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 interface AuthContextType {
   user: User | null;
-  loginAnonymous: (role?: UserRole, name?: string) => Promise<void>;
-  logout: () => Promise<void>;
+  login: (email: string, pass: string) => Promise<void>;
+  logout: () => void;
   loading: boolean;
 }
 
@@ -26,8 +26,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (userSnap.exists()) {
           setUser({ id: firebaseUser.uid, ...userSnap.data() } as User);
         } else {
-          // If anonymous user has no profile, it might be a fresh sign-in
-          // We'll handle profile creation in loginAnonymous
           setUser(null);
         }
       } else {
@@ -48,10 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
              const userData = docSnap.data() as User;
              setUser(prev => ({ ...prev, ...userData, id: docSnap.id } as User));
         } else {
-             // If document is deleted but user is still authed, we might want to sign out
-             if (auth.currentUser) {
-                logout();
-             }
+             logout();
         }
     });
 
@@ -78,30 +73,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => clearInterval(interval);
   }, [user?.id]);
 
-  const loginAnonymous = async (role: UserRole = 'admin', name: string = 'Demo User') => {
+  const login = async (email: string, pass: string) => {
     setLoading(true);
     try {
-        const cred = await signInAnonymously(auth);
-        const uid = cred.user.uid;
-        
-        // Check if profile exists, if not create one
-        const userRef = doc(db, collections.users, uid);
-        const userSnap = await getDoc(userRef);
-        
-        if (!userSnap.exists()) {
-            const newUser: Partial<User> = {
-                name,
-                role,
-                email: `anonymous_${uid.slice(0, 5)}@demo.edu`,
-                createdAt: Timestamp.now(),
-                accountStatus: 'active',
-                paymentStatus: 'paid'
-            };
-            await setDoc(userRef, newUser);
-            setUser({ id: uid, ...newUser } as User);
-        }
+        await signInWithEmailAndPassword(auth, email, pass);
     } catch (e: any) {
-        console.error("Anonymous login failed", e);
+        console.error("Login failed", e);
         throw e;
     } finally {
         setLoading(false);
@@ -114,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loginAnonymous, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

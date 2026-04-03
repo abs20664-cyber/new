@@ -1,5 +1,5 @@
 import { collection, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, collections } from './firebase';
 import { StudentSubscription } from '../types';
 
 export const checkAndUpdateSubscriptionStatus = async () => {

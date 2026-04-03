@@ -1,13 +1,20 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, signInAnonymously } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-import firebaseConfig from '../firebase-applet-config.json';
-export { firebaseConfig };
+export const firebaseConfig = {
+  apiKey: "AIzaSyD2aOVfl6bXOpWCL9eaiM85g14WB25aXYg",
+  authDomain: "alpha-26f1e.firebaseapp.com",
+  projectId: "alpha-26f1e",
+  storageBucket: "alpha-26f1e.firebasestorage.app",
+  messagingSenderId: "838970744952",
+  appId: "1:838970744952:web:4b190d95010ecf23e18d8d",
+  measurementId: "G-230TGXB20M"
+};
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const db = getFirestore(app);
 export const APP_ID = 'edusaas-live-demo-v2';
 
 export const collections = {
@@ -22,4 +29,12 @@ export const collections = {
     typing: `artifacts/${APP_ID}/public/data/typing`,
     groups: `artifacts/${APP_ID}/public/data/groups`,
     subjects: `artifacts/${APP_ID}/public/data/subjects`
+};
+
+export const signIn = async () => {
+    try {
+        await signInAnonymously(auth);
+    } catch (error) {
+        console.error("Auth error", error);
+    }
 };

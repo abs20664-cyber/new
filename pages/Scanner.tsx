@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { addDoc, collection, Timestamp, getDoc, doc, query, where, getDocs, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { addDoc, collection, Timestamp, getDoc, doc, query, where, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { usePlatform } from '../contexts/PlatformContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { CheckCircle, X, ShieldCheck, AlertTriangle, FileUp } from 'lucide-react';
-import { ClassSession, StudentSubscription, RecurringSession } from '../types';
+import { CheckCircle, X, ShieldCheck, AlertTriangle, FileUp, Clock } from 'lucide-react';
+import { ClassSession, StudentSubscription } from '../types';
 import { useLocation } from 'react-router-dom';
 
 interface ScannerProps {
@@ -37,14 +37,6 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
     const isProcessing = useRef(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [sessionData, setSessionData] = useState<ClassSession | null>(null);
-    const [recurringSessions, setRecurringSessions] = useState<RecurringSession[]>([]);
-
-    useEffect(() => {
-        const unsubRecurring = onSnapshot(collection(db, 'recurring_sessions'), (snap) => {
-            setRecurringSessions(snap.docs.map(d => ({ id: d.id, ...d.data() } as RecurringSession)).filter(s => s.status !== 'paused'));
-        });
-        return () => { unsubRecurring(); };
-    }, []);
 
     const stopScanning = useCallback(async () => {
         if (scannerRef.current && scannerRef.current.isScanning) {
@@ -68,43 +60,17 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
 
         const fetchSession = async () => {
             try {
-                let data: ClassSession | null = null;
-                
-                // Try finding in classes
                 const snap = await getDoc(doc(db, collections.classes, classId));
                 if (snap.exists()) {
-                    data = { id: snap.id, ...snap.data() } as ClassSession;
-                } else {
-                    // Try finding in recurring sessions
-                    const recurring = recurringSessions.find(s => classId === s.id || classId.startsWith(s.id + '-'));
-                    if (recurring) {
-                        data = {
-                            id: recurring.id,
-                            name: recurring.name,
-                            date: today,
-                            time: recurring.startTime,
-                            endTime: recurring.endTime,
-                            room: recurring.room,
-                            type: recurring.type
-                        } as ClassSession;
-                    }
-                }
-
-                if (data) {
+                    const data = { id: snap.id, ...snap.data() } as ClassSession;
+                    
                     const nowStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
                     
                     const hasEnded = data.date < today || (data.date === today && nowStr >= data.endTime);
-                    
-                    const startTimeParts = data.time.split(':');
-                    const startMinutes = parseInt(startTimeParts[0]) * 60 + parseInt(startTimeParts[1]);
-                    const nowMinutes = now.getHours() * 60 + now.getMinutes();
-                    const isTooEarly = data.date === today && (startMinutes - nowMinutes > 15);
                     const notStarted = data.date > today || (data.date === today && nowStr < data.time);
 
                     if (hasEnded) {
                         setErrorMsg(t('scanner.expired'));
-                    } else if (isTooEarly) {
-                        setErrorMsg(`${t('scanner.tooEarly')} ${data.time}.`);
                     } else if (notStarted) {
                         setErrorMsg(`${t('scanner.scheduled')} ${data.time}.`);
                     } else {
@@ -148,15 +114,6 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                             
                             const studentId = String(scanData.id);
                             const studentName = scanData.name || "Unknown Identity";
-
-                            const studentSnap = await getDoc(doc(db, collections.users, studentId));
-                            const studentData = studentSnap.data();
-                            if (!studentData || studentData.teacherId !== user?.id) {
-                                setStatus("Student not assigned to you");
-                                setIsPaused(true);
-                                if (scannerRef.current?.pause) scannerRef.current.pause();
-                                return;
-                            }
 
                             // Prevent duplicates for this session attendance
                             const q = query(
