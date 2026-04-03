@@ -1,5 +1,5 @@
 {
-  "name": "Edu-Alg OS",
+  "name": "EDU-TRACK",
   "description": "A professional academic management system designed for Algerian educational institutions.",
   "requestFramePermissions": ["camera", "microphone", "geolocation"]
 }
