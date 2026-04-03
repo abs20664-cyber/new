@@ -14,7 +14,7 @@ export const translations = {
     },
     nav: {
       hub: "Hub", schedule: "Schedule", dropbox: "Dropbox", cabinet: "Cabinet",
-      inbox: "Inbox", identity: "ID", registry: "Registry", settings: "Settings",
+      inbox: "Inbox", activity: "Activity", identity: "ID", registry: "Registry", settings: "Settings",
       myProfile: "My Profile", economic: "Finance"
     },
     login: {
@@ -184,7 +184,7 @@ export const translations = {
     },
     nav: {
       hub: "Hub", schedule: "Emploi du temps", dropbox: "Dropbox", cabinet: "Cabinet",
-      inbox: "Messagerie", identity: "ID", registry: "Registre", settings: "Paramètres",
+      inbox: "Messagerie", activity: "Activité", identity: "ID", registry: "Registre", settings: "Paramètres",
       myProfile: "Mon Profil", economic: "Finance"
     },
     login: {
@@ -354,7 +354,7 @@ export const translations = {
     },
     nav: {
       hub: "المركز", schedule: "الجدول", dropbox: "صندوق المهام", cabinet: "الخزانة",
-      inbox: "البريد", identity: "الهوية", registry: "السجل", settings: "الإعدادات",
+      inbox: "البريد", activity: "النشاط", identity: "الهوية", registry: "السجل", settings: "الإعدادات",
       myProfile: "ملفي الشخصي", economic: "المالية"
     },
     login: {
