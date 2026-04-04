@@ -157,7 +157,7 @@ const Profile: React.FC = () => {
           >
             <ChevronLeft size={20} className={isRTL ? 'rotate-180' : ''} />
           </button>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tighter uppercase text-institutional-950 dark:text-institutional-50">
+          <h1 className="text-2xl md:text-3xl font-black tracking-tighter uppercase text-institutional-900 dark:text-institutional-50">
             {t('profile.title')}
           </h1>
         </div>
@@ -200,7 +200,7 @@ const Profile: React.FC = () => {
               )}
             </div>
             
-            <h2 className="text-xl font-black text-institutional-950 dark:text-institutional-50 mb-1">
+            <h2 className="text-xl font-black text-institutional-900 dark:text-institutional-50 mb-1">
               {profileUser.name}
             </h2>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-institutional-100 dark:bg-institutional-800 text-institutional-600 text-xs font-black uppercase tracking-widest mb-4">
@@ -256,7 +256,7 @@ const Profile: React.FC = () => {
               <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                 <BookOpen size={20} />
               </div>
-              <h3 className="text-lg font-black text-institutional-950 dark:text-institutional-50 uppercase tracking-tight">
+              <h3 className="text-lg font-black text-institutional-900 dark:text-institutional-50 uppercase tracking-tight">
                 {t('profile.academicInfo')}
               </h3>
             </div>
@@ -326,7 +326,7 @@ const Profile: React.FC = () => {
               <div className="w-10 h-10 rounded-xl bg-institutional-100 dark:bg-institutional-800 text-institutional-600 dark:text-institutional-300 flex items-center justify-center">
                 <Briefcase size={20} />
               </div>
-              <h3 className="text-lg font-black text-institutional-950 dark:text-institutional-50 uppercase tracking-tight">
+              <h3 className="text-lg font-black text-institutional-900 dark:text-institutional-50 uppercase tracking-tight">
                 {t('profile.personalInfo')}
               </h3>
             </div>

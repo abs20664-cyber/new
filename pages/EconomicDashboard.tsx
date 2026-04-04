@@ -456,12 +456,12 @@ const EconomicDashboard: React.FC = () => {
 
     const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
-            case 'active': case 'paid': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
-            case 'disabled': return 'bg-institutional-200 text-institutional-600 dark:bg-institutional-800 dark:text-institutional-400';
-            case 'suspended': return 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400';
-            case 'expired': case 'unpaid': case 'missed': return 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400';
-            case 'pending': case 'partially paid': case 'late': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
-            default: return 'bg-institutional-100 text-institutional-700 dark:bg-institutional-800 dark:text-institutional-400';
+            case 'active': case 'paid': return 'bg-success/10 text-success';
+            case 'disabled': return 'bg-muted text-text-secondary dark:bg-muted/20 dark:text-text-secondary/80';
+            case 'suspended': return 'bg-danger/10 text-danger';
+            case 'expired': case 'unpaid': case 'missed': return 'bg-danger/10 text-danger';
+            case 'pending': case 'partially paid': case 'late': return 'bg-warning/10 text-warning';
+            default: return 'bg-muted/50 text-text-secondary dark:bg-muted/10 dark:text-text-secondary/70';
         }
     };
 
@@ -470,7 +470,7 @@ const EconomicDashboard: React.FC = () => {
             return (
                 <div className="space-y-4">
                     {[...Array(5)].map((_, i) => (
-                        <div key={i} className="bg-surface dark:bg-institutional-900 rounded-2xl p-6 shadow-sm">
+                        <div key={i} className="bg-surface dark:bg-background rounded-2xl p-6 shadow-sm border border-border">
                             <div className="flex items-center justify-between">
                                 <Skeleton className="h-8 w-32" />
                                 <Skeleton className="h-8 w-24" />
@@ -511,7 +511,7 @@ const EconomicDashboard: React.FC = () => {
                         />
                     ))}
                     {filteredStudents.length === 0 && (
-                        <div className="p-20 text-center text-institutional-600 text-xs font-black uppercase tracking-widest">
+                        <div className="p-20 text-center text-text-secondary text-xs font-black uppercase tracking-widest">
                             No students found matching filters.
                         </div>
                     )}
@@ -520,21 +520,21 @@ const EconomicDashboard: React.FC = () => {
         }
 
         return (
-            <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl">
+            <div className="bg-surface dark:bg-background border border-border rounded-[2.5rem] overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
                     <table className="w-full text-start border-collapse">
                         <thead>
-                            <tr className="bg-institutional-50 dark:bg-institutional-950 border-b border-institutional-200 dark:border-institutional-800">
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">{t('admin.legalName')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">Account Status</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">{t('economic.start')} / {t('economic.end')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">Monthly Amount</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">Duration</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-end">Timeline</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-end">Actions</th>
+                            <tr className="bg-muted/10 dark:bg-background border-b border-border">
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">{t('admin.legalName')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">Account Status</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">{t('economic.start')} / {t('economic.end')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">Monthly Amount</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">Duration</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-end">Timeline</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-end">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-institutional-100 dark:divide-institutional-800">
+                        <tbody className="divide-y divide-border">
                             {filteredStudents.map((s, idx) => (
                                 <StudentRow 
                                     key={s.id} 
@@ -555,7 +555,7 @@ const EconomicDashboard: React.FC = () => {
             return (
                 <div className="space-y-4">
                     {[...Array(5)].map((_, i) => (
-                        <div key={i} className="bg-surface dark:bg-institutional-900 rounded-2xl p-6 shadow-sm">
+                        <div key={i} className="bg-surface dark:bg-background rounded-2xl p-6 shadow-sm border border-border">
                             <div className="flex items-center justify-between">
                                 <Skeleton className="h-8 w-32" />
                                 <Skeleton className="h-8 w-24" />
@@ -603,7 +603,7 @@ const EconomicDashboard: React.FC = () => {
                         />
                     ))}
                     {filteredTeachers.length === 0 && (
-                        <div className="p-20 text-center text-institutional-600 text-xs font-black uppercase tracking-widest">
+                        <div className="p-20 text-center text-text-secondary text-xs font-black uppercase tracking-widest">
                             No teachers found matching filters.
                         </div>
                     )}
@@ -612,22 +612,22 @@ const EconomicDashboard: React.FC = () => {
         }
 
         return (
-            <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl">
+            <div className="bg-surface dark:bg-background border border-border rounded-[2.5rem] overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
                     <table className="w-full text-start border-collapse">
                         <thead>
-                            <tr className="bg-institutional-50 dark:bg-institutional-950 border-b border-institutional-200 dark:border-institutional-800">
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">{t('admin.legalName')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">{t('economic.status')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">{t('economic.amountOwed')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">{t('economic.amountPaid')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">Next Payment Date</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">Monthly Salary</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">{t('economic.notes')}</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-end">Actions</th>
+                            <tr className="bg-muted/10 dark:bg-background border-b border-border">
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">{t('admin.legalName')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">{t('economic.status')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">{t('economic.amountOwed')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">{t('economic.amountPaid')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">Next Payment Date</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">Monthly Salary</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">{t('economic.notes')}</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-secondary text-end">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-institutional-100 dark:divide-institutional-800">
+                        <tbody className="divide-y divide-border">
                             {filteredTeachers.map((t_user, idx) => (
                                 <TeacherRow 
                                     key={t_user.id} 
@@ -646,20 +646,20 @@ const EconomicDashboard: React.FC = () => {
     return (
         <div className="fade-in max-w-7xl mx-auto px-4 lg:px-0 pb-20">
             {/* Header & Tabs */}
-            <div className="mb-10 flex flex-col gap-8 pb-6 border-b border-institutional-200 dark:border-institutional-800">
+            <div className="mb-10 flex flex-col gap-8 pb-6 border-b border-border">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="text-start">
-                        <h2 className="text-3xl font-black uppercase tracking-tight text-institutional-950 dark:text-institutional-50">{t('economic.title')}</h2>
-                        <p className="text-[10px] font-black text-institutional-600 uppercase tracking-[0.3em] mt-1">Institutional President Terminal v3.1</p>
+                        <h2 className="text-3xl font-black uppercase tracking-tight text-text">{t('economic.title')}</h2>
+                        <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] mt-1">Institutional President Terminal v3.1</p>
                     </div>
                     
                     {/* Desktop Tabs */}
-                    <div className="hidden md:flex bg-institutional-100 dark:bg-institutional-800 p-1 rounded-2xl">
+                    <div className="hidden md:flex bg-muted/20 dark:bg-muted/10 p-1 rounded-2xl">
                         {(['overview', 'students', 'teachers', 'audit', 'sessions', 'timetable'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-600 hover:text-institutional-700'}`}>
+                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-surface dark:bg-muted/20 text-primary shadow-soft' : 'text-text-secondary hover:text-text'}`}>
                                 {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : tab === 'audit' ? 'Audit' : tab === 'sessions' ? 'Sessions' : 'Timetable'}
                             </button>
                         ))}
@@ -668,12 +668,12 @@ const EconomicDashboard: React.FC = () => {
 
                 {/* Mobile Tabs - Centered & Polished */}
                 <div className="md:hidden fixed bottom-4 left-0 right-0 z-50 flex justify-center">
-                    <div className="inline-flex bg-surface dark:bg-institutional-800 p-1.5 rounded-2xl shadow-xl border border-institutional-200 dark:border-institutional-700 overflow-x-auto scrollbar-hide max-w-[95vw]">
+                    <div className="inline-flex bg-surface dark:bg-muted/10 p-1.5 rounded-2xl shadow-xl border border-border overflow-x-auto scrollbar-hide max-w-[95vw]">
                         {(['overview', 'students', 'teachers', 'audit', 'sessions', 'timetable'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-institutional-100 dark:bg-institutional-700 text-primary shadow-md scale-105' : 'text-institutional-600'}`}>
+                                className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-muted/20 dark:bg-muted/20 text-primary shadow-md scale-105' : 'text-text-secondary'}`}>
                                 {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs').split(' ')[0] : tab === 'teachers' ? t('economic.teacherPayments').split(' ')[0] : tab === 'audit' ? 'Audit' : tab === 'sessions' ? 'Sessions' : 'Timetable'}
                             </button>
                         ))}
@@ -687,72 +687,72 @@ const EconomicDashboard: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
                             { label: t('economic.expected'), value: formatCurrencyDZD(financialSummary.totalExpectedRevenue), icon: TrendingUp, color: 'text-primary' },
-                            { label: t('economic.collected'), value: formatCurrencyDZD(financialSummary.totalCollectedRevenue), icon: DollarSign, color: 'text-emerald-500' },
-                            { label: t('economic.outstanding'), value: formatCurrencyDZD(financialSummary.outstandingPayments), icon: TrendingDown, color: 'text-rose-500' },
-                            { label: t('economic.payroll'), value: formatCurrencyDZD(financialSummary.teacherPayrollTotal), icon: CreditCard, color: 'text-amber-500' },
+                            { label: t('economic.collected'), value: formatCurrencyDZD(financialSummary.totalCollectedRevenue), icon: DollarSign, color: 'text-success' },
+                            { label: t('economic.outstanding'), value: formatCurrencyDZD(financialSummary.outstandingPayments), icon: TrendingDown, color: 'text-danger' },
+                            { label: t('economic.payroll'), value: formatCurrencyDZD(financialSummary.teacherPayrollTotal), icon: CreditCard, color: 'text-warning' },
                         ].map((kpi, i) => (
-                            <div key={i} className="bg-surface dark:bg-institutional-900 p-6 rounded-[2rem] border border-institutional-200 dark:border-institutional-800 shadow-soft hover:shadow-strong transition-all group">
+                            <div key={i} className="bg-surface dark:bg-background p-6 rounded-[2rem] border border-border shadow-soft hover:shadow-strong transition-all group">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className={`p-3 rounded-2xl bg-institutional-50 dark:bg-institutional-800 ${kpi.color} group-hover:scale-110 transition-transform`}>
+                                    <div className={`p-3 rounded-2xl bg-muted/10 dark:bg-muted/10 ${kpi.color} group-hover:scale-110 transition-transform`}>
                                         <kpi.icon size={20} />
                                     </div>
-                                    <ArrowRight size={14} className="text-institutional-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <ArrowRight size={14} className="text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
-                                <p className="text-[10px] font-black uppercase text-institutional-600 tracking-widest mb-1">{kpi.label}</p>
-                                <h3 className="text-2xl font-black text-institutional-900 dark:text-institutional-50">{kpi.value}</h3>
+                                <p className="text-[10px] font-black uppercase text-text-secondary tracking-widest mb-1">{kpi.label}</p>
+                                <h3 className="text-2xl font-black text-text">{kpi.value}</h3>
                             </div>
                         ))}
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Revenue Chart */}
-                        <div className="lg:col-span-2 bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-soft">
+                        <div className="lg:col-span-2 bg-surface dark:bg-background p-8 rounded-[2.5rem] border border-border shadow-soft">
                             <div className="flex items-center justify-between mb-8">
                                 <div className="text-start">
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50">{t('economic.revenue')} Analysis</h3>
-                                    <p className="text-[10px] font-bold text-institutional-600 uppercase mt-1">Monthly Collected vs Expected</p>
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-text">{t('economic.revenue')} Analysis</h3>
+                                    <p className="text-[10px] font-bold text-text-secondary uppercase mt-1">Monthly Collected vs Expected</p>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button onClick={() => exportCSV(financialSummary.revenueHistory, 'revenue_report')} className="p-2 text-institutional-600 hover:text-primary transition-colors"><FileSpreadsheet size={18} /></button>
-                                    <button onClick={() => exportPDF('Revenue Report', ['Month', 'Collected', 'Expected'], financialSummary.revenueHistory.map(h => [h.month, h.collected, h.expected]), 'revenue_report')} className="p-2 text-institutional-600 hover:text-primary transition-colors"><FileJson size={18} /></button>
+                                    <button onClick={() => exportCSV(financialSummary.revenueHistory, 'revenue_report')} className="p-2 text-text-secondary hover:text-primary transition-colors"><FileSpreadsheet size={18} /></button>
+                                    <button onClick={() => exportPDF('Revenue Report', ['Month', 'Collected', 'Expected'], financialSummary.revenueHistory.map(h => [h.month, h.collected, h.expected]), 'revenue_report')} className="p-2 text-text-secondary hover:text-primary transition-colors"><FileJson size={18} /></button>
                                 </div>
                             </div>
                             <div className="h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={financialSummary.revenueHistory}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} tickFormatter={(value) => `${value / 1000}k`} />
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: 'var(--muted)'}} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: 'var(--muted)'}} tickFormatter={(value) => `${value / 1000}k`} />
                                         <Tooltip 
-                                            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px', fontWeight: 'bold' }}
-                                            cursor={{ fill: '#f8fafc' }}
+                                            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-soft)', fontSize: '12px', fontWeight: 'bold', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }}
+                                            cursor={{ fill: 'var(--bg-body)' }}
                                             formatter={(value: number) => formatCurrencyDZD(value)}
                                         />
                                         <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', paddingTop: '20px' }} />
-                                        <Bar dataKey="expected" fill="#e2e8f0" radius={[4, 4, 0, 0]} name={t('economic.expected')} />
-                                        <Bar dataKey="collected" fill="#6366f1" radius={[4, 4, 0, 0]} name={t('economic.collected')} />
+                                        <Bar dataKey="expected" fill="var(--border-color)" radius={[4, 4, 0, 0]} name={t('economic.expected')} />
+                                        <Bar dataKey="collected" fill="var(--primary)" radius={[4, 4, 0, 0]} name={t('economic.collected')} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
                         </div>
 
                         {/* Alerts Panel */}
-                        <div className="bg-surface dark:bg-institutional-900 p-8 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-soft">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50 mb-8 text-start">{t('economic.alerts')}</h3>
+                        <div className="bg-background p-8 rounded-[2.5rem] border border-border shadow-soft">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-text mb-8 text-start">{t('economic.alerts')}</h3>
                             <div className="space-y-4">
                                 {[
-                                    { label: t('economic.expiredSubs'), count: alerts.expired, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50' },
-                                    { label: t('economic.unpaidTeachers'), count: alerts.unpaidT, icon: AlertCircle, color: 'text-rose-500', bg: 'bg-rose-50' },
-                                    { label: t('economic.revenueDrop'), active: alerts.revenueDrop, icon: TrendingDown, color: alerts.revenueDrop ? 'text-rose-500' : 'text-emerald-500', bg: alerts.revenueDrop ? 'bg-rose-50' : 'bg-emerald-50' },
+                                    { label: t('economic.expiredSubs'), count: alerts.expired, icon: Clock, color: 'text-warning', bg: 'bg-warning/10' },
+                                    { label: t('economic.unpaidTeachers'), count: alerts.unpaidT, icon: AlertCircle, color: 'text-danger', bg: 'bg-danger/10' },
+                                    { label: t('economic.revenueDrop'), active: alerts.revenueDrop, icon: TrendingDown, color: alerts.revenueDrop ? 'text-danger' : 'text-success', bg: alerts.revenueDrop ? 'bg-danger/10' : 'bg-success/10' },
                                 ].map((alert, i) => (
-                                    <div key={i} className={`p-5 rounded-2xl border border-institutional-100 dark:border-institutional-800 flex items-center justify-between group hover:border-primary/20 transition-all`}>
+                                    <div key={i} className={`p-5 rounded-2xl border border-border flex items-center justify-between group hover:border-primary/20 transition-all`}>
                                         <div className="flex items-center gap-4">
-                                            <div className={`p-2.5 rounded-xl ${alert.bg} dark:bg-institutional-800 ${alert.color}`}>
+                                            <div className={`p-2.5 rounded-xl ${alert.bg} dark:bg-muted/10 ${alert.color}`}>
                                                 <alert.icon size={18} />
                                             </div>
                                             <div className="text-start">
-                                                <p className="text-xs font-bold text-institutional-700 dark:text-institutional-300">{alert.label}</p>
-                                                <p className="text-[9px] font-black uppercase text-institutional-600 tracking-widest mt-0.5">System Flag</p>
+                                                <p className="text-xs font-bold text-text-secondary dark:text-text-secondary/80">{alert.label}</p>
+                                                <p className="text-[9px] font-black uppercase text-text-secondary tracking-widest mt-0.5">System Flag</p>
                                             </div>
                                         </div>
                                         <span className={`text-sm font-black ${alert.color}`}>
@@ -761,8 +761,8 @@ const EconomicDashboard: React.FC = () => {
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-8 pt-8 border-t border-institutional-100 dark:border-institutional-800">
-                                <button className="w-full py-4 bg-institutional-900 dark:bg-institutional-50 text-institutional-50 dark:text-institutional-900 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
+                            <div className="mt-8 pt-8 border-t border-border">
+                                <button className="w-full py-4 bg-text text-background rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
                                     Generate Monthly Report
                                 </button>
                             </div>
@@ -776,21 +776,21 @@ const EconomicDashboard: React.FC = () => {
                     {/* Filters & Search */}
                     <div className="mb-8 flex flex-col md:flex-row gap-4 sticky top-24 z-30 bg-body/80 backdrop-blur-md py-4">
                         <div className="relative flex-1 group">
-                            <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600 group-focus-within:text-primary transition-colors`} size={18} />
+                            <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-primary transition-colors`} size={18} />
                             <input 
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
                                 placeholder={t('inbox.searchPlaceholder')}
-                                className={`w-full bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12' : 'pl-12'} py-4 text-sm font-bold outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-soft`}
+                                className={`w-full bg-surface dark:bg-background border border-border rounded-2xl ${isRTL ? 'pr-12' : 'pl-12'} py-4 text-sm font-bold outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all shadow-soft`}
                             />
                         </div>
                         <div className="flex gap-4">
                             <div className="relative">
-                                <Filter className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600`} size={16} />
+                                <Filter className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-text-secondary`} size={16} />
                                 <select 
                                     value={filterStatus}
                                     onChange={e => setFilterStatus(e.target.value)}
-                                    className={`bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl ${isRTL ? 'pr-12 pl-8' : 'pl-12 pr-8'} py-4 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all appearance-none cursor-pointer shadow-soft`}>
+                                    className={`bg-surface dark:bg-background border border-border rounded-2xl ${isRTL ? 'pr-12 pl-8' : 'pl-12 pr-8'} py-4 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all appearance-none cursor-pointer shadow-soft`}>
                                     <option value="all">All Status</option>
                                     <option value="active">{t('economic.active')}</option>
                                     <option value="expired">{t('economic.expired')}</option>
@@ -798,14 +798,14 @@ const EconomicDashboard: React.FC = () => {
                                     <option value="paid">{t('economic.paid')}</option>
                                     <option value="unpaid">{t('economic.unpaid')}</option>
                                 </select>
-                                <ChevronDown className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 text-institutional-600 pointer-events-none`} size={14} />
+                                <ChevronDown className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none`} size={14} />
                             </div>
                             <button 
                                 onClick={() => activeTab === 'students' 
                                     ? exportCSV(filteredStudents.map(s => ({ ...s, ...subscriptions[s.id] })), 'student_subscriptions')
                                     : exportCSV(filteredTeachers.map(t_user => ({ ...t_user, ...payments[t_user.id] })), 'teacher_payments')
                                 }
-                                className="p-4 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-2xl text-institutional-600 hover:text-primary transition-all shadow-soft">
+                                className="p-4 bg-surface dark:bg-background border border-border rounded-2xl text-text-secondary hover:text-primary transition-all shadow-soft">
                                 <Download size={20} />
                             </button>
                         </div>
@@ -840,13 +840,13 @@ const EconomicDashboard: React.FC = () => {
 
             {activeTab === 'sessions' && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl p-8">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50 mb-6">Scheduled Sessions</h3>
+                    <div className="bg-surface dark:bg-background border border-border rounded-[2.5rem] overflow-hidden shadow-xl p-8">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-text mb-6">Scheduled Sessions</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {sessions.map(s => (
-                                <div key={s.id} className="p-6 bg-institutional-50 dark:bg-institutional-800 rounded-2xl border border-institutional-200 dark:border-institutional-700">
-                                    <h4 className="font-black text-lg text-institutional-900 dark:text-institutional-50 mb-2">{s.name}</h4>
-                                    <p className="text-xs text-institutional-600 font-bold uppercase tracking-widest mb-4">{s.date} • {s.time} - {s.endTime}</p>
+                                <div key={s.id} className="p-6 bg-surface dark:bg-muted/10 rounded-2xl border border-border">
+                                    <h4 className="font-black text-lg text-text mb-2">{s.name}</h4>
+                                    <p className="text-xs text-text-secondary font-bold uppercase tracking-widest mb-4">{s.date} • {s.time} - {s.endTime}</p>
                                     <span className="px-3 py-1 rounded-full text-[9px] font-black uppercase bg-primary/10 text-primary">{s.type}</span>
                                 </div>
                             ))}
@@ -857,24 +857,24 @@ const EconomicDashboard: React.FC = () => {
 
             {activeTab === 'timetable' && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl p-8">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50 mb-6">Fixed Timetable</h3>
+                    <div className="bg-surface dark:bg-background border border-border rounded-[2.5rem] overflow-hidden shadow-xl p-8">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-text mb-6">Fixed Timetable</h3>
                         <div className="overflow-x-auto">
                             <table className="w-full text-start border-collapse">
-                                <thead>
-                                    <tr className="bg-institutional-50 dark:bg-institutional-950 border-b border-institutional-200 dark:border-institutional-800">
-                                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">Time</th>
+                                <thead className="sticky top-0 z-10">
+                                    <tr className="bg-surface dark:bg-background border-b border-border">
+                                        <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">Time</th>
                                         {DAYS_OF_WEEK.map(day => (
-                                            <th key={day} className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-center">{day}</th>
+                                            <th key={day} className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-text-secondary text-center">{day}</th>
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-institutional-100 dark:divide-institutional-800">
+                                <tbody className="divide-y divide-border">
                                     {HOURS_OF_DAY.map(hour => (
                                         <tr key={hour}>
-                                            <td className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-institutional-600 text-start">{hour}</td>
+                                            <td className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-text-secondary text-start">{hour}</td>
                                             {DAYS_OF_WEEK.map(day => (
-                                                <td key={`${day}-${hour}`} className="px-4 py-3 border border-institutional-100 dark:border-institutional-800"></td>
+                                                <td key={`${day}-${hour}`} className="px-4 py-3 border border-border"></td>
                                             ))}
                                         </tr>
                                     ))}
@@ -887,36 +887,36 @@ const EconomicDashboard: React.FC = () => {
 
             {activeTab === 'audit' && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-[2.5rem] overflow-hidden shadow-xl">
-                        <div className="p-8 border-b border-institutional-100 dark:border-institutional-800 flex items-center justify-between">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-institutional-900 dark:text-institutional-50">{t('economic.auditLog')}</h3>
+                    <div className="bg-surface dark:bg-background border border-border rounded-[2.5rem] overflow-hidden shadow-xl">
+                        <div className="p-8 border-b border-border flex items-center justify-between">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-text">{t('economic.auditLog')}</h3>
                             <button onClick={() => exportCSV(auditLogs, 'financial_audit_log')} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:underline">
                                 <Download size={14} /> {t('economic.export')}
                             </button>
                         </div>
-                        <div className="divide-y divide-institutional-50 dark:divide-institutional-800">
+                        <div className="divide-y divide-border">
                             {auditLogs.map(log => (
-                                <div key={log.id} className="p-6 flex items-center justify-between hover:bg-institutional-50 dark:hover:bg-institutional-800/50 transition-colors">
+                                <div key={log.id} className="p-6 flex items-center justify-between hover:bg-muted/5 dark:hover:bg-muted/10 transition-colors">
                                     <div className="flex items-center gap-6">
-                                        <div className="w-10 h-10 rounded-xl bg-institutional-100 dark:bg-institutional-800 flex items-center justify-center text-institutional-600">
+                                        <div className="w-10 h-10 rounded-xl bg-muted/10 dark:bg-muted/10 flex items-center justify-center text-text-secondary">
                                             <History size={18} />
                                         </div>
                                         <div className="text-start">
-                                            <p className="text-sm font-bold text-institutional-900 dark:text-institutional-50">{log.action}</p>
-                                            <p className="text-[10px] font-bold text-institutional-600 uppercase tracking-widest">{log.details}</p>
+                                            <p className="text-sm font-bold text-text">{log.action}</p>
+                                            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{log.details}</p>
                                             {log.targetName && <p className="text-[9px] font-black text-primary uppercase mt-1">Target: {log.targetName}</p>}
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        <p className="text-[10px] font-black text-institutional-900 dark:text-institutional-50 uppercase tracking-widest">{log.userName}</p>
-                                        <p className="text-[9px] font-bold text-institutional-600 mt-1">
+                                        <p className="text-[10px] font-black text-text uppercase tracking-widest">{log.userName}</p>
+                                        <p className="text-[9px] font-bold text-text-secondary mt-1">
                                             {log.timestamp?.seconds ? new Date(log.timestamp.seconds * 1000).toLocaleString() : '---'}
                                         </p>
                                     </div>
                                 </div>
                             ))}
                             {auditLogs.length === 0 && (
-                                <div className="p-20 text-center text-institutional-600 text-xs font-black uppercase tracking-widest">
+                                <div className="p-20 text-center text-text-secondary text-xs font-black uppercase tracking-widest">
                                     No audit entries found.
                                 </div>
                             )}
@@ -927,19 +927,19 @@ const EconomicDashboard: React.FC = () => {
             {/* Student Settings Modal */}
             {studentToEdit && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-                    <div className="absolute inset-0 bg-institutional-900/60 backdrop-blur-sm" onClick={() => setStudentToEdit(null)} />
-                    <div className="relative w-full max-w-2xl bg-surface dark:bg-institutional-900 rounded-[2.5rem] border border-institutional-200 dark:border-institutional-800 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="p-8 border-b border-institutional-100 dark:border-institutional-800 flex items-center justify-between bg-institutional-50/50 dark:bg-institutional-800/30">
+                    <div className="absolute inset-0 bg-text/60 backdrop-blur-sm" onClick={() => setStudentToEdit(null)} />
+                    <div className="relative w-full max-w-2xl bg-surface dark:bg-background rounded-[2.5rem] border border-border shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="p-8 border-b border-border flex items-center justify-between bg-muted/5 dark:bg-muted/10">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-xl border border-primary/20">
                                     {studentToEdit.name.charAt(0)}
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-black text-institutional-900 dark:text-institutional-50">{studentToEdit.name}</h3>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-600">Edit Student Subscription</p>
+                                    <h3 className="text-lg font-black text-text">{studentToEdit.name}</h3>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Edit Student Subscription</p>
                                 </div>
                             </div>
-                            <button onClick={() => setStudentToEdit(null)} className="p-3 hover:bg-rose-500/10 hover:text-rose-500 text-institutional-600 rounded-2xl transition-all">
+                            <button onClick={() => setStudentToEdit(null)} className="p-3 hover:bg-danger/10 hover:text-danger text-text-secondary rounded-2xl transition-all">
                                 <XCircle size={24} />
                             </button>
                         </div>
@@ -948,31 +948,31 @@ const EconomicDashboard: React.FC = () => {
                             {/* Subscription Type & Amount */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-institutional-600 ml-1">Subscription Type</label>
-                                    <div className="flex bg-institutional-100 dark:bg-institutional-800 p-1.5 rounded-2xl">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary ml-1">Subscription Type</label>
+                                    <div className="flex bg-muted/10 dark:bg-muted/10 p-1.5 rounded-2xl">
                                         <button 
                                             onClick={() => setSubscriptionType('time')}
-                                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${subscriptionType === 'time' ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-600'}`}
+                                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${subscriptionType === 'time' ? 'bg-surface dark:bg-muted/20 text-primary shadow-soft' : 'text-text-secondary'}`}
                                         >
                                             Time Based
                                         </button>
                                         <button 
                                             onClick={() => setSubscriptionType('session')}
-                                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${subscriptionType === 'session' ? 'bg-surface dark:bg-institutional-700 text-primary shadow-soft' : 'text-institutional-600'}`}
+                                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${subscriptionType === 'session' ? 'bg-surface dark:bg-muted/20 text-primary shadow-soft' : 'text-text-secondary'}`}
                                         >
                                             Session Based
                                         </button>
                                     </div>
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-institutional-600 ml-1">Monthly Amount (DZD)</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary ml-1">Monthly Amount (DZD)</label>
                                     <div className="relative">
-                                        <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-institutional-600" size={18} />
+                                        <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
                                         <input 
                                             type="number"
                                             value={amountValue}
                                             onChange={(e) => setAmountValue(Number(e.target.value))}
-                                            className="w-full bg-institutional-50 dark:bg-institutional-800 border-2 border-institutional-200 dark:border-institutional-700 pl-12 pr-4 py-4 rounded-2xl text-sm font-bold text-institutional-900 dark:text-institutional-50 focus:border-primary outline-none transition-all"
+                                            className="w-full bg-background dark:bg-muted/10 border-2 border-border rounded-2xl text-sm font-bold text-text focus:border-primary outline-none transition-all"
                                         />
                                     </div>
                                 </div>
@@ -980,16 +980,16 @@ const EconomicDashboard: React.FC = () => {
 
                             {/* Duration / Sessions */}
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-institutional-600 ml-1">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary ml-1">
                                     {subscriptionType === 'time' ? 'Subscription Duration (Months)' : 'Total Sessions'}
                                 </label>
                                 <div className="relative">
-                                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-institutional-600" size={18} />
+                                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
                                     <input 
                                         type="number"
                                         value={subscriptionType === 'time' ? durationValue : sessionsValue}
                                         onChange={(e) => subscriptionType === 'time' ? setDurationValue(Number(e.target.value)) : setSessionsValue(Number(e.target.value))}
-                                        className="w-full bg-institutional-50 dark:bg-institutional-800 border-2 border-institutional-200 dark:border-institutional-700 pl-12 pr-4 py-4 rounded-2xl text-sm font-bold text-institutional-900 dark:text-institutional-50 focus:border-primary outline-none transition-all"
+                                        className="w-full bg-background dark:bg-muted/10 border-2 border-border rounded-2xl text-sm font-bold text-text focus:border-primary outline-none transition-all"
                                         placeholder={subscriptionType === 'time' ? 'Enter months' : 'Enter sessions'}
                                     />
                                 </div>
@@ -998,17 +998,17 @@ const EconomicDashboard: React.FC = () => {
                             {/* Status Quick Actions */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-institutional-600 ml-1">Payment Status</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary ml-1">Payment Status</label>
                                     <div className="grid grid-cols-3 gap-2">
                                         {[
-                                            { status: 'Paid', icon: CheckCircle, color: 'bg-emerald-500' },
-                                            { status: 'Pending', icon: Clock, color: 'bg-amber-500' },
-                                            { status: 'Unpaid', icon: XCircle, color: 'bg-rose-500' }
+                                            { status: 'Paid', icon: CheckCircle, color: 'bg-success' },
+                                            { status: 'Pending', icon: Clock, color: 'bg-warning' },
+                                            { status: 'Unpaid', icon: XCircle, color: 'bg-danger' }
                                         ].map(item => (
                                             <button 
                                                 key={item.status}
                                                 onClick={() => handleUpdateStudentPayment(studentToEdit.id, item.status as any)}
-                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-1 transition-all ${subscriptions[studentToEdit.id]?.paymentStatus === item.status ? `${item.color} text-institutional-50 shadow-lg` : 'bg-institutional-50 dark:bg-institutional-800 text-institutional-600 border border-institutional-200 dark:border-institutional-700'}`}
+                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-1 transition-all ${subscriptions[studentToEdit.id]?.paymentStatus === item.status ? `${item.color} text-primary-foreground shadow-lg` : 'bg-background dark:bg-muted/10 text-text-secondary border border-border'}`}
                                             >
                                                 <item.icon size={14} /> {item.status}
                                             </button>
@@ -1016,17 +1016,17 @@ const EconomicDashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-institutional-600 ml-1">Account Status</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary ml-1">Account Status</label>
                                     <div className="grid grid-cols-3 gap-2">
                                         {[
-                                            { status: 'active', icon: ShieldCheck, color: 'bg-emerald-500' },
-                                            { status: 'pending', icon: Clock, color: 'bg-amber-500' },
-                                            { status: 'disabled', icon: ShieldOff, color: 'bg-rose-500' }
+                                            { status: 'active', icon: ShieldCheck, color: 'bg-success' },
+                                            { status: 'pending', icon: Clock, color: 'bg-warning' },
+                                            { status: 'disabled', icon: ShieldOff, color: 'bg-danger' }
                                         ].map(item => (
                                             <button 
                                                 key={item.status}
                                                 onClick={() => handleUpdateAccountStatus(studentToEdit.id, item.status)}
-                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-1 transition-all ${studentToEdit.accountStatus === item.status ? `${item.color} text-institutional-50 shadow-lg` : 'bg-institutional-50 dark:bg-institutional-800 text-institutional-600 border border-institutional-200 dark:border-institutional-700'}`}
+                                                className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-1 transition-all ${studentToEdit.accountStatus === item.status ? `${item.color} text-primary-foreground shadow-lg` : 'bg-background dark:bg-muted/10 text-text-secondary border border-border'}`}
                                             >
                                                 <item.icon size={14} /> {item.status}
                                             </button>
@@ -1036,10 +1036,10 @@ const EconomicDashboard: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="p-8 bg-institutional-50/50 dark:bg-institutional-800/30 border-t border-institutional-100 dark:border-institutional-800 flex gap-4">
+                        <div className="p-8 bg-muted/5 dark:bg-muted/10 border-t border-border flex gap-4">
                             <button 
                                 onClick={() => setStudentToEdit(null)}
-                                className="flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-institutional-600 hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all"
+                                className="flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-text-secondary hover:bg-muted/10 dark:hover:bg-muted/20 transition-all"
                             >
                                 Close
                             </button>
@@ -1049,7 +1049,7 @@ const EconomicDashboard: React.FC = () => {
                                     await handleUpdateSubscriptionDuration(studentToEdit.id);
                                     setStudentToEdit(null);
                                 }}
-                                className="flex-[2] py-4 bg-primary text-institutional-50 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                className="flex-[2] py-4 bg-primary text-primary-foreground rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                             >
                                 <Save size={18} /> Save All Changes
                             </button>

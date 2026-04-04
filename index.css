@@ -2,12 +2,12 @@
 
 :root {
   /* Light Theme - Clean & Professional */
-  --bg-body: #94a3b8; /* slate-400 */
-  --bg-surface: #ffffff;
+  --bg-body: #f8fafc; /* slate-50 - Main Background (Page) */
+  --bg-surface: #ffffff; /* pure white - Card/Surface Background */
   --text-primary: #0f172a; /* slate-900 */
-  --text-secondary: #475569; /* slate-600 */
+  --text-secondary: #475569; /* slate-600 - Darkened for better contrast */
   --border-color: #e2e8f0; /* slate-200 */
-  --muted: #94a3b8; /* slate-400 */
+  --muted: #94a3b8; /* slate-400 - Darkened for better contrast */
 
   /* Primary Brand Colors - Light Mode */
   --primary: #006633;
@@ -34,13 +34,13 @@
 }
 
 .dark {
-  /* Dark Theme - Soft & Comfortable */
-  --bg-body: #020617; /* slate-950 */
-  --bg-surface: #0f172a; /* slate-900 */
+  /* Dark Theme - Deep & Modern */
+  --bg-body: #020617; /* slate-950 - Darker background */
+  --bg-surface: #0f172a; /* slate-900 - Darker surface */
   --text-primary: #f8fafc; /* slate-50 */
   --text-secondary: #94a3b8; /* slate-400 */
   --border-color: #1e293b; /* slate-800 */
-  --muted: #64748b; /* slate-500 */
+  --muted: #475569; /* slate-600 */
 
   /* Primary Brand Colors - Dark Mode (Brighter for contrast) */
   --primary: #10b981; /* emerald-500 */

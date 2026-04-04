@@ -243,7 +243,7 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
                 <div className="w-20 h-20 bg-danger/10 text-danger rounded-3xl flex items-center justify-center mb-6 shadow-xl border border-danger/20">
                     <AlertTriangle size={40} />
                 </div>
-                <h3 className="text-xl font-black uppercase text-institutional-950 dark:text-institutional-50 mb-2">{errorMsg}</h3>
+                <h3 className="text-xl font-black uppercase text-institutional-900 dark:text-institutional-50 mb-2">{errorMsg}</h3>
                 <p className="text-sm font-bold text-institutional-600 mb-8 uppercase tracking-widest">{t('scanner.protocolError')}</p>
                 <button onClick={onBack} className="bg-institutional-900 dark:bg-institutional-50 text-institutional-50 dark:text-institutional-900 px-10 py-4 rounded-xl font-black uppercase text-xs tracking-[0.2em] shadow-2xl transition-transform hover:scale-105">{t('scanner.returnHub')}</button>
             </div>
@@ -254,7 +254,7 @@ const Scanner: React.FC<ScannerProps> = ({ classId: propClassId, onBack }) => {
         <div className={`fade-in max-w-2xl mx-auto flex flex-col ${isMobile ? 'h-[calc(100vh-180px)]' : 'h-[calc(100vh-140px)]'}`}>
              <div className="mb-6 flex justify-between items-center shrink-0">
                 <div>
-                    <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-institutional-950 dark:text-institutional-50">{t('scanner.title')}</h2>
+                    <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-institutional-900 dark:text-institutional-50">{t('scanner.title')}</h2>
                     <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{sessionData?.name}</p>
                 </div>
                 <button onClick={onBack} className="w-12 h-12 flex items-center justify-center bg-institutional-200 dark:bg-institutional-800 text-institutional-600 hover:bg-danger hover:text-institutional-50 rounded-xl transition-all shadow-lg"><X size={24} /></button>

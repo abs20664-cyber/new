@@ -39,7 +39,7 @@ const ClassSessionItem = React.memo(({ cl, isLive, hasEnded, t, isRTL, openModal
     navigate: any;
 }) => {
     return (
-        <div key={cl.id} className={`p-8 bg-sidebar relative group rounded-[2.5rem] border border-border shadow-sm transition-all hover:shadow-xl hover:border-primary/20 ${isLive ? 'ring-2 ring-success ring-offset-4 ring-offset-background' : ''} ${hasEnded ? 'opacity-60 bg-sidebar/50' : ''}`}>
+        <div key={cl.id} className={`p-8 bg-surface dark:bg-institutional-950 relative group rounded-[2.5rem] border border-border shadow-sm transition-all hover:shadow-xl hover:border-primary/20 ${isLive ? 'ring-2 ring-success ring-offset-4 ring-offset-background' : ''} ${hasEnded ? 'opacity-60 bg-surface/50 dark:bg-institutional-950/50' : ''}`}>
             <div className={`absolute top-8 ${isRTL ? 'left-8' : 'right-8'} flex gap-3 z-10 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0`}>
                 <button 
                     onClick={() => openModal(cl)} 

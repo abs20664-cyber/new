@@ -13,7 +13,7 @@ export const translations = {
       encrypted: "End-to-End Encrypted", encryptedTerminal: "Encrypted Terminal Session"
     },
     nav: {
-      hub: "Hub", schedule: "Schedule", dropbox: "Dropbox", cabinet: "Cabinet",
+      hub: "Hub", schedule: "Schedule", homework: "Homework", cabinet: "Cabinet",
       inbox: "Inbox", activity: "Activity", identity: "ID", registry: "Registry", settings: "Settings",
       myProfile: "My Profile", economic: "Finance"
     },
@@ -49,7 +49,7 @@ export const translations = {
       type: "Type", sync: "Confirm Sync", filesSelected: "files selected",
       clickToAdd: "Add Files"
     },
-    dropbox: {
+    homework: {
       title: "Institutional Task Ledger", issueTask: "Issue Task",
       taskIssued: "New Task Issued", taskRemoved: "Task Removed",
       audit: "Audit Ledger", deadline: "Deadline", resource: "Resource",
@@ -183,7 +183,7 @@ export const translations = {
       encrypted: "Chiffré de bout en bout", encryptedTerminal: "Session de terminal chiffrée"
     },
     nav: {
-      hub: "Hub", schedule: "Emploi du temps", dropbox: "Dropbox", cabinet: "Cabinet",
+      hub: "Hub", schedule: "Emploi du temps", homework: "Devoirs", cabinet: "Cabinet",
       inbox: "Messagerie", activity: "Activité", identity: "ID", registry: "Registre", settings: "Paramètres",
       myProfile: "Mon Profil", economic: "Finance"
     },
@@ -219,7 +219,7 @@ export const translations = {
       type: "Type", sync: "Confirmer Sync", filesSelected: "fichiers sélectionnés",
       clickToAdd: "Ajouter des fichiers"
     },
-    dropbox: {
+    homework: {
       title: "Registre des Tâches Institutionnelles", issueTask: "Assigner Tâche",
       taskIssued: "Nouvelle Tâche Publiée", taskRemoved: "Tâche Supprimée",
       audit: "Audit du Registre", deadline: "Échéance", resource: "Ressource",
@@ -353,7 +353,7 @@ export const translations = {
       encrypted: "مشفر من طرف إلى طرف", encryptedTerminal: "جلسة تواصل مشفرة"
     },
     nav: {
-      hub: "المركز", schedule: "الجدول", dropbox: "صندوق المهام", cabinet: "الخزانة",
+      hub: "المركز", schedule: "الجدول", homework: "الواجبات", cabinet: "الخزانة",
       inbox: "البريد", activity: "النشاط", identity: "الهوية", registry: "السجل", settings: "الإعدادات",
       myProfile: "ملفي الشخصي", economic: "المالية"
     },
@@ -389,7 +389,7 @@ export const translations = {
       type: "النوع", sync: "تأكيد المزامنة", filesSelected: "ملفات مختارة",
       clickToAdd: "اضغط لإضافة ملفات"
     },
-    dropbox: {
+    homework: {
       title: "سجل المهام المؤسسي", issueTask: "إصدار مهمة",
       taskIssued: "تم نشر مهمة جديدة", taskRemoved: "تم حذف المهمة",
       audit: "تدقيق السجل", deadline: "الموعد النهائي", resource: "المصدر",

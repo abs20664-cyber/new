@@ -37,7 +37,7 @@ const UserRow = memo(({ index, style, data }: { index: number, style: React.CSSP
                             {u.name.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="font-black text-sm text-institutional-950 dark:text-institutional-50 truncate">{u.name}</p>
+                            <p className="font-black text-sm text-institutional-900 dark:text-institutional-50 truncate">{u.name}</p>
                             <p className="text-[10px] font-bold text-institutional-600 truncate">{u.email}</p>
                         </div>
                         <div className="flex items-center gap-1 bg-institutional-100 dark:bg-institutional-800 p-1 px-2 rounded-lg shrink-0">
@@ -63,7 +63,7 @@ const UserRow = memo(({ index, style, data }: { index: number, style: React.CSSP
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-institutional-50 shadow-sm ${u.role === 'admin' ? 'bg-danger' : 'bg-institutional-300 dark:bg-institutional-700'}`}>
                     {u.name.charAt(0)}
                 </div>
-                <span className="font-bold text-sm text-institutional-950 dark:text-institutional-50">{u.name}</span>
+                <span className="font-bold text-sm text-institutional-900 dark:text-institutional-50">{u.name}</span>
             </div>
             <div className="text-xs font-bold text-institutional-600 dark:text-institutional-400 truncate pr-4">{u.email}</div>
             <div className="flex items-center gap-2">
@@ -271,8 +271,8 @@ const AdminRegistry: React.FC = () => {
                     {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-[150px] w-full rounded-2xl" />)}
                 </div>
             ) : (
-                <div className="card-edu bg-surface dark:bg-institutional-900 border border-institutional-300 dark:border-institutional-800 rounded-[1.5rem] overflow-hidden shadow-2xl">
-                     <div className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] p-6 border-b border-institutional-200 dark:border-institutional-800 bg-institutional-50 dark:bg-institutional-950 font-black text-[10px] uppercase tracking-widest text-institutional-600 text-start`}>
+                <div className="card-edu bg-surface dark:bg-institutional-950 border border-institutional-300 dark:border-institutional-800 rounded-[1.5rem] overflow-hidden shadow-2xl">
+                     <div className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] p-6 border-b border-institutional-200 dark:border-institutional-800 bg-institutional-100 dark:bg-institutional-950 font-black text-[10px] uppercase tracking-widest text-institutional-600 text-start`}>
                         <div>{t('admin.legalName')}</div>
                         <div>{t('admin.email')}</div>
                         <div>{t('admin.permissions')}</div>
@@ -289,44 +289,44 @@ const AdminRegistry: React.FC = () => {
                 {/* Dashboard Stats */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 grid grid-cols-2 gap-4">
-                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft flex flex-col justify-between">
+                        <div className="bg-surface dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-600">Total Users</h3>
-                                <div className="w-8 h-8 rounded-full bg-institutional-100 dark:bg-institutional-800 flex items-center justify-center text-institutional-600">
+                                <div className="w-8 h-8 rounded-full bg-institutional-200 dark:bg-institutional-900 flex items-center justify-center text-institutional-600">
                                     <Users size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-black text-institutional-950 dark:text-institutional-50">{stats.total}</p>
+                            <p className="text-3xl font-black text-institutional-900 dark:text-institutional-50">{stats.total}</p>
                         </div>
-                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
+                        <div className="bg-institutional-50 dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-600">Students</h3>
-                                <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center text-success">
+                                <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center text-success">
                                     <GraduationCap size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-black text-institutional-950 dark:text-institutional-50">{stats.students}</p>
+                            <p className="text-3xl font-black text-institutional-900 dark:text-institutional-50">{stats.students}</p>
                         </div>
-                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
+                        <div className="bg-institutional-50 dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-600">Teachers</h3>
-                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                                     <Shield size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-black text-institutional-950 dark:text-institutional-50">{stats.teachers}</p>
+                            <p className="text-3xl font-black text-institutional-900 dark:text-institutional-50">{stats.teachers}</p>
                         </div>
-                        <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
+                        <div className="bg-institutional-50 dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-600">Staff</h3>
-                                <div className="w-8 h-8 rounded-full bg-danger/10 flex items-center justify-center text-danger">
+                                <div className="w-8 h-8 rounded-full bg-danger/20 flex items-center justify-center text-danger">
                                     <ShieldAlert size={16} />
                                 </div>
                             </div>
-                            <p className="text-3xl font-black text-institutional-950 dark:text-institutional-50">{stats.staff}</p>
+                            <p className="text-3xl font-black text-institutional-900 dark:text-institutional-50">{stats.staff}</p>
                         </div>
                     </div>
-                    <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft flex flex-col">
+                    <div className="bg-surface dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft flex flex-col">
                         <h3 className="text-[10px] font-black uppercase tracking-widest text-institutional-600 mb-4">Role Distribution</h3>
                         <div className="flex-1 min-h-[200px]">
                             <ResponsiveContainer width="100%" height="100%">
@@ -356,7 +356,7 @@ const AdminRegistry: React.FC = () => {
                 </div>
 
                 {/* Filters and Search */}
-                <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-4 rounded-[1.5rem] shadow-soft">
+                <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-surface dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 p-4 rounded-[1.5rem] shadow-soft">
                     <div className="relative w-full md:w-96">
                         <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-institutional-600" />
                         <input 
@@ -388,7 +388,7 @@ const AdminRegistry: React.FC = () => {
                 </div>
 
                 {/* Subject Management */}
-                <div className="bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft">
+                <div className="bg-surface dark:bg-institutional-950 border border-institutional-200 dark:border-institutional-800 p-6 rounded-[1.5rem] shadow-soft">
                     <h3 className="text-xs font-black uppercase tracking-widest text-institutional-600 mb-4">{t('admin.manageSubjects')}</h3>
                     <div className="flex gap-2 mb-4">
                         <input 
@@ -423,7 +423,7 @@ const AdminRegistry: React.FC = () => {
                     </List>
                 ) : (
                     <div className="academic-card rounded-[1.5rem] overflow-hidden shadow-strong">
-                        <div className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] p-6 border-b border-institutional-200 dark:border-institutional-800 bg-institutional-50 dark:bg-institutional-950 font-black text-[10px] uppercase tracking-widest text-institutional-600 text-start`}>
+                        <div className={`grid grid-cols-[1.5fr_1.5fr_1fr_0.5fr_100px] p-6 border-b border-institutional-200 dark:border-institutional-800 bg-institutional-100 dark:bg-institutional-950 font-black text-[10px] uppercase tracking-widest text-institutional-600 text-start`}>
                             <div>{t('admin.legalName')}</div>
                             <div>{t('admin.email')}</div>
                             <div>{t('admin.permissions')}</div>
@@ -456,7 +456,7 @@ const AdminRegistry: React.FC = () => {
         <div className="fade-in max-w-7xl mx-auto">
             <div className={`mb-8 flex ${isMobile ? 'flex-col gap-4' : 'justify-between items-center'}`}>
                 <div className="text-start">
-                    <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-institutional-950 dark:text-institutional-50">{t('nav.registry')} Dashboard</h2>
+                    <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-institutional-900 dark:text-institutional-50">{t('nav.registry')} Dashboard</h2>
                     <p className="text-[10px] font-bold text-danger uppercase tracking-widest mt-1">{t('admin.systemManagement')}</p>
                 </div>
                 <button 
@@ -473,7 +473,7 @@ const AdminRegistry: React.FC = () => {
                 <div className={`fixed inset-0 z-[100] bg-black/70 backdrop-blur-md flex items-center justify-center ${isMobile ? 'p-0 items-end' : 'p-4'}`}>
                     <div className={`bg-surface dark:bg-institutional-900 shadow-2xl relative border border-institutional-200 dark:border-institutional-800 max-h-[90vh] overflow-y-auto ${isMobile ? 'w-full rounded-t-[2.5rem] p-6 pb-10' : 'max-w-lg w-full p-10 rounded-[2rem] card-edu'}`}>
                         <button onClick={() => setIsModalOpen(false)} className={`absolute top-6 ${isRTL ? 'left-6' : 'right-6'} text-institutional-600`}><X size={24} /></button>
-                        <h3 className="text-xl font-black mb-8 uppercase tracking-tight text-institutional-950 dark:text-institutional-50">
+                        <h3 className="text-xl font-black mb-8 uppercase tracking-tight text-institutional-900 dark:text-institutional-50">
                             {editingUser ? t('admin.updateProfile') : t('admin.newAccount')}
                         </h3>
                         {tempPassword ? (

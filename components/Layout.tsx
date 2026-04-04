@@ -53,6 +53,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLangOpen, setIsLangOpen] = useState(false);
+    const [isNotifOpen, setIsNotifOpen] = useState(false);
     const [toasts, setToasts] = useState<Notification[]>([]);
     
     const [audioEnabled, setAudioEnabled] = useState(false);
@@ -74,6 +75,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
         }
     }, []);
 
+    // Initialize Audio
     useEffect(() => {
         const audio = new Audio(NOTIFICATION_SOUND_URL);
         audio.volume = 0.2;
@@ -194,14 +196,12 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
     const routes: any[] = user?.role === 'admin' 
         ? [
             { path: '/', label: t('nav.registry'), icon: Users }, 
-            { path: '/activity', label: t('nav.activity'), icon: Bell },
             { path: `/profile/${user?.id}`, label: t('nav.myProfile'), icon: UserCircle },
             { path: '/settings', label: t('nav.settings'), icon: Settings }
         ]
         : user?.role === 'economic'
         ? [
             { path: '/', label: t('nav.economic'), icon: DollarSign },
-            { path: '/activity', label: t('nav.activity'), icon: Bell },
             { path: '/schedule', label: t('nav.schedule'), icon: CalendarDays },
             { path: '/timetable', label: 'Timetable', icon: CalendarCheck },
             { path: `/profile/${user?.id}`, label: t('nav.myProfile'), icon: UserCircle },
@@ -210,17 +210,15 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
         : user?.role === 'teacher'
         ? [
             { path: '/', label: t('nav.hub'), icon: LayoutDashboard },
-            { path: '/activity', label: t('nav.activity'), icon: Bell },
             { path: '/schedule', label: t('nav.schedule'), icon: CalendarDays },
-            { path: '/assignments', label: t('nav.dropbox'), icon: FolderOpen },
+            { path: '/assignments', label: t('nav.homework'), icon: FolderOpen },
             { path: '/inbox', label: t('nav.inbox'), icon: MessageSquare },
             { path: `/profile/${user?.id}`, label: t('nav.myProfile'), icon: UserCircle },
         ]
         : [
             { path: '/', label: t('nav.identity'), icon: QrCode },
-            { path: '/activity', label: t('nav.activity'), icon: Bell },
             { path: '/schedule', label: t('nav.schedule'), icon: CalendarDays },
-            { path: '/assignments', label: t('nav.dropbox'), icon: FolderOpen },
+            { path: '/assignments', label: t('nav.homework'), icon: FolderOpen },
             { path: '/materials', label: t('nav.cabinet'), icon: Briefcase },
             { path: '/inbox', label: t('nav.inbox'), icon: MessageSquare },
             { path: `/profile/${user?.id}`, label: t('nav.myProfile'), icon: UserCircle },
@@ -279,7 +277,12 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
 
             {/* MAIN CONTENT AREA */}
             <main className={`flex-1 flex flex-col h-full relative overflow-hidden bg-body transition-all duration-500`}>
-                <header className={`shrink-0 z-40 sticky top-0 transition-all duration-500 ${isMobile ? 'h-0' : 'h-24 bg-surface/80 dark:bg-institutional-950/80 backdrop-blur-xl border-b border-institutional-200 dark:border-institutional-800 flex items-center justify-between px-16'}`}>
+                <motion.header 
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className={`shrink-0 z-40 sticky top-0 transition-all duration-500 ${isMobile ? 'h-0' : 'h-24 bg-surface/80 dark:bg-institutional-950/80 backdrop-blur-xl border-b border-institutional-200 dark:border-institutional-800 flex items-center justify-between px-16'}`}
+                >
                     {!isMobile && (
                         <>
                             <motion.div 
@@ -289,7 +292,15 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                 className="flex items-center gap-4"
                             >
                                 <Logo size="sm" />
-                                <h1 className="text-xl font-black tracking-tighter text-institutional-950 dark:text-institutional-50 uppercase">{t('appName')}</h1>
+                                <motion.h1 
+                                    key={getPageTitle()}
+                                    initial={{ opacity: 0, x: -10, scale: 0.98 }}
+                                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                                    transition={{ duration: 0.5, ease: "easeOut" }}
+                                    className="text-xl font-black tracking-tighter text-institutional-900 dark:text-institutional-50 uppercase"
+                                >
+                                    {getPageTitle()}
+                                </motion.h1>
                             </motion.div>
 
                             <div 
@@ -306,7 +317,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             </div>
                         </>
                     )}
-                </header>
+                </motion.header>
 
                 <div className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-12 relative scroll-smooth pb-28 pt-20">
                     <div className="max-w-[1400px] mx-auto">
@@ -316,7 +327,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
 
                 {/* BOTTOM NAVIGATION */}
             <div className="fixed bottom-4 inset-x-0 flex justify-center z-50 px-2 pointer-events-none">
-                <nav className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 flex items-center overflow-x-auto scroll-smooth scrollbar-hide p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] gap-1 pointer-events-auto max-w-full">
+                <nav className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 flex items-center overflow-visible scroll-smooth scrollbar-hide p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] gap-1 pointer-events-auto max-w-full">
                     {routes.map((route) => {
                         const Icon = route.icon;
                         const isActive = currentPath === route.path;
@@ -336,10 +347,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     <button onClick={toggleTheme} className="p-3 text-institutional-600 hover:text-primary transition-all">
                         {isDarkMode ? <Sun size={18} className="text-warning" /> : <Moon size={18} className="text-primary" />}
                     </button>
-                    <button onClick={() => setIsLangOpen(!isLangOpen)} className="p-3 text-institutional-600 hover:text-primary transition-all relative">
+                    <div onClick={() => setIsLangOpen(!isLangOpen)} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer" role="button" tabIndex={0}>
                         <Languages size={18} />
                         {isLangOpen && (
-                            <div className={`absolute bottom-full mb-3 inset-x-0 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-50 p-2`}>
+                            <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-48 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[60] p-2`}>
                                 {languages.map(l => (
                                     <button 
                                         key={l.code} 
@@ -352,7 +363,29 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                 ))}
                             </div>
                         )}
-                    </button>
+                    </div>
+                    <div onClick={() => setIsNotifOpen(!isNotifOpen)} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer" role="button" tabIndex={0}>
+                        <div className="relative">
+                            <Bell size={18} />
+                            {notifications.length > 0 && <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />}
+                        </div>
+                        {isNotifOpen && (
+                            <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-64 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[60] p-4`}>
+                                <h3 className="text-xs font-black uppercase text-institutional-900 dark:text-institutional-50 mb-3">Notifications</h3>
+                                <div className="space-y-2 max-h-60 overflow-y-auto">
+                                    {notifications.length > 0 ? (
+                                        notifications.map(n => (
+                                            <div key={n.id} className="text-xs text-institutional-600 p-2 bg-institutional-100 dark:bg-institutional-800 rounded-xl">
+                                                {n.message}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-xs text-institutional-600">No new notifications.</p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                     <button onClick={logout} className="p-3 text-danger hover:text-danger-hover transition-all">
                         <Power size={18} />
                     </button>

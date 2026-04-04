@@ -39,9 +39,9 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
     if (isMobile) {
         return (
             <div className="px-4 py-3">
-                <div className={`bg-institutional-50 dark:bg-institutional-900 rounded-[2rem] border-2 ${sub?.paymentStatus === 'Paid' ? 'border-emerald-500/20' : sub?.paymentStatus === 'Unpaid' ? 'border-rose-500/20' : 'border-institutional-200 dark:border-institutional-800'} p-5 shadow-xl shadow-institutional-900/5 relative overflow-hidden`}>
+                <div className={`bg-surface dark:bg-background rounded-[2rem] border-2 ${sub?.paymentStatus === 'Paid' ? 'border-success/20' : sub?.paymentStatus === 'Unpaid' ? 'border-danger/20' : 'border-border'} p-5 shadow-xl shadow-muted/5 relative overflow-hidden`}>
                     {/* Status Indicator Bar */}
-                    <div className={`absolute top-0 left-0 w-1.5 h-full ${sub?.paymentStatus === 'Paid' ? 'bg-emerald-500' : sub?.paymentStatus === 'Unpaid' ? 'bg-rose-500' : 'bg-amber-500'}`} />
+                    <div className={`absolute top-0 left-0 w-1.5 h-full ${sub?.paymentStatus === 'Paid' ? 'bg-success' : sub?.paymentStatus === 'Unpaid' ? 'bg-danger' : 'bg-warning'}`} />
                     
                     <div className="flex items-start justify-between mb-6">
                         <div 
@@ -54,32 +54,32 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                                 </div>
                                 <div className="absolute -bottom-1 -right-1">
                                     {s.accountStatus === 'disabled' || s.accountStatus === 'suspended'
-                                        ? <div className="bg-rose-500 p-1 rounded-lg border-2 border-white dark:border-institutional-900"><ShieldOff size={10} className="text-institutional-50" /></div>
-                                        : <div className="bg-emerald-500 p-1 rounded-lg border-2 border-white dark:border-institutional-900"><ShieldCheck size={10} className="text-institutional-50" /></div>
+                                        ? <div className="bg-danger p-1 rounded-lg border-2 border-surface dark:border-background"><ShieldOff size={10} className="text-background" /></div>
+                                        : <div className="bg-success p-1 rounded-lg border-2 border-surface dark:border-background"><ShieldCheck size={10} className="text-background" /></div>
                                     }
                                 </div>
                             </div>
                             <div>
-                                <p className="font-black text-base text-institutional-900 dark:text-institutional-50 leading-tight group-hover:text-primary transition-colors">{s.name}</p>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-institutional-600 mt-1">ID: {s.id}</p>
+                                <p className="font-black text-base text-text leading-tight group-hover:text-primary transition-colors">{s.name}</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary mt-1">ID: {s.id}</p>
                             </div>
                         </div>
                         <div className="text-end">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-institutional-600 mb-1">Monthly</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-1">Monthly</p>
                             <p className="text-sm font-black text-primary">{formatCurrencyDZD(sub?.monthlyAmount || 0)}</p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 mb-6">
-                        <div className="bg-institutional-50 dark:bg-institutional-800/50 p-3 rounded-2xl border border-institutional-100 dark:border-institutional-800">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-institutional-600 mb-1">Start Date</p>
-                            <p className="text-xs font-bold text-institutional-700 dark:text-institutional-300">{sub?.startDate || '---'}</p>
+                        <div className="bg-muted/5 dark:bg-muted/10 p-3 rounded-2xl border border-border">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary mb-1">Start Date</p>
+                            <p className="text-xs font-bold text-text dark:text-text-secondary/80">{sub?.startDate || '---'}</p>
                         </div>
-                        <div className="bg-institutional-50 dark:bg-institutional-800/50 p-3 rounded-2xl border border-institutional-100 dark:border-institutional-800">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-institutional-600 mb-1">
+                        <div className="bg-muted/5 dark:bg-muted/10 p-3 rounded-2xl border border-border">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary mb-1">
                                 {sub?.subscriptionType === 'session' ? 'Sessions' : 'End Date'}
                             </p>
-                            <p className="text-xs font-bold text-institutional-700 dark:text-institutional-300">
+                            <p className="text-xs font-bold text-text dark:text-text-secondary/80">
                                 {sub?.subscriptionType === 'session' 
                                     ? `${sub?.sessionsUsed || 0} / ${sub?.totalSessions || 0}`
                                     : (sub?.endDate || '---')
@@ -89,16 +89,16 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                     </div>
 
                     <div className="space-y-3">
-                        <div className="flex items-center justify-between p-4 bg-institutional-50 dark:bg-institutional-800/50 rounded-2xl border border-institutional-100 dark:border-institutional-800">
+                        <div className="flex items-center justify-between p-4 bg-muted/5 dark:bg-muted/10 rounded-2xl border border-border">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-institutional-600 mb-1">Payment Status</p>
-                                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg ${sub?.paymentStatus === 'Paid' ? 'bg-emerald-500 text-institutional-50' : sub?.paymentStatus === 'Unpaid' ? 'bg-rose-500 text-institutional-50' : 'bg-amber-500 text-institutional-50'}`}>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary mb-1">Payment Status</p>
+                                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg ${sub?.paymentStatus === 'Paid' ? 'bg-success text-background' : sub?.paymentStatus === 'Unpaid' ? 'bg-danger text-background' : 'bg-warning text-background'}`}>
                                     {sub?.paymentStatus || 'Pending'}
                                 </span>
                             </div>
                             <button 
                                 onClick={openSettings}
-                                className="px-4 py-2 bg-primary/10 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-institutional-50 transition-all"
+                                className="px-4 py-2 bg-primary/10 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-background transition-all"
                             >
                                 Manage
                             </button>
@@ -106,28 +106,28 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
 
                         <button 
                             onClick={() => setSelectedStudentId(selectedStudentId === s.id ? null : s.id)}
-                            className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${selectedStudentId === s.id ? 'bg-primary/10 text-primary' : 'text-institutional-600 hover:bg-institutional-50 dark:hover:bg-institutional-800'}`}>
+                            className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${selectedStudentId === s.id ? 'bg-primary/10 text-primary' : 'text-text-secondary hover:bg-muted/10 dark:hover:bg-muted/10'}`}>
                             <History size={14} /> {selectedStudentId === s.id ? 'Hide Timeline' : 'View Payment Timeline'}
                         </button>
                     </div>
 
                     {selectedStudentId === s.id && (
-                        <div className="mt-4 pt-4 border-t border-institutional-100 dark:border-institutional-800 space-y-2 animate-in slide-in-from-top-4 duration-300">
+                        <div className="mt-4 pt-4 border-t border-border space-y-2 animate-in slide-in-from-top-4 duration-300">
                             {paymentRecords.filter(r => r.studentId === s.id).length > 0 ? (
                                 paymentRecords.filter(r => r.studentId === s.id).map(r => (
-                                    <div key={r.id} className="flex items-center justify-between p-3 bg-institutional-50 dark:bg-institutional-800/30 rounded-xl border border-institutional-100 dark:border-institutional-800">
+                                    <div key={r.id} className="flex items-center justify-between p-3 bg-muted/5 dark:bg-muted/5 rounded-xl border border-border">
                                         <div className="flex items-center gap-3">
                                             <div className={`w-1.5 h-1.5 rounded-full ${getStatusColor(r.status)}`} />
                                             <div>
-                                                <p className="text-[10px] font-bold text-institutional-900 dark:text-institutional-50">{r.date}</p>
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-institutional-600">{formatCurrencyDZD(r.amount)} • {r.method}</p>
+                                                <p className="text-[10px] font-bold text-text">{r.date}</p>
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary">{formatCurrencyDZD(r.amount)} • {r.method}</p>
                                             </div>
                                         </div>
                                         <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${getStatusColor(r.status)}`}>{r.status}</span>
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-center py-4 text-[10px] font-bold text-institutional-600 uppercase tracking-widest">No payment records found</p>
+                                <p className="text-center py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">No payment records found</p>
                             )}
                         </div>
                     )}
@@ -137,18 +137,18 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
     }
 
     return (
-        <tr style={style} className={`transition-colors border-b border-institutional-200 dark:border-institutional-800 ${s.accountStatus === 'disabled' || s.accountStatus === 'frozen' ? 'bg-danger/5' : 'hover:bg-institutional-50 dark:hover:bg-institutional-900/50'}`}>
+        <tr style={style} className={`transition-colors border-b border-border ${s.accountStatus === 'disabled' || s.accountStatus === 'frozen' ? 'bg-danger/5' : 'hover:bg-muted/5 dark:hover:bg-muted/5'}`}>
             <td className="px-8 py-6">
                 <div 
                     className="flex items-center gap-4 cursor-pointer group"
                     onClick={openSettings}
                 >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-institutional-50 font-bold text-sm transition-transform group-hover:scale-110 ${s.accountStatus === 'disabled' ? 'bg-institutional-400' : 'bg-primary'}`}>
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-background font-bold text-sm transition-transform group-hover:scale-110 ${s.accountStatus === 'disabled' ? 'bg-muted' : 'bg-primary'}`}>
                         {s.name.charAt(0)}
                     </div>
                     <div>
-                        <p className="font-bold text-sm text-institutional-900 dark:text-institutional-50 group-hover:text-primary transition-colors">{s.name}</p>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-institutional-600">ID: {s.id}</p>
+                        <p className="font-bold text-sm text-text group-hover:text-primary transition-colors">{s.name}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">ID: {s.id}</p>
                     </div>
                 </div>
             </td>
@@ -156,10 +156,10 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
                         {s.accountStatus === 'disabled' || s.accountStatus === 'suspended'
-                            ? <ShieldOff size={16} className="text-rose-500" /> 
+                            ? <ShieldOff size={16} className="text-danger" /> 
                             : s.accountStatus === 'pending'
-                            ? <Clock size={16} className="text-amber-500" />
-                            : <ShieldCheck size={16} className="text-emerald-500" />
+                            ? <Clock size={16} className="text-warning" />
+                            : <ShieldCheck size={16} className="text-success" />
                         }
                         <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${s.accountStatus === 'disabled' || s.accountStatus === 'suspended' ? getStatusColor('disabled') : s.accountStatus === 'pending' ? getStatusColor('pending') : getStatusColor('active')}`}>
                             {s.accountStatus || 'active'}
@@ -170,31 +170,31 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
 
             <td className="px-8 py-6">
                 <div className="flex flex-col gap-1">
-                    <p className="text-[11px] font-bold text-institutional-900 dark:text-institutional-50">{sub?.startDate || '---'}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-600">{sub?.endDate || '---'}</p>
+                    <p className="text-[11px] font-bold text-text">{sub?.startDate || '---'}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">{sub?.endDate || '---'}</p>
                 </div>
             </td>
             <td className="px-8 py-6">
                 <div className="flex flex-col">
-                    <p className="font-bold text-sm text-institutional-900 dark:text-institutional-50">{formatCurrencyDZD(sub?.monthlyAmount || 0)}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-600">Monthly Amount</p>
+                    <p className="font-bold text-sm text-text">{formatCurrencyDZD(sub?.monthlyAmount || 0)}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Monthly Amount</p>
                 </div>
             </td>
             <td className="px-8 py-6">
                 <div className="flex flex-col">
-                    <p className="font-bold text-sm text-institutional-900 dark:text-institutional-50">
+                    <p className="font-bold text-sm text-text">
                         {sub?.subscriptionType === 'session' 
                             ? `${sub?.sessionsUsed || 0} / ${sub?.totalSessions || 0} Sessions`
                             : `${sub?.duration || 1} Months`
                         }
                     </p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-institutional-600">Subscription Type</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Subscription Type</p>
                 </div>
             </td>
             <td className="px-8 py-6">
                 <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${sub?.paymentStatus === 'Paid' ? 'bg-emerald-500' : sub?.paymentStatus === 'Unpaid' ? 'bg-rose-500' : 'bg-amber-500'}`} />
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${sub?.paymentStatus === 'Paid' ? 'text-emerald-500' : sub?.paymentStatus === 'Unpaid' ? 'text-rose-500' : 'text-amber-500'}`}>
+                    <div className={`w-2 h-2 rounded-full ${sub?.paymentStatus === 'Paid' ? 'bg-success' : sub?.paymentStatus === 'Unpaid' ? 'bg-danger' : 'bg-warning'}`} />
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${sub?.paymentStatus === 'Paid' ? 'text-success' : sub?.paymentStatus === 'Unpaid' ? 'text-danger' : 'text-warning'}`}>
                         {sub?.paymentStatus || 'Pending'}
                     </span>
                 </div>
@@ -203,14 +203,14 @@ const StudentRow: React.FC<StudentRowProps> = ({ index, style, data }) => {
                 <div className="flex justify-end gap-2">
                     <button 
                         onClick={() => setSelectedStudentId(selectedStudentId === s.id ? null : s.id)}
-                        className={`p-3 rounded-xl transition-all ${selectedStudentId === s.id ? 'bg-primary text-institutional-50' : 'text-institutional-600 hover:text-primary hover:bg-primary/5'}`}
+                        className={`p-3 rounded-xl transition-all ${selectedStudentId === s.id ? 'bg-primary text-background' : 'text-text-secondary hover:text-primary hover:bg-primary/5'}`}
                         title="View History"
                     >
                         <History size={18} />
                     </button>
                     <button 
                         onClick={openSettings}
-                        className="p-3 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-institutional-50 transition-all"
+                        className="p-3 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-background transition-all"
                         title="Manage Student"
                     >
                         <ChevronDown size={18} />
