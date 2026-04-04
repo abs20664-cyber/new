@@ -171,11 +171,6 @@ const Schedule: React.FC = () => {
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 pb-24">
-            <div className="text-center mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-institutional-900 dark:text-institutional-50 mb-2">{t('schedule.title')}</h2>
-                <p className="text-sm text-institutional-600 dark:text-institutional-400">Manage your academic timeline and sessions</p>
-            </div>
-
             <div className="flex flex-col md:flex-row gap-8 items-start justify-center">
                 {/* Calendar Section */}
                 <div className="w-full md:w-auto shrink-0">

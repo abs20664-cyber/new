@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { usePlatform } from '../contexts/PlatformContext';
 import Logo from './Logo';
-import { collection, onSnapshot, query, where, doc, updateDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, doc, updateDoc, limit } from 'firebase/firestore';
 import { db, collections } from '../services/firebase';
 import { Notification, AppLanguage } from '../types';
 import { 
@@ -54,6 +54,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLangOpen, setIsLangOpen] = useState(false);
     const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
     const [toasts, setToasts] = useState<Notification[]>([]);
     
     const [audioEnabled, setAudioEnabled] = useState(false);
@@ -124,12 +125,12 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
     useEffect(() => {
         if (!user) return;
         
-        const q = query(
+        const qNotifs = query(
             collection(db, collections.notifications),
             where('userId', '==', user.id)
         );
 
-        const unsub = onSnapshot(q, (snap) => {
+        const unsubNotifs = onSnapshot(qNotifs, (snap) => {
             const allNotifs = snap.docs.map(d => ({ id: d.id, ...d.data() } as Notification));
             const sortedNotifs = allNotifs.sort((a, b) => {
                 const tA = a.timestamp?.toMillis?.() || a.timestamp?.seconds * 1000 || 0;
@@ -151,7 +152,23 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
             setNotifications(sortedNotifs.slice(0, 50));
         });
 
-        return () => unsub();
+        // Unread Messages Count
+        const qMessages = query(collection(db, collections.messages), where('seen', '==', false), limit(500));
+        const unsubMessages = onSnapshot(qMessages, (snap) => {
+            let count = 0;
+            snap.docs.forEach(d => {
+                const m = d.data();
+                if (m.senderId !== user.id && m.chatId.includes(user.id)) {
+                    count++;
+                }
+            });
+            setUnreadMessagesCount(count);
+        });
+
+        return () => {
+            unsubNotifs();
+            unsubMessages();
+        };
     }, [user, audioEnabled]);
 
     const markAsRead = async (id: string) => {
@@ -331,13 +348,19 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     {routes.map((route) => {
                         const Icon = route.icon;
                         const isActive = currentPath === route.path;
+                        const isInbox = route.path === '/inbox';
                         return (
                             <button 
                                 key={route.path}
                                 onClick={() => { enableAudio(); onNavigate(route.path); }}
                                 className={`flex-shrink-0 flex flex-col items-center gap-1 p-2.5 rounded-[1.5rem] transition-all min-w-[60px] relative ${isActive ? 'text-primary bg-primary/5 scale-105' : 'text-institutional-600 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
                             >
-                                <Icon size={18} strokeWidth={isActive ? 3 : 2} />
+                                <div className="relative">
+                                    <Icon size={18} strokeWidth={isActive ? 3 : 2} />
+                                    {isInbox && unreadMessagesCount > 0 && (
+                                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />
+                                    )}
+                                </div>
                                 <span className={`text-[7px] font-black uppercase tracking-[0.1em] transition-all ${isActive ? 'opacity-100' : 'opacity-60'}`}>{route.label}</span>
                                 {isActive && <div className="absolute bottom-1 w-1 h-1 bg-primary rounded-full" />}
                             </button>
@@ -364,10 +387,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             </div>
                         )}
                     </div>
-                    <div onClick={() => setIsNotifOpen(!isNotifOpen)} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer" role="button" tabIndex={0}>
+                    <div onClick={() => { setIsNotifOpen(!isNotifOpen); if (!isNotifOpen) markAllRead(); }} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer" role="button" tabIndex={0}>
                         <div className="relative">
                             <Bell size={18} />
-                            {notifications.length > 0 && <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />}
+                            {unreadCount > 0 && !isNotifOpen && <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />}
                         </div>
                         {isNotifOpen && (
                             <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-64 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[60] p-4`}>

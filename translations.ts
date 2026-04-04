@@ -36,7 +36,7 @@ export const translations = {
       validSession: "Valid Session", helperMsg: "Present this terminal to your instructor to verify attendance and receive session materials."
     },
     schedule: {
-      title: "Institutional Time Allocation", cycleEntries: "No Cycle Entries",
+      cycleEntries: "No Cycle Entries",
       present: "Present", absent: "Absent", pending: "Pending", room: "Room",
       week: "Week", day: "Day"
     },
@@ -206,7 +206,7 @@ export const translations = {
       validSession: "Session Valide", helperMsg: "Présentez ce terminal à votre instructeur pour vérifier votre présence et recevoir les supports de cours."
     },
     schedule: {
-      title: "Allocation du Temps Institutionnel", cycleEntries: "Aucune entrée",
+      cycleEntries: "Aucune entrée",
       present: "Présent", absent: "Absent", pending: "En attente", room: "Salle",
       week: "Semaine", day: "Jour"
     },
@@ -376,7 +376,7 @@ export const translations = {
       validSession: "جلسة صالحة", helperMsg: "قدم هذا الجهاز لأستاذك لتأكيد حضورك واستلام مواد الحصة."
     },
     schedule: {
-      title: "توزيع الوقت المؤسسي", cycleEntries: "لا توجد حصص",
+      cycleEntries: "لا توجد حصص",
       present: "حاضر", absent: "غائب", pending: "قيد الانتظار", room: "قاعة",
       week: "أسبوع", day: "يوم"
     },
