@@ -653,28 +653,14 @@ const EconomicDashboard: React.FC = () => {
                         <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] mt-1">Institutional President Terminal v3.1</p>
                     </div>
                     
-                    {/* Desktop Tabs */}
-                    <div className="hidden md:flex bg-muted/20 dark:bg-muted/10 p-1 rounded-2xl">
+                    {/* Tabs - Unified & Scrollable (Top) */}
+                    <div className="flex bg-muted/20 dark:bg-muted/10 p-1 rounded-2xl overflow-x-auto scroll-hide max-w-full">
                         {(['overview', 'students', 'teachers', 'audit', 'sessions', 'timetable'] as const).map(tab => (
                             <button 
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-surface dark:bg-muted/20 text-primary shadow-soft' : 'text-text-secondary hover:text-text'}`}>
+                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-surface dark:bg-muted/20 text-primary shadow-soft' : 'text-text-secondary hover:text-text'}`}>
                                 {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs') : tab === 'teachers' ? t('economic.teacherPayments') : tab === 'audit' ? 'Audit' : tab === 'sessions' ? 'Sessions' : 'Timetable'}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Mobile Tabs - Centered & Polished */}
-                <div className="md:hidden fixed bottom-4 left-0 right-0 z-50 flex justify-center">
-                    <div className="inline-flex bg-surface dark:bg-muted/10 p-1.5 rounded-2xl shadow-xl border border-border overflow-x-auto scrollbar-hide max-w-[95vw]">
-                        {(['overview', 'students', 'teachers', 'audit', 'sessions', 'timetable'] as const).map(tab => (
-                            <button 
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab ? 'bg-muted/20 dark:bg-muted/20 text-primary shadow-md scale-105' : 'text-text-secondary'}`}>
-                                {tab === 'overview' ? 'Overview' : tab === 'students' ? t('economic.studentSubs').split(' ')[0] : tab === 'teachers' ? t('economic.teacherPayments').split(' ')[0] : tab === 'audit' ? 'Audit' : tab === 'sessions' ? 'Sessions' : 'Timetable'}
                             </button>
                         ))}
                     </div>
