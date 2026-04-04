@@ -54,6 +54,9 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLangOpen, setIsLangOpen] = useState(false);
     const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const [popupPos, setPopupPos] = useState(0);
+    const langBtnRef = useRef<HTMLButtonElement>(null);
+    const notifBtnRef = useRef<HTMLButtonElement>(null);
     const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
     const [toasts, setToasts] = useState<Notification[]>([]);
     
@@ -120,6 +123,25 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
         setIsDarkMode(nextMode);
         document.documentElement.classList.toggle('dark', nextMode);
         localStorage.setItem('edu_alg_theme', nextMode ? 'dark' : 'light');
+    };
+
+    const handleLangClick = () => {
+        if (!isLangOpen && langBtnRef.current) {
+            const rect = langBtnRef.current.getBoundingClientRect();
+            setPopupPos(rect.left + rect.width / 2);
+        }
+        setIsLangOpen(!isLangOpen);
+        setIsNotifOpen(false);
+    };
+
+    const handleNotifClick = () => {
+        if (!isNotifOpen && notifBtnRef.current) {
+            const rect = notifBtnRef.current.getBoundingClientRect();
+            setPopupPos(rect.left + rect.width / 2);
+            markAllRead();
+        }
+        setIsNotifOpen(!isNotifOpen);
+        setIsLangOpen(false);
     };
 
     useEffect(() => {
@@ -342,11 +364,62 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     </div>
                 </div>
 
+            {/* POPUPS (Outside nav to avoid clipping) */}
+            {(isLangOpen || isNotifOpen) && (
+                <div 
+                    className="fixed inset-0 z-[90] bg-transparent" 
+                    onClick={() => { setIsLangOpen(false); setIsNotifOpen(false); }}
+                />
+            )}
+            
+            {isLangOpen && (
+                <div 
+                    className="fixed bottom-24 w-48 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[100] p-2 pointer-events-auto"
+                    style={{ left: popupPos, transform: 'translateX(-50%)' }}
+                >
+                    {languages.map(l => (
+                        <button 
+                            key={l.code} 
+                            onClick={(e) => { e.stopPropagation(); setLanguage(l.code); setIsLangOpen(false); }}
+                            className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all text-xs font-black uppercase ${language === l.code ? 'text-primary bg-primary/5' : 'text-institutional-600'}`}
+                        >
+                            <span className="text-xl">{l.flag}</span>
+                            <span>{l.label}</span>
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {isNotifOpen && (
+                <div 
+                    className="fixed bottom-24 w-64 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[100] p-4 pointer-events-auto"
+                    style={{ left: popupPos, transform: 'translateX(-50%)' }}
+                >
+                    <h3 className="text-xs font-black uppercase text-institutional-900 dark:text-institutional-50 mb-3">Notifications</h3>
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                        {notifications.length > 0 ? (
+                            notifications.map(n => (
+                                <div key={n.id} className="text-xs text-institutional-600 p-2 bg-institutional-100 dark:bg-institutional-800 rounded-xl">
+                                    {n.message}
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-xs text-institutional-600">No new notifications.</p>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {/* BOTTOM NAVIGATION */}
             <div className="fixed bottom-0 inset-x-0 z-50 pointer-events-none flex justify-center">
-                <div className="pointer-events-auto overflow-x-auto no-scrollbar max-w-[95vw] sm:max-w-full px-2 pb-4 scroll-smooth snap-x">
-                    <div className="flex items-end h-[450px]">
-                        <nav className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 flex items-center p-1.5 px-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] gap-1 mb-1">
+                <div 
+                    className="pointer-events-auto overflow-x-auto no-scrollbar max-w-[95vw] sm:max-w-full px-2 pb-4 scroll-smooth snap-x"
+                    onScroll={() => {
+                        if (isLangOpen) setIsLangOpen(false);
+                        if (isNotifOpen) setIsNotifOpen(false);
+                    }}
+                >
+                    <nav className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 flex items-center p-1.5 px-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] gap-1 mb-1">
                             {routes.map((route) => {
                                 const Icon = route.icon;
                                 const isActive = currentPath === route.path;
@@ -377,37 +450,18 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             
                             <div className="relative shrink-0 snap-center">
                                 <button 
-                                    onClick={() => {
-                                        setIsLangOpen(!isLangOpen);
-                                        setIsNotifOpen(false);
-                                    }} 
+                                    ref={langBtnRef}
+                                    onClick={handleLangClick} 
                                     className={`p-3 transition-all relative ${isLangOpen ? 'text-primary' : 'text-institutional-600 hover:text-primary'}`}
                                 >
                                     <Languages size={18} />
                                 </button>
-                                {isLangOpen && (
-                                    <div className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 w-48 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[100] p-2">
-                                        {languages.map(l => (
-                                            <button 
-                                                key={l.code} 
-                                                onClick={(e) => { e.stopPropagation(); setLanguage(l.code); setIsLangOpen(false); }}
-                                                className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all text-xs font-black uppercase ${language === l.code ? 'text-primary bg-primary/5' : 'text-institutional-600'}`}
-                                            >
-                                                <span className="text-xl">{l.flag}</span>
-                                                <span>{l.label}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
                             </div>
                             
                             <div className="relative shrink-0 snap-center">
                                 <button 
-                                    onClick={() => { 
-                                        setIsNotifOpen(!isNotifOpen); 
-                                        setIsLangOpen(false);
-                                        if (!isNotifOpen) markAllRead(); 
-                                    }} 
+                                    ref={notifBtnRef}
+                                    onClick={handleNotifClick} 
                                     className={`p-3 transition-all relative ${isNotifOpen ? 'text-primary' : 'text-institutional-600 hover:text-primary'}`}
                                 >
                                     <div className="relative">
@@ -415,29 +469,12 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                                         {unreadCount > 0 && !isNotifOpen && <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />}
                                     </div>
                                 </button>
-                                {isNotifOpen && (
-                                    <div className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 w-64 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[100] p-4">
-                                        <h3 className="text-xs font-black uppercase text-institutional-900 dark:text-institutional-50 mb-3">Notifications</h3>
-                                        <div className="space-y-2 max-h-60 overflow-y-auto">
-                                            {notifications.length > 0 ? (
-                                                notifications.map(n => (
-                                                    <div key={n.id} className="text-xs text-institutional-600 p-2 bg-institutional-100 dark:bg-institutional-800 rounded-xl">
-                                                        {n.message}
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <p className="text-xs text-institutional-600">No new notifications.</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                             
                             <button onClick={logout} className="p-3 text-danger hover:text-danger-hover transition-all shrink-0 snap-center">
                                 <Power size={18} />
                             </button>
                         </nav>
-                    </div>
                 </div>
             </div>
             </main>
