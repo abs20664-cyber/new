@@ -344,74 +344,78 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
 
                 {/* BOTTOM NAVIGATION */}
             <div className="fixed bottom-4 inset-x-0 flex justify-center z-50 px-2 pointer-events-none">
-                <nav className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 flex items-center overflow-x-auto scroll-smooth scrollbar-hide p-1.5 px-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] gap-1 pointer-events-auto max-w-[95vw] sm:max-w-full snap-x">
-                    {routes.map((route) => {
-                        const Icon = route.icon;
-                        const isActive = currentPath === route.path;
-                        const isInbox = route.path === '/inbox';
-                        return (
-                            <button 
-                                key={route.path}
-                                onClick={() => { enableAudio(); onNavigate(route.path); }}
-                                className={`flex-shrink-0 flex flex-col items-center gap-1 p-2.5 rounded-[1.5rem] transition-all min-w-[64px] relative snap-center ${isActive ? 'text-primary bg-primary/5 scale-105' : 'text-institutional-600 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
-                            >
-                                <div className="relative">
-                                    <Icon size={18} strokeWidth={isActive ? 3 : 2} />
-                                    {isInbox && unreadMessagesCount > 0 && (
-                                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />
-                                    )}
-                                </div>
-                                <span className={`text-[7px] font-black uppercase tracking-[0.1em] transition-all ${isActive ? 'opacity-100' : 'opacity-60'}`}>{route.label}</span>
-                                {isActive && <div className="absolute bottom-1 w-1 h-1 bg-primary rounded-full" />}
-                            </button>
-                        );
-                    })}
+                <nav className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 flex items-center p-1.5 px-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] gap-1 pointer-events-auto max-w-[95vw] sm:max-w-full overflow-visible">
+                    <div className="flex items-center overflow-x-auto scroll-smooth scroll-hide snap-x gap-1 flex-1 min-w-0">
+                        {routes.map((route) => {
+                            const Icon = route.icon;
+                            const isActive = currentPath === route.path;
+                            const isInbox = route.path === '/inbox';
+                            return (
+                                <button 
+                                    key={route.path}
+                                    onClick={() => { enableAudio(); onNavigate(route.path); }}
+                                    className={`flex-shrink-0 flex flex-col items-center gap-1 p-2.5 rounded-[1.5rem] transition-all min-w-[64px] relative snap-center ${isActive ? 'text-primary bg-primary/5 scale-105' : 'text-institutional-600 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
+                                >
+                                    <div className="relative">
+                                        <Icon size={18} strokeWidth={isActive ? 3 : 2} />
+                                        {isInbox && unreadMessagesCount > 0 && (
+                                            <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />
+                                        )}
+                                    </div>
+                                    <span className={`text-[7px] font-black uppercase tracking-[0.1em] transition-all ${isActive ? 'opacity-100' : 'opacity-60'}`}>{route.label}</span>
+                                    {isActive && <div className="absolute bottom-1 w-1 h-1 bg-primary rounded-full" />}
+                                </button>
+                            );
+                        })}
+                    </div>
                     <div className="w-px h-8 bg-institutional-200 dark:bg-institutional-800 mx-1 shrink-0" />
-                    <button onClick={toggleTheme} className="p-3 text-institutional-600 hover:text-primary transition-all shrink-0">
-                        {isDarkMode ? <Sun size={18} className="text-warning" /> : <Moon size={18} className="text-primary" />}
-                    </button>
-                    <div onClick={() => setIsLangOpen(!isLangOpen)} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer shrink-0" role="button" tabIndex={0}>
-                        <Languages size={18} />
-                        {isLangOpen && (
-                            <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-48 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[60] p-2`}>
-                                {languages.map(l => (
-                                    <button 
-                                        key={l.code} 
-                                        onClick={(e) => { e.stopPropagation(); setLanguage(l.code); setIsLangOpen(false); }}
-                                        className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all text-xs font-black uppercase ${language === l.code ? 'text-primary bg-primary/5' : 'text-institutional-600'}`}
-                                    >
-                                        <span className="text-xl">{l.flag}</span>
-                                        <span>{l.label}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                    <div onClick={() => { setIsNotifOpen(!isNotifOpen); if (!isNotifOpen) markAllRead(); }} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer shrink-0" role="button" tabIndex={0}>
-                        <div className="relative">
-                            <Bell size={18} />
-                            {unreadCount > 0 && !isNotifOpen && <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />}
-                        </div>
-                        {isNotifOpen && (
-                            <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-64 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[60] p-4`}>
-                                <h3 className="text-xs font-black uppercase text-institutional-900 dark:text-institutional-50 mb-3">Notifications</h3>
-                                <div className="space-y-2 max-h-60 overflow-y-auto">
-                                    {notifications.length > 0 ? (
-                                        notifications.map(n => (
-                                            <div key={n.id} className="text-xs text-institutional-600 p-2 bg-institutional-100 dark:bg-institutional-800 rounded-xl">
-                                                {n.message}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="text-xs text-institutional-600">No new notifications.</p>
-                                    )}
+                    <div className="flex items-center gap-0.5 shrink-0">
+                        <button onClick={toggleTheme} className="p-3 text-institutional-600 hover:text-primary transition-all shrink-0">
+                            {isDarkMode ? <Sun size={18} className="text-warning" /> : <Moon size={18} className="text-primary" />}
+                        </button>
+                        <div onClick={() => setIsLangOpen(!isLangOpen)} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer shrink-0" role="button" tabIndex={0}>
+                            <Languages size={18} />
+                            {isLangOpen && (
+                                <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-48 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[60] p-2`}>
+                                    {languages.map(l => (
+                                        <button 
+                                            key={l.code} 
+                                            onClick={(e) => { e.stopPropagation(); setLanguage(l.code); setIsLangOpen(false); }}
+                                            className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-institutional-100 dark:hover:bg-institutional-800 transition-all text-xs font-black uppercase ${language === l.code ? 'text-primary bg-primary/5' : 'text-institutional-600'}`}
+                                        >
+                                            <span className="text-xl">{l.flag}</span>
+                                            <span>{l.label}</span>
+                                        </button>
+                                    ))}
                                 </div>
+                            )}
+                        </div>
+                        <div onClick={() => { setIsNotifOpen(!isNotifOpen); if (!isNotifOpen) markAllRead(); }} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer shrink-0" role="button" tabIndex={0}>
+                            <div className="relative">
+                                <Bell size={18} />
+                                {unreadCount > 0 && !isNotifOpen && <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />}
                             </div>
-                        )}
+                            {isNotifOpen && (
+                                <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-64 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[60] p-4`}>
+                                    <h3 className="text-xs font-black uppercase text-institutional-900 dark:text-institutional-50 mb-3">Notifications</h3>
+                                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                                        {notifications.length > 0 ? (
+                                            notifications.map(n => (
+                                                <div key={n.id} className="text-xs text-institutional-600 p-2 bg-institutional-100 dark:bg-institutional-800 rounded-xl">
+                                                    {n.message}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-xs text-institutional-600">No new notifications.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <button onClick={logout} className="p-3 text-danger hover:text-danger-hover transition-all shrink-0">
+                            <Power size={18} />
+                        </button>
                     </div>
-                    <button onClick={logout} className="p-3 text-danger hover:text-danger-hover transition-all">
-                        <Power size={18} />
-                    </button>
                 </nav>
             </div>
             </main>
