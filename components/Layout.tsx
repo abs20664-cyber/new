@@ -336,7 +336,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                     )}
                 </motion.header>
 
-                <div className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-12 relative scroll-smooth pb-28 pt-20">
+                <div className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-12 relative scroll-smooth pb-36 pt-20">
                     <div className="max-w-[1400px] mx-auto">
                         {children}
                     </div>
@@ -344,7 +344,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
 
                 {/* BOTTOM NAVIGATION */}
             <div className="fixed bottom-4 inset-x-0 flex justify-center z-50 px-2 pointer-events-none">
-                <nav className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 flex items-center overflow-visible scroll-smooth scrollbar-hide p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] gap-1 pointer-events-auto max-w-full">
+                <nav className="bg-surface/90 dark:bg-institutional-900/90 backdrop-blur-2xl border border-institutional-200 dark:border-institutional-800 flex items-center overflow-x-auto scroll-smooth scrollbar-hide p-1.5 px-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[2rem] gap-1 pointer-events-auto max-w-[95vw] sm:max-w-full snap-x">
                     {routes.map((route) => {
                         const Icon = route.icon;
                         const isActive = currentPath === route.path;
@@ -353,7 +353,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             <button 
                                 key={route.path}
                                 onClick={() => { enableAudio(); onNavigate(route.path); }}
-                                className={`flex-shrink-0 flex flex-col items-center gap-1 p-2.5 rounded-[1.5rem] transition-all min-w-[60px] relative ${isActive ? 'text-primary bg-primary/5 scale-105' : 'text-institutional-600 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
+                                className={`flex-shrink-0 flex flex-col items-center gap-1 p-2.5 rounded-[1.5rem] transition-all min-w-[64px] relative snap-center ${isActive ? 'text-primary bg-primary/5 scale-105' : 'text-institutional-600 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
                             >
                                 <div className="relative">
                                     <Icon size={18} strokeWidth={isActive ? 3 : 2} />
@@ -366,11 +366,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             </button>
                         );
                     })}
-                    <div className="w-px h-8 bg-institutional-200 dark:bg-institutional-800 mx-1" />
-                    <button onClick={toggleTheme} className="p-3 text-institutional-600 hover:text-primary transition-all">
+                    <div className="w-px h-8 bg-institutional-200 dark:bg-institutional-800 mx-1 shrink-0" />
+                    <button onClick={toggleTheme} className="p-3 text-institutional-600 hover:text-primary transition-all shrink-0">
                         {isDarkMode ? <Sun size={18} className="text-warning" /> : <Moon size={18} className="text-primary" />}
                     </button>
-                    <div onClick={() => setIsLangOpen(!isLangOpen)} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer" role="button" tabIndex={0}>
+                    <div onClick={() => setIsLangOpen(!isLangOpen)} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer shrink-0" role="button" tabIndex={0}>
                         <Languages size={18} />
                         {isLangOpen && (
                             <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-48 bg-surface dark:bg-institutional-900 border border-institutional-200 dark:border-institutional-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 z-[60] p-2`}>
@@ -387,7 +387,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentPath, onNavigat
                             </div>
                         )}
                     </div>
-                    <div onClick={() => { setIsNotifOpen(!isNotifOpen); if (!isNotifOpen) markAllRead(); }} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer" role="button" tabIndex={0}>
+                    <div onClick={() => { setIsNotifOpen(!isNotifOpen); if (!isNotifOpen) markAllRead(); }} className="p-3 text-institutional-600 hover:text-primary transition-all relative cursor-pointer shrink-0" role="button" tabIndex={0}>
                         <div className="relative">
                             <Bell size={18} />
                             {unreadCount > 0 && !isNotifOpen && <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-ping" />}
