@@ -18,7 +18,7 @@ export const translations = {
       myProfile: "My Profile", economic: "Finance"
     },
     login: {
-      title: "Secure Access Terminal", welcome: "Welcome back",
+      welcome: "Welcome back",
       email: "Email Address", password: "Password", authenticate: "Sign in",
       verifying: "Signing in...", forgot: "Forgot Credentials?", demoAccounts: "View demo accounts",
       clickToFill: "Click to Fill",
@@ -188,7 +188,7 @@ export const translations = {
       myProfile: "Mon Profil", economic: "Finance"
     },
     login: {
-      title: "Terminal d'accès sécurisé", welcome: "Content de vous revoir",
+      welcome: "Content de vous revoir",
       email: "Adresse Email", password: "Mot de passe", authenticate: "Se connecter",
       verifying: "Connexion...", forgot: "Identifiants oubliés ?", demoAccounts: "Voir les comptes démo",
       clickToFill: "Cliquer pour remplir",
@@ -358,7 +358,7 @@ export const translations = {
       myProfile: "ملفي الشخصي", economic: "المالية"
     },
     login: {
-      title: "محطة الوصول الآمنة", welcome: "مرحباً بعودتك",
+      welcome: "مرحباً بعودتك",
       email: "البريد الإلكتروني", password: "كلمة المرور", authenticate: "تسجيل الدخول",
       verifying: "جاري تسجيل الدخول...", forgot: "نسيت بيانات الدخول؟", demoAccounts: "عرض الحسابات التجريبية",
       clickToFill: "اضغط للملء",
