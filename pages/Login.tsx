@@ -107,10 +107,10 @@ const Login: React.FC = () => {
     ];
 
     return (
-        <div className={`min-h-screen flex bg-background relative overflow-hidden ${isRTL ? 'font-arabic' : ''}`}>
-            <div className="w-full flex items-center justify-center p-6 sm:p-12 bg-institutional-50 dark:bg-institutional-950 relative">
+        <div className={`min-h-screen flex bg-institutional-50 relative overflow-hidden ${isRTL ? 'font-arabic' : ''}`}>
+            <div className="w-full flex items-center justify-center p-6 sm:p-12 bg-institutional-50 relative">
                 {/* Subtle Background Detail for Right Side */}
-                <div className="absolute inset-0 pointer-events-none opacity-[0.02] dark:opacity-[0.05]">
+                <div className="absolute inset-0 pointer-events-none opacity-[0.02]">
                     <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_100%_0%,#000_0%,transparent_50%)]" />
                 </div>
 
@@ -125,12 +125,12 @@ const Login: React.FC = () => {
                             <Logo size="lg" />
                             
                             {/* Language Switcher - Modern Pill */}
-                            <div className="flex p-1 bg-institutional-50 dark:bg-institutional-900 rounded-full border border-institutional-100 dark:border-institutional-800">
+                            <div className="flex p-1 bg-institutional-50 rounded-full border border-institutional-100">
                                 {languages.map((lang) => (
                                     <button
                                         key={lang.code}
                                         onClick={() => setLanguage(lang.code)}
-                                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${language === lang.code ? 'bg-institutional-50 dark:bg-institutional-800 text-primary shadow-sm' : 'text-institutional-600 hover:text-institutional-600 dark:hover:text-institutional-200'}`}
+                                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${language === lang.code ? 'bg-institutional-50 text-primary shadow-sm' : 'text-institutional-600 hover:text-institutional-600'}`}
                                     >
                                         {lang.code}
                                     </button>
@@ -138,7 +138,7 @@ const Login: React.FC = () => {
                             </div>
                         </div>
                         
-                        <h2 className="text-4xl font-serif text-institutional-900 dark:text-institutional-50 tracking-tight leading-tight mb-3">
+                        <h2 className="text-4xl font-serif text-institutional-900 tracking-tight leading-tight mb-3">
                             {pendingUser ? t('economic.changePassword') : t('login.welcome')}
                         </h2>
                         <p className="text-institutional-600 text-sm font-medium">
@@ -151,7 +151,7 @@ const Login: React.FC = () => {
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="mb-8 p-4 bg-rose-50 dark:bg-rose-900/10 border border-rose-200 dark:border-rose-900/20 rounded-2xl flex items-center gap-3 text-rose-600 dark:text-rose-400 text-sm font-bold"
+                            className="mb-8 p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-rose-600 text-sm font-bold"
                         >
                             <AlertCircle size={18} className="shrink-0" />
                             {error}
@@ -177,7 +177,7 @@ const Login: React.FC = () => {
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder={t('login.minCharacters')} 
-                                            className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-institutional-100 dark:border-institutional-800 font-bold focus:border-primary focus:bg-institutional-50 dark:focus:bg-institutional-900 outline-none text-sm transition-all`}
+                                            className={`w-full bg-institutional-50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-institutional-100 font-bold focus:border-primary focus:bg-institutional-50 outline-none text-sm transition-all`}
                                             required 
                                         />
                                     </div>
@@ -191,7 +191,7 @@ const Login: React.FC = () => {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder={t('login.repeatPassword')} 
-                                            className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-institutional-100 dark:border-institutional-800 font-bold focus:border-primary focus:bg-institutional-50 dark:focus:bg-institutional-900 outline-none text-sm transition-all`}
+                                            className={`w-full bg-institutional-50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-2xl border-2 border-institutional-100 font-bold focus:border-primary focus:bg-institutional-50 outline-none text-sm transition-all`}
                                             required 
                                         />
                                     </div>
@@ -233,7 +233,7 @@ const Login: React.FC = () => {
                                                         value={name}
                                                         onChange={(e) => setName(e.target.value)}
                                                         placeholder="Full Name" 
-                                                        className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 dark:border-institutional-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                className={`w-full bg-institutional-50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
                                                         required 
                                                     />
                                                 </div>
@@ -245,7 +245,7 @@ const Login: React.FC = () => {
                                                     <select 
                                                         value={role}
                                                         onChange={(e) => setRole(e.target.value as UserRole)}
-                                                        className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 dark:border-institutional-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all appearance-none cursor-pointer`}
+                                                        className={`w-full bg-institutional-50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all appearance-none cursor-pointer`}
                                                         required
                                                     >
                                                         <option value="student">{t('roles.student')}</option>
@@ -259,7 +259,7 @@ const Login: React.FC = () => {
                                         </>
                                     )}
                                     <div>
-                                        <label className="text-xs font-semibold text-institutional-600 dark:text-institutional-400 mb-2 block px-1">{t('login.email')}</label>
+                                        <label className="text-xs font-semibold text-institutional-600 mb-2 block px-1">{t('login.email')}</label>
                                         <div className="relative group">
                                             <Mail className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600 group-focus-within:text-primary transition-colors`} size={20} />
                                             <input 
@@ -267,14 +267,14 @@ const Login: React.FC = () => {
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
                                                 placeholder="name@institution.edu.dz" 
-                                                className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 dark:border-institutional-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                className={`w-full bg-institutional-50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
                                                 required 
                                             />
                                         </div>
                                     </div>
                                     
                                     <div>
-                                        <label className="text-xs font-semibold text-institutional-600 dark:text-institutional-400 mb-2 block px-1">{t('login.password')}</label>
+                                        <label className="text-xs font-semibold text-institutional-600 mb-2 block px-1">{t('login.password')}</label>
                                         <div className="relative group">
                                             <Lock className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-institutional-600 group-focus-within:text-primary transition-colors`} size={20} />
                                             <input 
@@ -282,7 +282,7 @@ const Login: React.FC = () => {
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 placeholder="••••••••" 
-                                                className={`w-full bg-institutional-50 dark:bg-institutional-900/50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 dark:border-institutional-800 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
+                                                className={`w-full bg-institutional-50 ${isRTL ? 'pr-12' : 'pl-12'} p-4 rounded-xl border border-institutional-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none text-sm transition-all`}
                                                 required 
                                             />
                                         </div>
@@ -337,7 +337,7 @@ const Login: React.FC = () => {
                                     <button 
                                         key={u.id}
                                         onClick={() => fillCredentials(u)}
-                                        className="w-full text-left bg-institutional-50 dark:bg-institutional-900 hover:bg-institutional-50 dark:hover:bg-institutional-800 p-4 rounded-xl border border-institutional-200 dark:border-institutional-800 transition-all group active:scale-[0.98] shadow-sm"
+                                        className="w-full text-left bg-institutional-50 hover:bg-institutional-50 p-4 rounded-xl border border-institutional-200 transition-all group active:scale-[0.98] shadow-sm"
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
@@ -345,7 +345,7 @@ const Login: React.FC = () => {
                                                     {u.role.charAt(0).toUpperCase()}
                                                 </div>
                                                 <div>
-                                                    <p className="text-institutional-900 dark:text-institutional-50 font-semibold text-sm">{u.name}</p>
+                                                    <p className="text-institutional-900 font-semibold text-sm">{u.name}</p>
                                                     <p className="text-xs text-institutional-600 capitalize">{u.role}</p>
                                                 </div>
                                             </div>
@@ -356,8 +356,8 @@ const Login: React.FC = () => {
                         )}
                     </AnimatePresence>
                     
-                    <div className="mt-12 pt-8 border-t border-institutional-100 dark:border-institutional-800 flex flex-col items-center justify-center gap-3 text-institutional-600">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-institutional-600 dark:text-institutional-600">
+                    <div className="mt-12 pt-8 border-t border-institutional-100 flex flex-col items-center justify-center gap-3 text-institutional-600">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-institutional-600">
                             الجمهورية الجزائرية الديمقراطية الشعبية
                         </p>
                         <div className="flex items-center gap-6">

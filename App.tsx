@@ -46,7 +46,7 @@ const AppContent: React.FC = () => {
   // 2. Auth Guard: If no user, show login
   if (!user || !user.role) {
       return (
-        <Suspense fallback={<div className="h-screen bg-institutional-950" />}>
+        <Suspense fallback={<div className="h-screen bg-institutional-50" />}>
           <Login />
         </Suspense>
       );
